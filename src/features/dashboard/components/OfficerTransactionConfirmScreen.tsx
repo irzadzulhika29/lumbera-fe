@@ -34,6 +34,15 @@ export default function OfficerTransactionConfirmScreen({
   const selectedOption = option || transaction.amountOptions?.[0] || "-";
   const formattedAmount = formatCurrency(amount);
   const accountNumber = extractAccountNumber(member.meta);
+  const successParams = new URLSearchParams({
+    memberId: member.id,
+  });
+
+  if (selectedOption && selectedOption !== "-") {
+    successParams.set("option", selectedOption);
+  }
+
+  const successHref = `/dashboard/officer/transactions/${transaction.slug}/success?${successParams.toString()}`;
   const summaryTitle =
     transaction.slug === "savings"
       ? "Ringkasan Simpanan"
@@ -69,69 +78,71 @@ export default function OfficerTransactionConfirmScreen({
                 </p>
               </div>
             </div>
+
+            <div className="absolute inset-x-5 top-30 rounded-[18px] border border-[#dfe5ea] bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
+              <section className="rounded-[14px] bg-white px-5 py-5">
+                <h2 className="text-[1rem] font-bold tracking-[-0.03em] text-primary">
+                  {summaryTitle}
+                </h2>
+
+                <div className="mt-5 space-y-4 text-[1rem] leading-tight">
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="text-text/72">Nama</span>
+                    <span className="text-right font-bold text-text/72">
+                      {member.name} - {accountNumber}
+                    </span>
+                  </div>
+
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="text-text/72">Jenis</span>
+                    <span className="text-right font-bold text-text/72">
+                      {transaction.title} {selectedOption}
+                    </span>
+                  </div>
+
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="text-text/72">Dicatat oleh</span>
+                    <span className="text-right font-bold text-text/72">
+                      Jamaludin
+                    </span>
+                  </div>
+
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="text-text/72">Tanggal</span>
+                    <span className="text-right font-bold text-text/72">
+                      11 Jun 2026, 09:08
+                    </span>
+                  </div>
+
+                  <div className="pt-5" />
+
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="font-bold text-text/72">{amountLabel}</span>
+                    <span className="text-right text-[1.05rem] font-bold text-primary">
+                      Rp {formattedAmount}
+                    </span>
+                  </div>
+
+                  <div className="pt-5" />
+
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="font-bold text-text/72">Hash</span>
+                    <span className="text-right text-text/28">
+                      SHA-256: a3f7b2e1...
+                    </span>
+                  </div>
+                </div>
+              </section>
+            </div>
           </header>
 
-          <div className="bg-white px-5 pb-8 pt-[30px]">
-            <section className="rounded-[14px] border-2 border-[#d9dde2] bg-white px-5 py-5">
-              <h2 className="text-[1rem] font-bold tracking-[-0.03em] text-primary">
-                {summaryTitle}
-              </h2>
-
-              <div className="mt-5 space-y-4 text-[1rem] leading-tight">
-                <div className="flex items-start justify-between gap-4">
-                  <span className="text-text/72">Nama</span>
-                  <span className="text-right font-bold text-text/72">
-                    {member.name} - {accountNumber}
-                  </span>
-                </div>
-
-                <div className="flex items-start justify-between gap-4">
-                  <span className="text-text/72">Jenis</span>
-                  <span className="text-right font-bold text-text/72">
-                    {transaction.title} {selectedOption}
-                  </span>
-                </div>
-
-                <div className="flex items-start justify-between gap-4">
-                  <span className="text-text/72">Dicatat oleh</span>
-                  <span className="text-right font-bold text-text/72">
-                    Jamaludin
-                  </span>
-                </div>
-
-                <div className="flex items-start justify-between gap-4">
-                  <span className="text-text/72">Tanggal</span>
-                  <span className="text-right font-bold text-text/72">
-                    11 Jun 2026, 09:08
-                  </span>
-                </div>
-
-                <div className="pt-5" />
-
-                <div className="flex items-start justify-between gap-4">
-                  <span className="font-bold text-text/72">{amountLabel}</span>
-                  <span className="text-right text-[1.05rem] font-bold text-primary">
-                    Rp {formattedAmount}
-                  </span>
-                </div>
-
-                <div className="pt-5" />
-
-                <div className="flex items-start justify-between gap-4">
-                  <span className="font-bold text-text/72">Hash</span>
-                  <span className="text-right text-text/28">
-                    SHA-256: a3f7b2e1...
-                  </span>
-                </div>
-              </div>
-            </section>
-
-            <button
-              type="button"
-              className="mt-7 w-full rounded-[10px] bg-primary px-4 py-4 text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
+          <div className="bg-white px-5 pb-8 pt-[332px]">
+            <Link
+              href={successHref}
+              className="block w-full rounded-[10px] bg-primary px-4 py-4 text-center text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
             >
               Simpan
-            </button>
+            </Link>
           </div>
         </div>
       </section>

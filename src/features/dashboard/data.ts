@@ -151,6 +151,19 @@ const memberDashboard: DashboardViewModel = {
   ),
 };
 
+export function getDashboardNavigation(
+  role: DashboardRole,
+  activeLabel: string = "Beranda",
+) {
+  const baseNavigation =
+    role === "officer" ? officerDashboard.navigation : memberDashboard.navigation;
+
+  return baseNavigation.map((item) => ({
+    ...item,
+    active: item.label === activeLabel,
+  }));
+}
+
 export function getDashboardData(role: DashboardRole): DashboardViewModel {
   return role === "officer" ? officerDashboard : memberDashboard;
 }

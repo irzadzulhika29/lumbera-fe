@@ -21,7 +21,6 @@ export default function DashboardScreen({ role }: { role: DashboardRole }) {
             cooperativeName={dashboard.cooperativeName}
             period={dashboard.period}
             syncLabel={dashboard.syncLabel}
-            notificationCount={dashboard.notificationCount}
             stats={<DashboardStats metrics={dashboard.metrics} />}
           />
 

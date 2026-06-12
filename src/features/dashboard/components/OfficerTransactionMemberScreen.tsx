@@ -25,16 +25,6 @@ function SearchIcon() {
   );
 }
 
-function CheckIcon() {
-  return (
-    <Icon
-      icon="solar:check-circle-bold"
-      className="h-5 w-5 text-white"
-      aria-hidden="true"
-    />
-  );
-}
-
 export default function OfficerTransactionMemberScreen({
   type,
 }: {
