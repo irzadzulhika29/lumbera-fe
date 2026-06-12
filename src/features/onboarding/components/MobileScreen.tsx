@@ -10,7 +10,7 @@ export default function MobileScreen({ children, className }: MobileScreenProps)
     <main className="min-h-[100svh] bg-[#4a4a4a] sm:px-4 sm:py-6">
       <div
         className={twMerge(
-          "mx-auto flex min-h-[100svh] w-full flex-col overflow-hidden bg-white sm:min-h-[860px] sm:rounded-[34px] sm:shadow-[0_24px_80px_rgba(15,23,42,0.22)]",
+          "mx-auto flex min-h-[100svh] w-screen flex-col overflow-hidden bg-white sm:min-h-[860px] sm:rounded-[34px] sm:shadow-[0_24px_80px_rgba(15,23,42,0.22)]",
           className,
         )}
       >
