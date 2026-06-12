@@ -44,13 +44,6 @@ export const officerTransactionTypeConfigs: OfficerTransactionTypeConfig[] = [
     icon: "installment",
     tone: "green",
   },
-  {
-    slug: "stock-mutations",
-    title: "Mutasi Stok",
-    subtitle: "Persediaan",
-    icon: "reports",
-    tone: "orange",
-  },
 ];
 
 export const officerTransactionMenus: DashboardAction[] =

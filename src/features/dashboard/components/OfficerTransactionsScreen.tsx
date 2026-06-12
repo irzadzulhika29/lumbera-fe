@@ -32,7 +32,6 @@ const filterChips = [
   { label: "Simpanan", active: false },
   { label: "Pinjaman", active: false },
   { label: "Angsuran", active: false },
-  { label: "Mutasi Stok", active: false },
 ] as const;
 
 function SearchIcon() {
@@ -102,7 +101,7 @@ export default function OfficerTransactionsScreen() {
                   <Link
                     key={action.label}
                     href={action.href}
-                    className="flex w-[132px] shrink-0 flex-col items-center rounded-[22px] bg-[#EEF4F9] px-4 pb-5 pt-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    className="flex w-[100px] shrink-0 flex-col items-center rounded-[22px] bg-[#EEF4F9] px-3 pb-5 pt-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                   >
                     <span
                       className={`flex h-[62px] w-[62px] items-center justify-center rounded-[18px] ${toneClasses[action.tone]}`}
