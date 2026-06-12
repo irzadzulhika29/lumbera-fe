@@ -1,49 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-import {
-  getAuthCooperativeProfileHref,
-  getAuthProfileHref,
-  type RoleOptionId,
-} from "@/src/features/onboarding/content";
+import type { RoleOptionId } from "@/src/features/onboarding/content";
+import { getAuthProfileHref } from "@/src/features/onboarding/content";
 import PressButton from "@/src/shared/components/ui/PressButton";
 
-const COOPERATIVE_TYPE_OPTIONS = [
-  {
-    id: "ksp",
-    title: "KSP",
-    description: "Koperasi Simpan Pinjam",
-  },
-  {
-    id: "pangan",
-    title: "Pangan",
-    description: "Beras, Jagung, Bulky",
-  },
-  {
-    id: "cold-chain",
-    title: "Cold-Chain",
-    description: "Sayur, Buah, Ikan",
-  },
-  {
-    id: "toko-gerai",
-    title: "Toko Gerai",
-    description: "Retail, Warung Koperasi",
-  },
-  {
-    id: "utilitas",
-    title: "Utilitas",
-    description: "Air, Listrik, Gas",
-  },
-  {
-    id: "peternakan",
-    title: "Peternakan",
-    description: "Sapi, Kambing, Ayam",
-  },
-] as const;
-
-type CooperativeTypeId = (typeof COOPERATIVE_TYPE_OPTIONS)[number]["id"];
+import {
+  COOPERATIVE_TYPE_OPTIONS,
+} from "./cooperative-type/cooperativeTypeConfig";
+import { useCooperativeTypeForm } from "../hooks/useCooperativeTypeForm";
 
 type CooperativeTypeScreenProps = {
   roleId: RoleOptionId;
@@ -53,8 +19,7 @@ export default function CooperativeTypeScreen({
   roleId,
 }: CooperativeTypeScreenProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [selectedType, setSelectedType] = useState<CooperativeTypeId>("ksp");
+  const form = useCooperativeTypeForm(roleId);
 
   return (
     <>
@@ -69,7 +34,7 @@ export default function CooperativeTypeScreen({
 
       <div className="mt-10 grid grid-cols-2 gap-5">
         {COOPERATIVE_TYPE_OPTIONS.map((option) => {
-          const isSelected = option.id === selectedType;
+          const isSelected = option.id === form.selectedType;
 
           return (
             <PressButton
@@ -77,7 +42,7 @@ export default function CooperativeTypeScreen({
               type="button"
               variant={isSelected ? "primary" : "outline"}
               className="flex min-h-[74px] flex-col items-center justify-center gap-1 rounded-lg px-3 py-3 text-center"
-              onClick={() => setSelectedType(option.id)}
+              onClick={() => form.handleSelectType(option.id)}
             >
               <span className="text-[0.95rem] font-bold leading-none">
                 {option.title}
@@ -102,27 +67,22 @@ export default function CooperativeTypeScreen({
             type="button"
             className="h-14 w-14 shrink-0 px-0 py-0 text-xl"
             aria-label="Kembali"
-            onClick={() =>
-              startTransition(() => {
-                router.push(getAuthProfileHref(roleId));
-              })
-            }
+            onClick={() => router.push(getAuthProfileHref(roleId))}
           >
             {"<"}
           </PressButton>
           <PressButton
             type="button"
             className="h-14 flex-1 text-base font-semibold"
-            disabled={isPending}
-            onClick={() =>
-              startTransition(() => {
-                router.push(getAuthCooperativeProfileHref(roleId));
-              })
-            }
+            disabled={form.isPending || form.isSubmitting}
+            onClick={form.handleSubmit}
           >
-            Lanjut
+            {form.isSubmitting ? "Menyimpan..." : "Lanjut"}
           </PressButton>
         </div>
+        {form.formError ? (
+          <p className="mt-3 text-sm text-error">{form.formError}</p>
+        ) : null}
 
         <div className="pt-6 text-center text-[0.82rem] text-text/22">
           Diawasi OJK - Sesuai UU PDP No.27/2022
