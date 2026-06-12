@@ -1,6 +1,7 @@
 import { twMerge } from "tailwind-merge";
 
 import { ROLE_OPTIONS } from "@/src/features/onboarding/content";
+import PressButton from "@/src/shared/components/ui/PressButton";
 
 import BrandMark from "./BrandMark";
 
@@ -52,12 +53,12 @@ function RoleCard({
   roleId: (typeof ROLE_OPTIONS)[number]["id"];
 }) {
   return (
-    <button
-      type="button"
+    <PressButton
+      variant="outline"
       className={twMerge(
-        "w-full rounded-[12px] border-2 border-primary bg-white px-4 py-4 text-left",
-        "shadow-[0_5px_0_0_var(--color-primary-shadow)] transition-transform duration-150",
-        "hover:-translate-y-0.5 active:translate-y-0.5",
+        "w-full rounded-[12px] px-4 py-4 text-left",
+        "border-2 border-primary bg-white",
+        "shadow-[0_5px_0_0_var(--color-primary-shadow)]",
       )}
     >
       <div className="flex items-start gap-2.5">
@@ -73,24 +74,24 @@ function RoleCard({
           </p>
         </div>
       </div>
-    </button>
+    </PressButton>
   );
 }
 
 export default function RoleSelectScreen() {
   return (
-    <main className="min-h-[100svh] bg-white text-text">
+    <main className="min-h-[100svh] w-full bg-white text-text">
       <section className="mx-auto flex min-h-[100svh] w-full max-w-[430px] flex-col bg-white">
         <div className="flex w-full flex-1 flex-col px-6 pb-12 pt-7">
           <header className="flex justify-center">
-            <BrandMark variant="color" />
+            <BrandMark variant="color" className="scale-95" />
           </header>
 
           <div className="mt-14">
-            <h1 className="max-w-[9ch] text-[2.2rem] font-bold leading-[1.02] tracking-[-0.05em]">
+            <h1 className="max-w-xs text-3xl font-bold">
               Masuk sebagai siapa?
             </h1>
-            <p className="mt-4 text-[1.02rem] leading-snug text-text/80">
+            <p className="mt-4 text-xl leading-snug text-text/80">
               Pilih peran anda di koperasi
             </p>
           </div>
