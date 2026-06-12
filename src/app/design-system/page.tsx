@@ -42,7 +42,7 @@ const colorGroups = [
 
 export default function DesignSystemPage() {
   return (
-    <main className="min-h-screen bg-surface px-6 py-12 text-text">
+    <main className="min-h-screen w-full bg-surface px-6 py-12 text-text">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
         <section className="rounded-[2rem] border border-border bg-card p-8 shadow-sm">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-secondary">

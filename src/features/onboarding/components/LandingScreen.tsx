@@ -12,11 +12,9 @@ import OnboardingStartButton from "./OnboardingStartButton";
 
 function FeatureStackCard({
   label,
-  tileClassName,
   className,
 }: {
   label: string;
-  tileClassName: string;
   className?: string;
 }) {
   return (
@@ -95,7 +93,6 @@ export default function LandingScreen() {
               <FeatureStackCard
                 key={feature.id}
                 label={feature.label}
-                tileClassName={feature.tileClassName}
                 className={index === 0 ? "" : "-mt-4"}
               />
             ))}
