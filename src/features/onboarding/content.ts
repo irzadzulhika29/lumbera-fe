@@ -26,7 +26,7 @@ export const LANDING_FEATURES = [
 
 export const ROLE_OPTIONS = [
   {
-    id: "manager",
+    id: "officer",
     title: "Pengurus Koperasi",
     description: "Kelola transaksi, laporan & ledger",
   },

@@ -5,7 +5,7 @@ import { ROLE_OPTIONS } from "@/src/features/onboarding/content";
 import BrandMark from "./BrandMark";
 
 function RoleIcon({ roleId }: { roleId: (typeof ROLE_OPTIONS)[number]["id"] }) {
-  if (roleId === "manager") {
+  if (roleId === "officer") {
     return (
       <svg
         aria-hidden="true"
