@@ -80,7 +80,7 @@ export function useProfileOnboardingForm({
         nikHash: protectedNikValue,
         nikEncrypted: protectedNikValue,
         positionCode: POSITION_CODE_MAP[position],
-        existingCooperativeCode: koperasiCode,
+        existingCooperativeCode: koperasiCode.trim() || undefined,
       });
 
       saveOnboardingDraftSession(roleId, {
