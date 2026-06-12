@@ -1,23 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
-import DashboardBottomNavigation from "@/src/features/dashboard/components/DashboardBottomNavigation";
 import { getDashboardNavigation } from "@/src/features/dashboard/data";
+import { financePeriodOptions } from "@/src/features/dashboard/reportData";
 import SelectField from "@/src/shared/components/ui/SelectField";
+
+import DashboardScreenShell from "../layout/DashboardScreenShell";
 
 const healthBreakdown = [
   { label: "Keuangan (35%)", score: 87, tone: "text-[#159A97]" },
   { label: "Operasional (25%)", score: 75, tone: "text-[#F59E0B]" },
   { label: "Data (20%)", score: 80, tone: "text-[#159A97]" },
   { label: "Kepatuhan (20%)", score: 72, tone: "text-[#F59E0B]" },
-] as const;
-
-const periodOptions = [
-  { label: "Minggu ini", value: "weekly" },
-  { label: "Bulan ini", value: "monthly" },
-  { label: "Semester ini", value: "semester" },
-  { label: "Tahun ini", value: "yearly" },
 ] as const;
 
 const reportTypeOptions = [
@@ -92,14 +88,22 @@ function SecurityQr() {
   );
 }
 
-export default function ReportScreen() {
+type ReportScreenProps = {
+  initialPeriod?: string;
+};
+
+export default function ReportScreen({
+  initialPeriod = "monthly",
+}: ReportScreenProps) {
   const navigation = getDashboardNavigation("officer", "Laporan");
-  const [period, setPeriod] = useState("monthly");
+  const [period, setPeriod] = useState(initialPeriod);
 
   return (
-    <section className="flex h-[100svh] w-full flex-none flex-col overflow-hidden bg-[#f7f8f9] sm:h-[860px]">
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:thin] [scrollbar-color:rgba(18,148,144,0.35)_transparent]">
-        <div className="px-6 pb-8 pt-[calc(1.5rem+env(safe-area-inset-top))]">
+    <DashboardScreenShell
+      background="bg-[#f7f8f9]"
+      navigationItems={navigation}
+    >
+        <div className="px-6 pb-4 pt-[calc(1.5rem+env(safe-area-inset-top))]">
           <header>
             <h1 className="text-[2.05rem] font-bold leading-none tracking-[-0.04em] text-primary">
               Laporan
@@ -109,16 +113,16 @@ export default function ReportScreen() {
             </p>
           </header>
 
-          <section className="mt-5">
-            <div className="flex justify-center items-start gap-3">
+          <section>
+            <div className="flex items-start justify-center gap-3">
               <div className="min-w-0 basis-[40%] space-y-[1rem] pt-5">
                 <h2 className="text-[13px] font-bold tracking-[-0.03em] text-primary">
                   Kesehatan Koperasi
-                </h2>{" "}
+                </h2>
                 {healthBreakdown.map((item) => (
                   <div
                     key={item.label}
-                    className="flex items-center justify-between gap- text-[0.92rem]"
+                    className="flex items-center justify-between gap-3 text-[0.92rem]"
                   >
                     <span className="font-medium text-[11px]">
                       {item.label}
@@ -192,7 +196,7 @@ export default function ReportScreen() {
             <div className="mt-6">
               <SelectField
                 value={period}
-                options={periodOptions.map((option) => ({ ...option }))}
+                options={financePeriodOptions.map((option) => ({ ...option }))}
                 onChange={setPeriod}
                 placeholder="Pilih periode"
                 fieldClassName="rounded-[14px] border border-[#dfe3e8] bg-white px-5 py-5 text-[1.18rem] font-medium shadow-[inset_0_0_0_2px_rgba(240,242,245,0.55)]"
@@ -209,12 +213,12 @@ export default function ReportScreen() {
               ))}
             </div>
 
-            <button
-              type="button"
-              className="mt-7 w-full rounded-[14px] bg-primary px-4 py-5 text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
+            <Link
+              href={`/dashboard/reports/finance?period=${period}`}
+              className="mt-7 block w-full rounded-[14px] bg-primary px-4 py-5 text-center text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
             >
               Lihat Laporan
-            </button>
+            </Link>
           </section>
 
           <section className="mt-5 flex items-start gap-5">
@@ -228,25 +232,22 @@ export default function ReportScreen() {
               </p>
             </div>
 
-            <div className="min-w-0 flex-1 pt-3">
+            <div className="min-w-0 pt-3">
               <h2 className="text-[1rem] font-bold leading-snug tracking-[-0.03em] text-primary">
                 Cek keamanan
                 <br />
                 dan Sertifikat Koperasi
               </h2>
 
-              <button
-                type="button"
-                className="mt-5 rounded-[14px] bg-primary px-6 py-5 text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
+              <Link
+                href="/dashboard/reports/security"
+                className="block mt-5 rounded-[14px] bg-primary px-6 py-5 text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
               >
                 Cek sekarang
-              </button>
+              </Link>
             </div>
           </section>
         </div>
-      </div>
-
-      <DashboardBottomNavigation items={navigation} />
-    </section>
+    </DashboardScreenShell>
   );
 }

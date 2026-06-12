@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import OfficerTransactionConfirmScreen from "@/src/features/dashboard/components/OfficerTransactionConfirmScreen";
+import OfficerTransactionConfirmScreen from "@/src/features/dashboard/components/screens/OfficerTransactionConfirmScreen";
 import {
   getOfficerMemberById,
   getOfficerTransactionTypeConfig,

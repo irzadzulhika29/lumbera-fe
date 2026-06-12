@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import type { DashboardNavigationItem } from "@/src/features/dashboard/types";
 
-import DashboardIcon from "./DashboardIcon";
+import DashboardIcon from "../common/DashboardIcon";
 
 export default function DashboardBottomNavigation({
   items,

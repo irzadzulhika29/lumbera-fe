@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import DashboardScreen from "@/src/features/dashboard/components/DashboardScreen";
+import DashboardScreen from "@/src/features/dashboard/components/screens/DashboardScreen";
 
 export const metadata: Metadata = {
   title: "Dashboard | Lumbera",

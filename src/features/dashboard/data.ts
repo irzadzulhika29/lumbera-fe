@@ -12,7 +12,7 @@ const sharedNavigation = [
   },
   {
     label: "Anggota",
-    href: "/dashboard/members",
+    href: "/dashboard/officer/members",
     icon: "members",
   },
   {
@@ -30,7 +30,7 @@ const sharedNavigation = [
 const officerDashboard: DashboardViewModel = {
   role: "officer",
   greeting: "Selamat Pagi,",
-  userName: "Udin!",
+  userName: "Amba!",
   cooperativeName: "Koperasi Padiwangi",
   period: "KSP · Juni 2026",
   syncLabel: "Online · Sinkron 2 menit lalu",
