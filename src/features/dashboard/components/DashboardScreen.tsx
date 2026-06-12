@@ -13,7 +13,7 @@ export default function DashboardScreen({ role }: { role: DashboardRole }) {
 
   return (
     <MobileScreen className="bg-[#f7f8f9]">
-      <div className="flex h-[100svh] w-full flex-none flex-col overflow-hidden bg-[#f7f8f9] sm:h-[860px]">
+      <section className="flex h-[100svh] w-full flex-none flex-col overflow-hidden bg-[#f7f8f9] sm:h-[860px]">
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:thin] [scrollbar-color:rgba(18,148,144,0.35)_transparent]">
           <DashboardHeader
             greeting={dashboard.greeting}
@@ -22,17 +22,20 @@ export default function DashboardScreen({ role }: { role: DashboardRole }) {
             period={dashboard.period}
             syncLabel={dashboard.syncLabel}
             notificationCount={dashboard.notificationCount}
+            stats={<DashboardStats metrics={dashboard.metrics} />}
           />
 
-          <main className="relative -mt-5 rounded-t-[28px] bg-[#f7f8f9] px-5 pb-5 pt-5">
-            <DashboardStats metrics={dashboard.metrics} />
-            <QuickActions actions={dashboard.actions} />
+          <div className="bg-[#f7f8f9] px-5 pb-5 pt-[58px]">
+            <QuickActions
+              actions={dashboard.actions}
+              href={dashboard.quickActionsHref}
+            />
             <RecentTransactions transactions={dashboard.transactions} />
-          </main>
+          </div>
         </div>
 
         <DashboardBottomNavigation items={dashboard.navigation} />
-      </div>
+      </section>
     </MobileScreen>
   );
 }

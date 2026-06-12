@@ -53,6 +53,7 @@ export type DashboardViewModel = {
   syncLabel: string;
   notificationCount: number;
   metrics: DashboardMetric[];
+  quickActionsHref?: string;
   actions: DashboardAction[];
   transactions: DashboardTransaction[];
   navigation: DashboardNavigationItem[];
