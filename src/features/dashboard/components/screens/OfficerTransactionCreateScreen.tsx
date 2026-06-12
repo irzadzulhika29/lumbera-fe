@@ -28,6 +28,7 @@ export default function OfficerTransactionCreateScreen({
     transaction.amountOptions?.[0] ?? "",
   );
   const [amount, setAmount] = useState("");
+  const [keterangan, setKeterangan] = useState("");
 
   const confirmHref = useMemo(() => {
     const params = new URLSearchParams({ memberId, amount });
@@ -36,8 +37,12 @@ export default function OfficerTransactionCreateScreen({
       params.set("option", selectedOption);
     }
 
+    if (keterangan) {
+      params.set("keterangan", keterangan);
+    }
+
     return `/dashboard/officer/transactions/${transaction.slug}/confirm?${params.toString()}`;
-  }, [amount, memberId, selectedOption, transaction.slug]);
+  }, [amount, keterangan, memberId, selectedOption, transaction.slug]);
 
   return (
     <DashboardScreenShell background="bg-white">
@@ -91,6 +96,20 @@ export default function OfficerTransactionCreateScreen({
             labelClassName="text-[1rem] font-medium text-text"
             fieldClassName="rounded-[10px] border-[#d7dbe0] bg-white px-4 py-3.5 shadow-none"
             inputClassName="text-[1rem] font-medium"
+          />
+        </section>
+
+        <section className="mt-5">
+          <label className="text-[1rem] font-medium text-text" htmlFor="keterangan">
+            Keterangan
+          </label>
+          <input
+            id="keterangan"
+            type="text"
+            value={keterangan}
+            onChange={(e) => setKeterangan(e.target.value)}
+            placeholder="Opsional"
+            className="mt-3 w-full rounded-[10px] border border-[#d7dbe0] bg-white px-4 py-3.5 text-[1rem] font-medium outline-none transition-colors focus:border-primary"
           />
         </section>
 

@@ -13,6 +13,7 @@ function extractAccountNumber(meta: string) {
 
 type TransactionConfirmationCardProps = {
   amount: string;
+  keterangan: string;
   member: OfficerMember;
   option: string;
   transaction: OfficerTransactionTypeConfig;
@@ -20,6 +21,7 @@ type TransactionConfirmationCardProps = {
 
 export default function TransactionConfirmationCard({
   amount,
+  keterangan,
   member,
   option,
   transaction,
@@ -61,6 +63,12 @@ export default function TransactionConfirmationCard({
           <span className="text-text/72">Dicatat oleh</span>
           <span className="text-right font-bold text-text/72">Jamaludin</span>
         </div>
+        {keterangan ? (
+          <div className="flex items-start justify-between gap-4">
+            <span className="text-text/72">Keterangan</span>
+            <span className="text-right font-bold text-text/72">{keterangan}</span>
+          </div>
+        ) : null}
         <div className="flex items-start justify-between gap-4">
           <span className="text-text/72">Tanggal</span>
           <span className="text-right font-bold text-text/72">

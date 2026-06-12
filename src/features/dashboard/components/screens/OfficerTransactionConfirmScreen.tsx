@@ -11,6 +11,7 @@ import TransactionConfirmationCard from "../transactions/TransactionConfirmation
 
 type OfficerTransactionConfirmScreenProps = {
   amount: string;
+  keterangan: string;
   member: OfficerMember;
   option: string;
   transaction: OfficerTransactionTypeConfig;
@@ -18,10 +19,12 @@ type OfficerTransactionConfirmScreenProps = {
 
 export default function OfficerTransactionConfirmScreen({
   amount,
+  keterangan,
   member,
   option,
   transaction,
 }: OfficerTransactionConfirmScreenProps) {
+  const hasKeterangan = keterangan.trim().length > 0;
   const selectedOption = option || transaction.amountOptions?.[0] || "-";
   const successParams = new URLSearchParams({ memberId: member.id });
 
@@ -41,6 +44,7 @@ export default function OfficerTransactionConfirmScreen({
         floatingContent={
           <TransactionConfirmationCard
             amount={amount}
+            keterangan={keterangan}
             member={member}
             option={option}
             transaction={transaction}
@@ -48,7 +52,11 @@ export default function OfficerTransactionConfirmScreen({
         }
       />
 
-      <div className="bg-white px-5 pb-8 pt-[332px]">
+      <div
+        className={`bg-white px-5 pb-8 ${
+          hasKeterangan ? "pt-[388px]" : "pt-[332px]"
+        }`}
+      >
         <Link
           href={successHref}
           className="block w-full rounded-[10px] bg-primary px-4 py-4 text-center text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
