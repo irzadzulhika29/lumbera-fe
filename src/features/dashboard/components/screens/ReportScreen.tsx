@@ -103,15 +103,19 @@ export default function ReportScreen({
       background="bg-[#f7f8f9]"
       navigationItems={navigation}
     >
-        <div className="px-6 pb-4 pt-[calc(1.5rem+env(safe-area-inset-top))]">
-          <header>
-            <h1 className="text-[2.05rem] font-bold leading-none tracking-[-0.04em] text-primary">
-              Laporan
-            </h1>
-            <p className="mt-3 text-[1rem] font-medium text-primary/88">
-              Pantau kinerja operasional koperasi
-            </p>
-          </header>
+        <div className="px-6 pb-4">
+        <header className="bg-primary px-7 pb-10 pt-[calc(1.3rem+env(safe-area-inset-top))] text-white">
+          <div className="flex items-center gap-3">
+            <div className="min-w-0">
+              <h1 className="text-[1.68rem] font-bold leading-none tracking-[-0.045em] text-white">
+                Laporan
+              </h1>
+              <p className="mt-1 text-xs font-medium text-white/82">
+                Pantau kinerja operasional koperasi
+              </p>
+            </div>
+          </div>
+        </header>
 
           <section>
             <div className="flex items-start justify-center gap-3">

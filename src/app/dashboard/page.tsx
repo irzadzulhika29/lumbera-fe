@@ -8,6 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardPage() {
-  // Replace this fixture with the authenticated user's server-side session role.
   return <DashboardScreen role="officer" />;
 }
