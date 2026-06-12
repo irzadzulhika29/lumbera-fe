@@ -1,12 +1,24 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import MobileScreen from "@/src/features/onboarding/components/MobileScreen";
 import { getDashboardData } from "@/src/features/dashboard/data";
+import type { DashboardIconName } from "@/src/features/dashboard/types";
 import { officerTransactionMenus } from "@/src/features/dashboard/transactionFlow";
 
 import BackFilledIconClient from "./BackFilledIconClient";
-import DashboardIcon from "./DashboardIcon";
 import NextIconClient from "./NextIconClient";
+
+const ornamentMap: Record<DashboardIconName, string> = {
+  savings: "/ornament/savings.svg",
+  loan: "/ornament/loan.svg",
+  installment: "/ornament/installment.svg",
+  reports: "/ornament/report.svg",
+  home: "/ornament/transaction.svg",
+  members: "/ornament/transaction.svg",
+  profile: "/ornament/transaction.svg",
+  notification: "/ornament/transaction.svg",
+};
 
 const toneClasses = {
   teal: "bg-[linear-gradient(180deg,#EEF4F9_0%,#E2EEF7_100%)] text-[#3868a8]",
@@ -52,13 +64,13 @@ export default function OfficerTransactionsScreen() {
             <div className="flex items-center gap-3">
               <Link
                 href="/dashboard"
-                className="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-[14px] bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 <BackFilledIconClient className="text-[1.35rem] text-primary" />
               </Link>
 
               <div className="min-w-0">
-                <h1 className="text-[2rem] font-bold leading-none tracking-[-0.045em] text-white">
+                <h1 className="text-[1.68rem] font-bold leading-none tracking-[-0.045em] text-white">
                   Transaksi
                 </h1>
               </div>
@@ -95,8 +107,11 @@ export default function OfficerTransactionsScreen() {
                     <span
                       className={`flex h-[62px] w-[62px] items-center justify-center rounded-[18px] ${toneClasses[action.tone]}`}
                     >
-                      <DashboardIcon
-                        name={action.icon}
+                      <Image
+                        src={ornamentMap[action.icon]}
+                        alt=""
+                        width={30}
+                        height={30}
                         className="h-[30px] w-[30px]"
                       />
                     </span>
@@ -122,7 +137,7 @@ export default function OfficerTransactionsScreen() {
             </div>
 
             <section className="mt-8">
-              <h2 className="text-[1.6rem] font-bold leading-none tracking-[-0.04em] text-primary">
+              <h2 className="text-[1.05rem] font-bold  text-primary">
                 Semua transaksi
               </h2>
 
