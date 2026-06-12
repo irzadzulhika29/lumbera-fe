@@ -25,14 +25,7 @@ export default function QuickActions({
         >
           Menu Cepat
         </h2>
-        {href ? (
-          <Link
-            href={href}
-            className="text-[0.78rem] font-medium text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-          >
-            Lihat semua
-          </Link>
-        ) : null}
+       
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-3">

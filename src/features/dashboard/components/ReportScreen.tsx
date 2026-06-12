@@ -229,19 +229,19 @@ export default function ReportScreen({
               </p>
             </div>
 
-            <div className="min-w-0 flex-1 pt-3">
+            <div className="min-w-0 pt-3">
               <h2 className="text-[1rem] font-bold leading-snug tracking-[-0.03em] text-primary">
                 Cek keamanan
                 <br />
                 dan Sertifikat Koperasi
               </h2>
 
-              <button
-                type="button"
-                className="mt-5 rounded-[14px] bg-primary px-6 py-5 text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
+              <Link
+                href="/dashboard/reports/security"
+                className="block mt-5 rounded-[14px] bg-primary px-6 py-5 text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
               >
                 Cek sekarang
-              </button>
+              </Link>
             </div>
           </section>
         </div>
