@@ -73,42 +73,42 @@ assert.equal(AUTH_BANK_ACCOUNT_ROUTE, "/auth/bank-account");
 assert.equal(AUTH_ACTIVATION_ROUTE, "/auth/activation");
 assert.equal(AUTH_ACTIVATION_SUCCESS_ROUTE, "/auth/activation-success");
 
-assert.equal(getAuthPhoneHref("manager"), "/auth/phone?role=manager");
+assert.equal(getAuthPhoneHref("officer"), "/auth/phone?role=officer");
 assert.equal(getAuthPhoneHref("member"), "/auth/phone?role=member");
-assert.equal(getAuthOtpHref("manager"), "/auth/otp?role=manager");
+assert.equal(getAuthOtpHref("officer"), "/auth/otp?role=officer");
 assert.equal(getAuthPinHref("member", "create"), "/auth/pin?role=member&step=create");
 assert.equal(
-  getAuthPinHref("manager", "confirm"),
-  "/auth/pin?role=manager&step=confirm",
+  getAuthPinHref("officer", "confirm"),
+  "/auth/pin?role=officer&step=confirm",
 );
-assert.equal(getAuthProfileHref("manager"), "/auth/profile?role=manager&step=1");
+assert.equal(getAuthProfileHref("officer"), "/auth/profile?role=officer&step=1");
 assert.equal(
   getAuthCooperativeTypeHref("member"),
   "/auth/cooperative-type?role=member",
 );
 assert.equal(
-  getAuthCooperativeProfileHref("manager"),
-  "/auth/cooperative-profile?role=manager",
+  getAuthCooperativeProfileHref("officer"),
+  "/auth/cooperative-profile?role=officer",
 );
 assert.equal(
   getAuthFinancialConfigHref("member"),
   "/auth/financial-config?role=member",
 );
 assert.equal(
-  getAuthBankAccountHref("manager"),
-  "/auth/bank-account?role=manager",
+  getAuthBankAccountHref("officer"),
+  "/auth/bank-account?role=officer",
 );
 assert.equal(
   getAuthActivationHref("member"),
   "/auth/activation?role=member",
 );
 assert.equal(
-  getAuthActivationSuccessHref("manager"),
-  "/auth/activation-success?role=manager",
+  getAuthActivationSuccessHref("officer"),
+  "/auth/activation-success?role=officer",
 );
 
 assert.equal(
-  getRolePhoneErrorMessage("manager"),
+  getRolePhoneErrorMessage("officer"),
   "Nomor ini tidak terdaftar sebagai pengurus koperasi",
 );
 
@@ -117,7 +117,7 @@ assert.equal(
   "Nomor ini tidak terdaftar sebagai anggota koperasi",
 );
 
-assert.equal(getPendingPinStorageKey("manager"), "lumbera.pending-pin.manager");
+assert.equal(getPendingPinStorageKey("officer"), "lumbera.pending-pin.officer");
 
 assert.equal(validatePinConfirmation("", "123456"), "PIN awal tidak ditemukan. Ulangi dari awal.");
 assert.equal(validatePinConfirmation("123456", "12345"), "PIN harus terdiri dari 6 digit");

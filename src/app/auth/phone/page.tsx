@@ -12,7 +12,7 @@ export default async function AuthPhonePage({
   const resolvedSearchParams = await searchParams;
   const requestedRole = resolvedSearchParams.role;
   const roleId: RoleOptionId =
-    requestedRole && isRoleOptionId(requestedRole) ? requestedRole : "manager";
+    requestedRole && isRoleOptionId(requestedRole) ? requestedRole : "officer";
 
   return <PhoneAuthScreen roleId={roleId} />;
 }

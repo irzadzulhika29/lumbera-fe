@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Icon } from "@iconify/react";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -13,11 +14,13 @@ import OnboardingStartButton from "./OnboardingStartButton";
 function FeatureStackCard({
   label,
   className,
-  slashClassName,
+  icon,
+  ornamentClassName,
 }: {
   label: string;
   className?: string;
-  slashClassName?: string;
+  icon: string;
+  ornamentClassName?: string;
 }) {
   return (
     <article
@@ -28,7 +31,7 @@ function FeatureStackCard({
     >
       <div
         aria-hidden="true"
-        className="absolute inset-x-3 bottom-4 top-3 rounded-[28px] border border-white/8 bg-gradient-to-b from-white/6 via-white/[0.03] to-transparent"
+        className="absolute inset-x-3 bottom-4 top-3 rounded-[28px]"
       />
       <div
         aria-hidden="true"
@@ -38,20 +41,17 @@ function FeatureStackCard({
         aria-hidden="true"
         className="absolute inset-x-0 top-0 h-8 rounded-t-[32px] bg-gradient-to-b from-primary to-transparent"
       />
-      {slashClassName ? (
-        <Image
-          src="/ornament/white-slash.svg"
-          alt=""
-          width={104}
-          height={16}
+      {ornamentClassName ? (
+        <Icon
+          icon={icon}
           aria-hidden="true"
           className={twMerge(
-            "pointer-events-none absolute h-auto w-[92px] opacity-95",
-            slashClassName,
+            "pointer-events-none absolute h-11 w-11 text-white drop-shadow-[0_8px_18px_rgba(0,0,0,0.12)]",
+            ornamentClassName,
           )}
         />
       ) : null}
-      <p className="relative z-10 text-balance">{label}</p>
+      <p className="relative z-10">{label}</p>
     </article>
   );
 }
@@ -81,7 +81,7 @@ export default function LandingScreen() {
           </header>
 
           <div className="mt-12 px-2 text-white">
-            <h1 className="text-[2.45rem] font-bold leading-[0.98] tracking-[-0.05em]">
+            <h1 className="text-4xl font-bold leading-[0.98] tracking-[-0.05em]">
               {LANDING_HEADLINE.map((line) => (
                 <span key={line} className="block">
                   {line}
@@ -105,21 +105,25 @@ export default function LandingScreen() {
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 bottom-[11.5rem] top-[19.5rem]"
             >
-              <div className="absolute left-[-2.5rem] top-8 h-36 w-36 rounded-full border border-white/8 bg-gradient-to-br from-white/10 to-transparent blur-[1px]" />
-              <div className="absolute right-[-2rem] top-24 h-44 w-44 rounded-full border border-white/8 bg-gradient-to-bl from-white/10 to-transparent blur-[1px]" />
-              <div className="absolute left-10 bottom-6 h-28 w-28 rounded-full border border-white/8 bg-gradient-to-tr from-white/8 to-transparent blur-[1px]" />
             </div>
             {LANDING_FEATURES.map((feature, index) => (
               <FeatureStackCard
                 key={feature.id}
                 label={feature.label}
-                className={index === 0 ? "" : "-mt-4"}
-                slashClassName={
+                icon={
                   index === 0
-                    ? "right-7 top-1 rotate-[74deg]"
+                    ? "solar:shield-check-bold-duotone"
                     : index === 1
-                      ? "left-5 top-3 -rotate-[102deg]"
-                      : "right-7 top-1 rotate-[84deg]"
+                      ? "solar:chart-square-bold-duotone"
+                      : "solar:cloud-cross-bold-duotone"
+                }
+                className={index === 0 ? "" : "-mt-4"}
+                ornamentClassName={
+                  index === 0
+                    ? "right-2 top-0 rotate-[8deg]"
+                    : index === 1
+                      ? "left-2 top-0 -rotate-[8deg]"
+                      : "right-7 top-3 rotate-[8deg]"
                 }
               />
             ))}

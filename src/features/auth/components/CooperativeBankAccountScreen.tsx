@@ -1,5 +1,6 @@
 "use client";
 
+import { Icon } from "@iconify/react";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
@@ -21,28 +22,13 @@ const BANK_OPTIONS = [
 
 function BankAdornment() {
   return (
-    <svg
+    <Icon
+      icon="solar:buildings-2-bold-duotone"
       width="18"
       height="18"
-      viewBox="0 0 24 24"
-      fill="none"
       aria-hidden="true"
       className="block"
-    >
-      <path
-        d="M3 9.5L12 4L21 9.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M5.5 10.5V18.5M10 10.5V18.5M14 10.5V18.5M18.5 10.5V18.5M4 20H20"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
+    />
   );
 }
 

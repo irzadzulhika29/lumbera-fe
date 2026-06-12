@@ -1,5 +1,6 @@
 "use client";
 
+import { Icon } from "@iconify/react";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 
@@ -26,23 +27,13 @@ const COOPERATIVE_SUMMARY = [
 
 function CheckCircleIcon() {
   return (
-    <svg
+    <Icon
+      icon="solar:check-circle-bold"
       width="18"
       height="18"
-      viewBox="0 0 20 20"
-      fill="none"
       aria-hidden="true"
       className="block"
-    >
-      <circle cx="10" cy="10" r="9" fill="currentColor" />
-      <path
-        d="M6.2 10.1L8.7 12.6L13.8 7.5"
-        stroke="white"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    />
   );
 }
 
