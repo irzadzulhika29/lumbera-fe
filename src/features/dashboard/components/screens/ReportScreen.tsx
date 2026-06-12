@@ -8,6 +8,7 @@ import { financePeriodOptions } from "@/src/features/dashboard/reportData";
 import SelectField from "@/src/shared/components/ui/SelectField";
 
 import DashboardScreenShell from "../layout/DashboardScreenShell";
+import OfficerFlowHeader from "../layout/OfficerFlowHeader";
 
 const healthBreakdown = [
   { label: "Keuangan (35%)", score: 87, tone: "text-[#159A97]" },
@@ -103,16 +104,13 @@ export default function ReportScreen({
       background="bg-[#f7f8f9]"
       navigationItems={navigation}
     >
-        <div className="px-6 pb-4 pt-[calc(1.5rem+env(safe-area-inset-top))]">
-          <header>
-            <h1 className="text-[2.05rem] font-bold leading-none tracking-[-0.04em] text-primary">
-              Laporan
-            </h1>
-            <p className="mt-3 text-[1rem] font-medium text-primary/88">
-              Pantau kinerja operasional koperasi
-            </p>
-          </header>
+      <OfficerFlowHeader
+        backHref="/dashboard"
+        title="Laporan"
+        subtitle="Pantau kinerja operasional koperasi"
+      />
 
+      <div className="px-6 pb-4">
           <section>
             <div className="flex items-start justify-center gap-3">
               <div className="min-w-0 basis-[40%] space-y-[1rem] pt-5">

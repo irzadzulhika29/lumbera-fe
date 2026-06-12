@@ -9,7 +9,7 @@ import {
 
 type PageProps = {
   params: Promise<{ type: string }>;
-  searchParams: Promise<{ amount?: string; memberId?: string; option?: string }>;
+  searchParams: Promise<{ amount?: string; memberId?: string; option?: string; keterangan?: string }>;
 };
 
 export async function generateMetadata({
@@ -30,7 +30,7 @@ export default async function OfficerTransactionConfirmPage({
   params,
   searchParams,
 }: PageProps) {
-  const [{ type }, { amount, memberId, option }] = await Promise.all([
+  const [{ type }, { amount, memberId, option, keterangan }] = await Promise.all([
     params,
     searchParams,
   ]);
@@ -47,6 +47,7 @@ export default async function OfficerTransactionConfirmPage({
       amount={amount}
       member={member}
       option={option ?? ""}
+      keterangan={keterangan ?? ""}
       transaction={transaction}
     />
   );

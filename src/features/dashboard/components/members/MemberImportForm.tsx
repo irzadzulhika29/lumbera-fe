@@ -3,10 +3,22 @@ import { Icon } from "@iconify/react";
 import PressButton from "@/src/shared/components/ui/PressButton";
 
 export default function MemberImportForm({
+  onImportSuccess,
   onSwitchMode,
 }: {
+  onImportSuccess: (fileName: string) => void;
   onSwitchMode: () => void;
 }) {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    onImportSuccess(file.name);
+  };
+
   return (
     <>
       <div className="mb-6 mt-2">
@@ -32,6 +44,7 @@ export default function MemberImportForm({
             id="file-upload"
             className="absolute inset-0 cursor-pointer opacity-0"
             accept=".xlsx,.xls,.csv"
+            onChange={handleFileChange}
           />
           <div className="pointer-events-none flex h-full items-center bg-[#118B87] px-4 text-white">
             <Icon
