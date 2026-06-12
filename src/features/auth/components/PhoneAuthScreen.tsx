@@ -80,7 +80,9 @@ export default function PhoneAuthScreen({ roleId }: PhoneAuthScreenProps) {
           }}
           fieldClassName={error ? "border-error px-4 py-2.5" : "px-4 py-2.5"}
           inputClassName={
-            error ? "text-sm text-error placeholder:text-error/35" : "text-sm"
+            error
+              ? "text-base text-error placeholder:text-error/35"
+              : "text-base"
           }
           prefixClassName="text-base"
           className="mt-3"

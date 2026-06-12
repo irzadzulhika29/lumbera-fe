@@ -1,5 +1,6 @@
 "use client";
 
+import { Icon } from "@iconify/react";
 import { startTransition } from "react";
 import { useRouter } from "next/navigation";
 import { twMerge } from "tailwind-merge";
@@ -14,40 +15,16 @@ import PressButton from "@/src/shared/components/ui/PressButton";
 import BrandMark from "./BrandMark";
 
 function RoleIcon({ roleId }: { roleId: (typeof ROLE_OPTIONS)[number]["id"] }) {
-  if (roleId === "officer") {
-    return (
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        className="h-6 w-6 text-primary"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M14 18v-1.2A3.8 3.8 0 0 0 10.2 13H6.8A3.8 3.8 0 0 0 3 16.8V18" />
-        <circle cx="8.5" cy="8" r="3.2" />
-        <path d="M17 7v6" />
-        <path d="M14 10h6" />
-      </svg>
-    );
-  }
-
   return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
+    <Icon
+      icon={
+        roleId === "officer"
+          ? "solar:users-group-rounded-bold-duotone"
+          : "solar:user-rounded-bold-duotone"
+      }
       className="h-6 w-6 text-primary"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="8" r="3.4" />
-      <path d="M5 18v-0.9A4.1 4.1 0 0 1 9.1 13h5.8A4.1 4.1 0 0 1 19 17.1V18" />
-    </svg>
+      aria-hidden="true"
+    />
   );
 }
 

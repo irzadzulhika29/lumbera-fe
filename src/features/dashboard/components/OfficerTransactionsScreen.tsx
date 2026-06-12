@@ -1,3 +1,4 @@
+import { Icon } from "@iconify/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -36,19 +37,11 @@ const filterChips = [
 
 function SearchIcon() {
   return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
+    <Icon
+      icon="solar:magnifer-linear"
       className="h-5 w-5 text-text/55"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="6.5" />
-      <path d="m16 16 4.5 4.5" />
-    </svg>
+      aria-hidden="true"
+    />
   );
 }
 

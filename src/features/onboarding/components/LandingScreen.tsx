@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Icon } from "@iconify/react";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -13,9 +14,13 @@ import OnboardingStartButton from "./OnboardingStartButton";
 function FeatureStackCard({
   label,
   className,
+  icon,
+  ornamentClassName,
 }: {
   label: string;
   className?: string;
+  icon: string;
+  ornamentClassName?: string;
 }) {
   return (
     <article
@@ -26,20 +31,27 @@ function FeatureStackCard({
     >
       <div
         aria-hidden="true"
+        className="absolute inset-x-3 bottom-4 top-3 rounded-[28px]"
+      />
+      <div
+        aria-hidden="true"
         className="absolute inset-x-0 top-0 h-[62%] rounded-[32px] bg-transparent"
       />
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-0 h-8 rounded-t-[32px] bg-gradient-to-b from-primary to-transparent"
       />
-      {/* <div
-        aria-hidden="true"
-        className={twMerge(
-          "absolute h-[46px] w-[46px] rounded-[10px]  shadow-[0_8px_12px_rgba(0,0,0,0.12)]",
-          tileClassName,
-        )}
-      /> */}
-      <p className="relative z-10 text-balance">{label}</p>
+      {ornamentClassName ? (
+        <Icon
+          icon={icon}
+          aria-hidden="true"
+          className={twMerge(
+            "pointer-events-none absolute h-11 w-11 text-white drop-shadow-[0_8px_18px_rgba(0,0,0,0.12)]",
+            ornamentClassName,
+          )}
+        />
+      ) : null}
+      <p className="relative z-10">{label}</p>
     </article>
   );
 }
@@ -48,7 +60,7 @@ export default function LandingScreen() {
   return (
     <MobileScreen>
       <section className="relative flex min-h-[100svh] flex-1 flex-col bg-white">
-        <div className="absolute inset-x-0 top-0 bottom-[132px] overflow-hidden rounded-bl-[54px] bg-primary">
+        <div className="absolute inset-x-0 top-0 bottom-[132px] overflow-hidden rounded-bl-[84px] bg-primary">
           <video
             autoPlay
             muted
@@ -68,8 +80,8 @@ export default function LandingScreen() {
             <BrandMark variant="light" />
           </header>
 
-          <div className="mt-7 px-2 text-white">
-            <h1 className="text-[2.45rem] font-bold leading-[0.98] tracking-[-0.05em]">
+          <div className="mt-12 px-2 text-white">
+            <h1 className="text-4xl font-bold leading-[0.98] tracking-[-0.05em]">
               {LANDING_HEADLINE.map((line) => (
                 <span key={line} className="block">
                   {line}
@@ -77,7 +89,7 @@ export default function LandingScreen() {
               ))}
             </h1>
 
-            <div className="mt-1 flex justify-end pr-4">
+            <div className="mt-1 pl-[8.4rem]">
               <Image
                 src="/ornament/white-slash.svg"
                 alt=""
@@ -88,12 +100,31 @@ export default function LandingScreen() {
             </div>
           </div>
 
-          <div className="mt-8 flex flex-1 flex-col justify-end px-1 pb-16">
+          <div className="relative -mx-3 mt-5 flex flex-1 flex-col justify-end pb-24">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-[11.5rem] top-[19.5rem]"
+            >
+            </div>
             {LANDING_FEATURES.map((feature, index) => (
               <FeatureStackCard
                 key={feature.id}
                 label={feature.label}
+                icon={
+                  index === 0
+                    ? "solar:shield-check-bold-duotone"
+                    : index === 1
+                      ? "solar:chart-square-bold-duotone"
+                      : "solar:cloud-cross-bold-duotone"
+                }
                 className={index === 0 ? "" : "-mt-4"}
+                ornamentClassName={
+                  index === 0
+                    ? "right-2 top-0 rotate-[8deg]"
+                    : index === 1
+                      ? "left-2 top-0 -rotate-[8deg]"
+                      : "right-7 top-3 rotate-[8deg]"
+                }
               />
             ))}
           </div>

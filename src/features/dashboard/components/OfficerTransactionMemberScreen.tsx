@@ -1,5 +1,6 @@
-"use client";
+"use client"
 
+import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { useState, useMemo } from "react";
@@ -16,19 +17,21 @@ import NextIconClient from "./NextIconClient";
 
 function SearchIcon() {
   return (
-    <svg
+    <Icon
+      icon="solar:magnifer-linear"
+      className="h-5 w-5 text-primary"
       aria-hidden="true"
-      viewBox="0 0 24 24"
-      className="h-5 w-5 text-text/55"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="6.5" />
-      <path d="m16 16 4.5 4.5" />
-    </svg>
+    />
+  );
+}
+
+function CheckIcon() {
+  return (
+    <Icon
+      icon="solar:check-circle-bold"
+      className="h-5 w-5 text-white"
+      aria-hidden="true"
+    />
   );
 }
 
