@@ -84,7 +84,7 @@ export const isPinSetupStep = (value: string): value is PinSetupStep =>
   value === "create" || value === "confirm";
 
 export const getRolePhoneErrorMessage = (roleId: RoleOptionId) =>
-  roleId === "manager"
+  roleId === "officer"
     ? "Nomor ini tidak terdaftar sebagai pengurus koperasi"
     : "Nomor ini tidak terdaftar sebagai anggota koperasi";
 

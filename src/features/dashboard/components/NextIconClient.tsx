@@ -1,11 +1,18 @@
 "use client";
 
-import NextIcon from "@iconify-react/grommet-icons/next";
+import { Icon } from "@iconify/react";
 
 export default function NextIconClient({
   className,
 }: {
   className?: string;
 }) {
-  return <NextIcon height="1em" className={className} />;
+  return (
+    <Icon
+      icon="solar:alt-arrow-right-linear"
+      height="1em"
+      className={className}
+      aria-hidden="true"
+    />
+  );
 }

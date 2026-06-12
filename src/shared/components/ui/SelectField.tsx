@@ -3,6 +3,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
+import PressButton from "./PressButton";
+
 type SelectOption = {
   label: string;
   value: string;
@@ -53,7 +55,7 @@ export default function SelectField({
   }, [isOpen]);
 
   return (
-    <div ref={rootRef} className={twMerge("flex w-full flex-col gap-2.5", className)}>
+    <div ref={rootRef} className={twMerge("flex w-full rounded-md flex-col gap-2.5", className)}>
       {label ? (
         <label
           htmlFor={generatedId}
@@ -64,14 +66,15 @@ export default function SelectField({
       ) : null}
 
       <div className="relative">
-        <button
+        <PressButton
           id={generatedId}
           type="button"
+          variant="outlineFlat"
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           className={twMerge(
-            "flex w-full items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left shadow-sm transition-colors",
-            "focus:border-secondary/45 focus:outline-none",
+            "flex w-full items-center justify-between rounded-md px-4 py-3 text-left shadow-sm",
+            "focus-visible:border-secondary/45 focus-visible:outline-none",
             fieldClassName,
           )}
           onClick={() => setIsOpen((current) => !current)}
@@ -98,12 +101,12 @@ export default function SelectField({
           >
             v
           </span>
-        </button>
+        </PressButton>
 
         {isOpen ? (
           <div
             role="listbox"
-            className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-20 rounded-lg border border-border bg-card p-2 shadow-[0_14px_34px_rgba(15,23,42,0.12)]"
+            className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-20 rounded-md border border-border bg-card p-2 shadow-[0_14px_34px_rgba(15,23,42,0.12)]"
           >
             {options.map((option) => (
               <button

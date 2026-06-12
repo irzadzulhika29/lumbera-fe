@@ -58,6 +58,12 @@ export const PRESS_BUTTON_VARIANTS = {
     hoverShadow: "0 2px 0 0 var(--color-primary-shadow)",
     pressShadow: "0 1px 0 0 var(--color-primary-shadow)",
   },
+  outlineFlat: {
+    base: "border border-border bg-card text-text/80 hover:bg-surface",
+    shadow: "none",
+    hoverShadow: "none",
+    pressShadow: "none",
+  },
   "outline-orange": {
     base: "border border-warning bg-card text-warning hover:bg-warning/10",
     shadow: "0 4px 0 0 var(--color-warning-shadow)",

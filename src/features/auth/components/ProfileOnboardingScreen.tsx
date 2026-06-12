@@ -10,6 +10,7 @@ import {
 import BaseInput from "@/src/shared/components/ui/BaseInput";
 import PressButton from "@/src/shared/components/ui/PressButton";
 import SelectField from "@/src/shared/components/ui/SelectField";
+import { twMerge } from "tailwind-merge";
 
 const POSITION_OPTIONS = [
   { label: "Ketua", value: "ketua" },
@@ -86,16 +87,32 @@ export default function ProfileOnboardingScreen({
           inputMode="numeric"
         />
 
-        <SelectField
-          label={
-            <>
-              Jabatan di Koperasi <span className="text-error">*</span>
-            </>
-          }
-          value={position}
-          options={POSITION_OPTIONS}
-          onChange={setPosition}
-        />
+        <div className="flex w-full flex-col gap-2.5">
+          <label className="text-[1.05rem] leading-none font-medium text-text">
+            Jabatan di Koperasi <span className="text-error">*</span>
+          </label>
+          <div className="grid grid-cols-3 gap-3">
+            {POSITION_OPTIONS.map((option) => {
+              const isSelected = option.value === position;
+
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={twMerge(
+                    "rounded-lg px-3 py-6 text-center text-[0.95rem] font-bold leading-none transition-colors",
+                    isSelected
+                      ? "bg-primary text-white"
+                      : "bg-primary/38 text-white/92",
+                  )}
+                  onClick={() => setPosition(option.value)}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         <SelectField
           label="Kode Koperasi (jika sudah terdaftar)"

@@ -85,8 +85,8 @@ export default function CooperativeTypeScreen({
               <span
                 className={
                   isSelected
-                    ? "text-[0.78rem] leading-snug text-white/85"
-                    : "text-[0.78rem] leading-snug text-primary/80"
+                    ? "whitespace-nowrap text-[0.72rem] leading-none tracking-[-0.01em] text-white/85"
+                    : "whitespace-nowrap text-[0.72rem] leading-none tracking-[-0.01em] text-primary/80"
                 }
               >
                 {option.description}
