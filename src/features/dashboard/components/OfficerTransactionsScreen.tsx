@@ -59,7 +59,7 @@ export default function OfficerTransactionsScreen() {
     <MobileScreen className="bg-white">
       <section className="flex h-[100svh] w-full flex-none flex-col overflow-hidden bg-white sm:h-[860px]">
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:thin] [scrollbar-color:rgba(18,148,144,0.35)_transparent]">
-          <header className="bg-primary px-7 pb-24 pt-[calc(2rem+env(safe-area-inset-top))] text-white">
+          <header className="bg-primary px-7 pb-24 pt-[calc(1.3rem+env(safe-area-inset-top))] text-white">
             <div className="flex items-center gap-3">
               <Link
                 href="/dashboard"
@@ -78,10 +78,8 @@ export default function OfficerTransactionsScreen() {
             <p className="mt-10 text-[1rem] font-medium text-white/88">
               Pilih jenis transaksi yang akan dicatat
             </p>
-          </header>
 
-          <div className="bg-white px-5 pb-7 pt-0">
-            <div className="-mt-9 rounded-[18px] border border-[#dfe5ea] bg-white px-5 py-5 shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
+            <div className=" rounded-[18px] border border-[#dfe5ea] bg-white px-5 py-5 shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
               <div className="flex items-center gap-3">
                 <SearchIcon />
                 <input
@@ -94,7 +92,9 @@ export default function OfficerTransactionsScreen() {
                 />
               </div>
             </div>
+          </header>
 
+          <div className="bg-white px-5 pb-7 pt-0">
             <div className="mt-14 -mx-5 overflow-x-auto px-5 [scrollbar-width:none]">
               <div className="flex w-max gap-4">
                 {officerTransactionMenus.map((action) => (
