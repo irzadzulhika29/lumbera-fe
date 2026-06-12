@@ -13,8 +13,8 @@ import PressButton from "@/src/shared/components/ui/PressButton";
 
 import BrandMark from "./BrandMark";
 
-function RoleIcon({ roleId }: { roleId: RoleOptionId }) {
-  if (roleId === "manager") {
+function RoleIcon({ roleId }: { roleId: (typeof ROLE_OPTIONS)[number]["id"] }) {
+  if (roleId === "officer") {
     return (
       <svg
         aria-hidden="true"
