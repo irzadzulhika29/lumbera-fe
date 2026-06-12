@@ -4,13 +4,16 @@ import Link from "next/link";
 import { startTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { startOnboarding } from "@/src/features/auth/api/authApi";
 import {
   getAuthOtpHref,
   type RoleOptionId,
 } from "@/src/features/onboarding/content";
+import { isApiError } from "@/src/shared/api";
 import PhoneInput from "@/src/features/auth/components/common/PhoneInput";
 import PressButton from "@/src/shared/components/ui/PressButton";
 import AuthPageFrame from "@/src/features/auth/components/AuthPageFrame";
+import { saveOnboardingDraftSession } from "../utils/onboardingDraftStorage";
 
 type PhoneAuthScreenProps = {
   roleId: RoleOptionId;
@@ -20,8 +23,9 @@ export default function PhoneAuthScreen({ roleId }: PhoneAuthScreenProps) {
   const router = useRouter();
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const normalizedPhone = phone.replace(/\D/g, "");
 
     if (!normalizedPhone) {
@@ -35,10 +39,33 @@ export default function PhoneAuthScreen({ roleId }: PhoneAuthScreenProps) {
     }
 
     setError("");
+    setIsSubmitting(true);
 
-    startTransition(() => {
-      router.push(getAuthOtpHref(roleId));
-    });
+    try {
+      const onboardingDraft = await startOnboarding({
+        roleId,
+        phoneNumber: normalizedPhone,
+      });
+
+      saveOnboardingDraftSession(roleId, {
+        onboardingDraftId: onboardingDraft.onboarding_draft_id,
+        roleId,
+        phoneNumber: onboardingDraft.phone_number,
+        expiresInSeconds: onboardingDraft.expires_in_seconds,
+      });
+
+      startTransition(() => {
+        router.push(getAuthOtpHref(roleId));
+      });
+    } catch (requestError) {
+      setError(
+        isApiError(requestError)
+          ? requestError.message
+          : "Terjadi kesalahan saat menghubungi server",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -92,6 +119,7 @@ export default function PhoneAuthScreen({ roleId }: PhoneAuthScreenProps) {
       <div className="mt-12">
         <PressButton
           className="w-full py-3.5 text-base font-semibold"
+          disabled={isSubmitting}
           onClick={handleSubmit}
         >
           Masuk

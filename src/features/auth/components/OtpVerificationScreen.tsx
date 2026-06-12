@@ -1,17 +1,20 @@
 "use client";
 
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { verifyOnboardingOtp } from "@/src/features/auth/api/authApi";
 import {
   getAuthPhoneHref,
   getAuthPinHref,
   type RoleOptionId,
 } from "@/src/features/onboarding/content";
+import { isApiError } from "@/src/shared/api";
 import OtpInput from "@/src/shared/components/ui/OtpInput";
 
 import AuthBackLink from "./AuthBackLink";
 import AuthPageFrame from "./AuthPageFrame";
+import { getOnboardingDraftSession } from "../utils/onboardingDraftStorage";
 
 type OtpVerificationScreenProps = {
   roleId: RoleOptionId;
@@ -22,15 +25,64 @@ export default function OtpVerificationScreen({
 }: OtpVerificationScreenProps) {
   const router = useRouter();
   const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
+  const lastSubmittedOtpRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (otp.length !== 6) {
       return;
     }
 
-    startTransition(() => {
-      router.push(getAuthPinHref(roleId, "create"));
-    });
+    if (lastSubmittedOtpRef.current === otp) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    void (async () => {
+      const onboardingDraft = getOnboardingDraftSession(roleId);
+
+      if (!onboardingDraft?.onboardingDraftId) {
+        lastSubmittedOtpRef.current = null;
+
+        if (!isCancelled) {
+          setError("Sesi onboarding tidak ditemukan. Ulangi dari awal.");
+        }
+
+        return;
+      }
+
+      lastSubmittedOtpRef.current = otp;
+
+      try {
+        await verifyOnboardingOtp({
+          roleId,
+          onboardingDraftId: onboardingDraft.onboardingDraftId,
+          otp,
+        });
+
+        if (!isCancelled) {
+          setError("");
+          startTransition(() => {
+            router.push(getAuthPinHref(roleId, "create"));
+          });
+        }
+      } catch (requestError) {
+        if (!isCancelled) {
+          setError(
+            isApiError(requestError)
+              ? requestError.message
+              : "Terjadi kesalahan saat memverifikasi OTP",
+          );
+        }
+
+        lastSubmittedOtpRef.current = null;
+      }
+    })();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [otp, roleId, router]);
 
   return (
@@ -49,7 +101,17 @@ export default function OtpVerificationScreen({
       <div className="mt-14">
         <OtpInput
           value={otp}
-          onChange={setOtp}
+          onChange={(nextOtp) => {
+            if (nextOtp !== otp) {
+              lastSubmittedOtpRef.current = null;
+            }
+
+            setOtp(nextOtp);
+
+            if (error) {
+              setError("");
+            }
+          }}
           label={
             <>
               Masukkan pin <span className="text-error">*</span>
@@ -58,6 +120,7 @@ export default function OtpVerificationScreen({
           className="[&_label]:text-[1.05rem] [&_label]:font-medium"
           slotClassName="h-13 text-base"
           emptySlotCharacter="0"
+          error={error}
         />
       </div>
     </AuthPageFrame>
