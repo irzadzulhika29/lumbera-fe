@@ -1,11 +1,22 @@
 import assert from "node:assert/strict";
 
 import {
+  AUTH_PHONE_ROUTE,
+  AUTH_OTP_ROUTE,
+  AUTH_PIN_ROUTE,
   LANDING_FEATURES,
   LANDING_HEADLINE,
   ROLE_OPTIONS,
   START_ROUTE,
+  getAuthOtpHref,
+  getAuthPhoneHref,
+  getAuthPinHref,
+  getRolePhoneErrorMessage,
 } from "../src/features/onboarding/content.ts";
+import {
+  getPendingPinStorageKey,
+  validatePinConfirmation,
+} from "../src/features/auth/utils/pinSetupFlow.ts";
 
 assert.deepEqual(LANDING_HEADLINE, [
   "Platform",
@@ -36,5 +47,35 @@ assert.deepEqual(
     "Pantau saldo & skor kredit Anda",
   ],
 );
+
+assert.equal(AUTH_PHONE_ROUTE, "/auth/phone");
+assert.equal(AUTH_OTP_ROUTE, "/auth/otp");
+assert.equal(AUTH_PIN_ROUTE, "/auth/pin");
+
+assert.equal(getAuthPhoneHref("manager"), "/auth/phone?role=manager");
+assert.equal(getAuthPhoneHref("member"), "/auth/phone?role=member");
+assert.equal(getAuthOtpHref("manager"), "/auth/otp?role=manager");
+assert.equal(getAuthPinHref("member", "create"), "/auth/pin?role=member&step=create");
+assert.equal(
+  getAuthPinHref("manager", "confirm"),
+  "/auth/pin?role=manager&step=confirm",
+);
+
+assert.equal(
+  getRolePhoneErrorMessage("manager"),
+  "Nomor ini tidak terdaftar sebagai pengurus koperasi",
+);
+
+assert.equal(
+  getRolePhoneErrorMessage("member"),
+  "Nomor ini tidak terdaftar sebagai anggota koperasi",
+);
+
+assert.equal(getPendingPinStorageKey("manager"), "lumbera.pending-pin.manager");
+
+assert.equal(validatePinConfirmation("", "123456"), "PIN awal tidak ditemukan. Ulangi dari awal.");
+assert.equal(validatePinConfirmation("123456", "12345"), "PIN harus terdiri dari 6 digit");
+assert.equal(validatePinConfirmation("123456", "654321"), "PIN tidak sesuai. Coba masukkan ulang.");
+assert.equal(validatePinConfirmation("123456", "123456"), null);
 
 console.log("onboarding content smoke test passed");

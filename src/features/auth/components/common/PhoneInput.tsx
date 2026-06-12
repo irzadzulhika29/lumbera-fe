@@ -1,18 +1,29 @@
 import BaseInput from "@/src/shared/components/ui/BaseInput";
+import { twMerge } from "tailwind-merge";
 
 type PhoneInputProps = Omit<
   React.ComponentProps<typeof BaseInput>,
   "type" | "startAdornment"
->;
+> & {
+  prefixClassName?: string;
+};
 
-export default function PhoneInput(props: PhoneInputProps) {
+export default function PhoneInput({
+  prefixClassName,
+  ...props
+}: PhoneInputProps) {
   return (
     <BaseInput
       type="tel"
-      placeholder="8123456789"
+      placeholder="82342323218"
       labelClassName="text-base font-medium"
       startAdornment={
-        <span className="text-lg leading-none font-semibold text-text/80">
+        <span
+          className={twMerge(
+            "text-lg leading-none font-semibold text-text/80",
+            prefixClassName,
+          )}
+        >
           +62
         </span>
       }

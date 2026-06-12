@@ -6,6 +6,7 @@ type BaseInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & {
   labelClassName?: string;
   hint?: string;
   error?: string;
+  fieldClassName?: string;
   inputClassName?: string;
   startAdornment?: ReactNode;
 };
@@ -17,6 +18,7 @@ export default function BaseInput({
   hint,
   error,
   className,
+  fieldClassName,
   inputClassName,
   startAdornment,
   disabled = false,
@@ -46,6 +48,7 @@ export default function BaseInput({
           "rounded-lg border bg-card px-5 py-3.5 shadow-sm transition-colors",
           error ? "border-error/45" : "border-border",
           disabled ? "opacity-60" : "focus-within:border-secondary/45",
+          fieldClassName,
         )}
       >
         <div className="flex items-center gap-4">
