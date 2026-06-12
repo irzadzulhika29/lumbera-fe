@@ -75,11 +75,11 @@ export default function OfficerTransactionsScreen() {
               </div>
             </div>
 
-            <p className="mt-10 text-[1rem] font-medium text-white/88">
+            <p className="mt-6 text-[1rem] font-medium text-white/88">
               Pilih jenis transaksi yang akan dicatat
             </p>
 
-            <div className=" rounded-[18px] border border-[#dfe5ea] bg-white px-5 py-5 shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
+            <div className="mt-5 rounded-[18px] border border-[#dfe5ea] bg-white px-5 py-3.5 shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
               <div className="flex items-center gap-3">
                 <SearchIcon />
                 <input
@@ -95,7 +95,7 @@ export default function OfficerTransactionsScreen() {
           </header>
 
           <div className="bg-white px-5 pb-7 pt-0">
-            <div className="mt-14 -mx-5 overflow-x-auto px-5 [scrollbar-width:none]">
+            <div className="mt-12 -mx-5 overflow-x-auto px-5 [scrollbar-width:none]">
               <div className="flex w-max gap-4">
                 {officerTransactionMenus.map((action) => (
                   <Link
