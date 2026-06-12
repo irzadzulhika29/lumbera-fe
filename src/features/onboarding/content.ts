@@ -2,6 +2,13 @@ export const START_ROUTE = "/role-select";
 export const AUTH_PHONE_ROUTE = "/auth/phone";
 export const AUTH_OTP_ROUTE = "/auth/otp";
 export const AUTH_PIN_ROUTE = "/auth/pin";
+export const AUTH_PROFILE_ROUTE = "/auth/profile";
+export const AUTH_COOPERATIVE_TYPE_ROUTE = "/auth/cooperative-type";
+export const AUTH_COOPERATIVE_PROFILE_ROUTE = "/auth/cooperative-profile";
+export const AUTH_FINANCIAL_CONFIG_ROUTE = "/auth/financial-config";
+export const AUTH_BANK_ACCOUNT_ROUTE = "/auth/bank-account";
+export const AUTH_ACTIVATION_ROUTE = "/auth/activation";
+export const AUTH_ACTIVATION_SUCCESS_ROUTE = "/auth/activation-success";
 
 export const LANDING_HEADLINE = [
   "Platform",
@@ -48,6 +55,27 @@ export const getAuthOtpHref = (roleId: RoleOptionId) =>
 
 export const getAuthPinHref = (roleId: RoleOptionId, step: PinSetupStep) =>
   `${AUTH_PIN_ROUTE}?role=${roleId}&step=${step}`;
+
+export const getAuthProfileHref = (roleId: RoleOptionId) =>
+  `${AUTH_PROFILE_ROUTE}?role=${roleId}&step=1`;
+
+export const getAuthCooperativeTypeHref = (roleId: RoleOptionId) =>
+  `${AUTH_COOPERATIVE_TYPE_ROUTE}?role=${roleId}`;
+
+export const getAuthCooperativeProfileHref = (roleId: RoleOptionId) =>
+  `${AUTH_COOPERATIVE_PROFILE_ROUTE}?role=${roleId}`;
+
+export const getAuthFinancialConfigHref = (roleId: RoleOptionId) =>
+  `${AUTH_FINANCIAL_CONFIG_ROUTE}?role=${roleId}`;
+
+export const getAuthBankAccountHref = (roleId: RoleOptionId) =>
+  `${AUTH_BANK_ACCOUNT_ROUTE}?role=${roleId}`;
+
+export const getAuthActivationHref = (roleId: RoleOptionId) =>
+  `${AUTH_ACTIVATION_ROUTE}?role=${roleId}`;
+
+export const getAuthActivationSuccessHref = (roleId: RoleOptionId) =>
+  `${AUTH_ACTIVATION_SUCCESS_ROUTE}?role=${roleId}`;
 
 export const isRoleOptionId = (value: string): value is RoleOptionId =>
   ROLE_OPTIONS.some((option) => option.id === value);

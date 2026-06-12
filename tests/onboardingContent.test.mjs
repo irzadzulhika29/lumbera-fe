@@ -4,13 +4,27 @@ import {
   AUTH_PHONE_ROUTE,
   AUTH_OTP_ROUTE,
   AUTH_PIN_ROUTE,
+  AUTH_PROFILE_ROUTE,
+  AUTH_COOPERATIVE_TYPE_ROUTE,
+  AUTH_COOPERATIVE_PROFILE_ROUTE,
+  AUTH_FINANCIAL_CONFIG_ROUTE,
+  AUTH_BANK_ACCOUNT_ROUTE,
+  AUTH_ACTIVATION_ROUTE,
+  AUTH_ACTIVATION_SUCCESS_ROUTE,
   LANDING_FEATURES,
   LANDING_HEADLINE,
   ROLE_OPTIONS,
   START_ROUTE,
+  getAuthActivationHref,
+  getAuthActivationSuccessHref,
+  getAuthBankAccountHref,
+  getAuthCooperativeProfileHref,
+  getAuthCooperativeTypeHref,
+  getAuthFinancialConfigHref,
   getAuthOtpHref,
   getAuthPhoneHref,
   getAuthPinHref,
+  getAuthProfileHref,
   getRolePhoneErrorMessage,
 } from "../src/features/onboarding/content.ts";
 import {
@@ -51,6 +65,13 @@ assert.deepEqual(
 assert.equal(AUTH_PHONE_ROUTE, "/auth/phone");
 assert.equal(AUTH_OTP_ROUTE, "/auth/otp");
 assert.equal(AUTH_PIN_ROUTE, "/auth/pin");
+assert.equal(AUTH_PROFILE_ROUTE, "/auth/profile");
+assert.equal(AUTH_COOPERATIVE_TYPE_ROUTE, "/auth/cooperative-type");
+assert.equal(AUTH_COOPERATIVE_PROFILE_ROUTE, "/auth/cooperative-profile");
+assert.equal(AUTH_FINANCIAL_CONFIG_ROUTE, "/auth/financial-config");
+assert.equal(AUTH_BANK_ACCOUNT_ROUTE, "/auth/bank-account");
+assert.equal(AUTH_ACTIVATION_ROUTE, "/auth/activation");
+assert.equal(AUTH_ACTIVATION_SUCCESS_ROUTE, "/auth/activation-success");
 
 assert.equal(getAuthPhoneHref("manager"), "/auth/phone?role=manager");
 assert.equal(getAuthPhoneHref("member"), "/auth/phone?role=member");
@@ -59,6 +80,31 @@ assert.equal(getAuthPinHref("member", "create"), "/auth/pin?role=member&step=cre
 assert.equal(
   getAuthPinHref("manager", "confirm"),
   "/auth/pin?role=manager&step=confirm",
+);
+assert.equal(getAuthProfileHref("manager"), "/auth/profile?role=manager&step=1");
+assert.equal(
+  getAuthCooperativeTypeHref("member"),
+  "/auth/cooperative-type?role=member",
+);
+assert.equal(
+  getAuthCooperativeProfileHref("manager"),
+  "/auth/cooperative-profile?role=manager",
+);
+assert.equal(
+  getAuthFinancialConfigHref("member"),
+  "/auth/financial-config?role=member",
+);
+assert.equal(
+  getAuthBankAccountHref("manager"),
+  "/auth/bank-account?role=manager",
+);
+assert.equal(
+  getAuthActivationHref("member"),
+  "/auth/activation?role=member",
+);
+assert.equal(
+  getAuthActivationSuccessHref("manager"),
+  "/auth/activation-success?role=manager",
 );
 
 assert.equal(

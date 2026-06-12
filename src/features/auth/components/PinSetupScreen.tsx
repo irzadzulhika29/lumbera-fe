@@ -4,6 +4,7 @@ import { startTransition, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
+  getAuthProfileHref,
   getAuthOtpHref,
   getAuthPinHref,
   type PinSetupStep,
@@ -64,6 +65,10 @@ export default function PinSetupScreen({ roleId, step }: PinSetupScreenProps) {
     }
 
     setError("");
+    window.sessionStorage.removeItem(getPendingPinStorageKey(roleId));
+    startTransition(() => {
+      router.push(getAuthProfileHref(roleId));
+    });
   };
 
   return (
