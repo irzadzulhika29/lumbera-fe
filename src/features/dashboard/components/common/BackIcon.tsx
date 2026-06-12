@@ -2,14 +2,14 @@
 
 import { Icon } from "@iconify/react";
 
-export default function NextIconClient({
+export default function BackIcon({
   className,
 }: {
   className?: string;
 }) {
   return (
     <Icon
-      icon="solar:alt-arrow-right-linear"
+      icon="solar:alt-arrow-left-linear"
       height="1em"
       className={className}
       aria-hidden="true"

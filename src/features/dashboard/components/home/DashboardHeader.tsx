@@ -1,5 +1,3 @@
-import DashboardIcon from "./DashboardIcon";
-
 type DashboardHeaderProps = {
   stats?: React.ReactNode;
   greeting: string;

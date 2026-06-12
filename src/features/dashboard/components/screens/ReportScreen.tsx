@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 
-import DashboardBottomNavigation from "@/src/features/dashboard/components/DashboardBottomNavigation";
 import { getDashboardNavigation } from "@/src/features/dashboard/data";
 import { financePeriodOptions } from "@/src/features/dashboard/reportData";
 import SelectField from "@/src/shared/components/ui/SelectField";
+
+import DashboardScreenShell from "../layout/DashboardScreenShell";
 
 const healthBreakdown = [
   { label: "Keuangan (35%)", score: 87, tone: "text-[#159A97]" },
@@ -98,8 +99,10 @@ export default function ReportScreen({
   const [period, setPeriod] = useState(initialPeriod);
 
   return (
-    <section className="flex h-[100svh] w-full flex-none flex-col overflow-hidden bg-[#f7f8f9] sm:h-[860px]">
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:thin] [scrollbar-color:rgba(18,148,144,0.35)_transparent]">
+    <DashboardScreenShell
+      background="bg-[#f7f8f9]"
+      navigationItems={navigation}
+    >
         <div className="px-6 pb-4 pt-[calc(1.5rem+env(safe-area-inset-top))]">
           <header>
             <h1 className="text-[2.05rem] font-bold leading-none tracking-[-0.04em] text-primary">
@@ -245,9 +248,6 @@ export default function ReportScreen({
             </div>
           </section>
         </div>
-      </div>
-
-      <DashboardBottomNavigation items={navigation} />
-    </section>
+    </DashboardScreenShell>
   );
 }

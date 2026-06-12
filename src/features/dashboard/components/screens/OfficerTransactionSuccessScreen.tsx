@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-import MobileScreen from "@/src/features/onboarding/components/MobileScreen";
+import DashboardScreenShell from "../layout/DashboardScreenShell";
 
 type OfficerTransactionSuccessScreenProps = {
   hash: string;
@@ -20,9 +20,10 @@ export default function OfficerTransactionSuccessScreen({
   transactionLabel,
 }: OfficerTransactionSuccessScreenProps) {
   return (
-    <MobileScreen className="bg-white">
-      <main className="min-h-[100svh] w-full bg-white text-text sm:min-h-[860px]">
-        <section className="mx-auto flex min-h-[100svh] w-full flex-col bg-white px-6 pb-8 pt-7 sm:min-h-[860px]">
+    <DashboardScreenShell
+      background="bg-white"
+      contentClassName="flex flex-col px-6 pb-8 pt-7 text-text"
+    >
           <div className="flex flex-1 flex-col items-center text-center">
             <motion.div
               initial={{ opacity: 0, y: 18 }}
@@ -107,8 +108,6 @@ export default function OfficerTransactionSuccessScreen({
               </Link>
             </div>
           </div>
-        </section>
-      </main>
-    </MobileScreen>
+    </DashboardScreenShell>
   );
 }

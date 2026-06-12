@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import SecurityReportScreen from "@/src/features/dashboard/components/SecurityReportScreen";
+import SecurityReportScreen from "@/src/features/dashboard/components/screens/SecurityReportScreen";
 
 export const metadata: Metadata = {
   title: "Keamanan Koperasi | Lumbera",

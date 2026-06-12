@@ -8,7 +8,7 @@ import {
 } from "@/src/features/onboarding/content";
 
 import BrandMark from "./BrandMark";
-import MobileScreen from "./MobileScreen";
+import MobileScreen from "@/src/shared/components/layout/MobileScreen";
 import OnboardingStartButton from "./OnboardingStartButton";
 
 function FeatureStackCard({

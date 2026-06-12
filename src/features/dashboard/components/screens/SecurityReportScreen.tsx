@@ -1,11 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 
-import MobileScreen from "@/src/features/onboarding/components/MobileScreen";
-
-import BackFilledIconClient from "./BackFilledIconClient";
+import DashboardPageHeader from "../layout/DashboardPageHeader";
+import DashboardScreenShell from "../layout/DashboardScreenShell";
 
 const auditItems = [
   { label: "Koperasi", value: "Koperasi Padiwangi" },
@@ -16,27 +14,14 @@ const auditItems = [
 
 export default function SecurityReportScreen() {
   return (
-    <MobileScreen className="bg-[#f7f8f9]">
-      <section className="flex h-[100svh] w-full flex-none flex-col overflow-hidden bg-[#f7f8f9] sm:h-[860px]">
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:thin] [scrollbar-color:rgba(18,148,144,0.35)_transparent]">
-          <div className="px-6 pb-8 pt-[calc(1.4rem+env(safe-area-inset-top))]">
-            <header className="flex items-start gap-4">
-              <Link
-                href="/dashboard/reports"
-                className="flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-[14px] bg-primary text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >
-                <BackFilledIconClient className="text-[1.55rem]" />
-              </Link>
-
-              <div className="min-w-0 pt-1">
-                <h1 className="text-[1.5rem] font-bold leading-none tracking-[-0.04em] text-primary">
-                  Keamanan Koperasi
-                </h1>
-                <p className="mt-2 text-xs font-medium text-primary/88">
-                  Cek keamanan koperasi secara berkala
-                </p>
-              </div>
-            </header>
+    <DashboardScreenShell background="bg-[#f7f8f9]">
+      <div className="px-6 pb-8 pt-[calc(1.4rem+env(safe-area-inset-top))]">
+        <DashboardPageHeader
+          backHref="/dashboard/reports"
+          title="Keamanan Koperasi"
+          subtitle="Cek keamanan koperasi secara berkala"
+          titleClassName="text-[1.5rem]"
+        />
 
             <section className="mt-6 rounded-[18px] border border-[#dde2e7] bg-white shadow-[0_8px_22px_rgba(15,23,42,0.05)]">
               <div className="px-6 py-2">
@@ -115,9 +100,7 @@ export default function SecurityReportScreen() {
                 Download Sertifikat
               </button>
             </div>
-          </div>
-        </div>
-      </section>
-    </MobileScreen>
+      </div>
+    </DashboardScreenShell>
   );
 }

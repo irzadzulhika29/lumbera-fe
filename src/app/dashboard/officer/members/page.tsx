@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import CooperativeMembersScreen from "@/src/features/dashboard/components/CooperativeMembersScreen";
+import CooperativeMembersScreen from "@/src/features/dashboard/components/screens/CooperativeMembersScreen";
 
 export const metadata: Metadata = {
   title: "Anggota Koperasi | Lumbera",

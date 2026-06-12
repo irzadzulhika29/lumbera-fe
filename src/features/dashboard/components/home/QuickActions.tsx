@@ -11,10 +11,8 @@ const quickActionIconMap = {
 
 export default function QuickActions({
   actions,
-  href,
 }: {
   actions: DashboardAction[];
-  href?: string;
 }) {
   return (
     <section aria-labelledby="quick-actions-title" className="mt-6">

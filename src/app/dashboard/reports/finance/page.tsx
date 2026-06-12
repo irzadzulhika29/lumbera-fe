@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import FinanceReportScreen from "@/src/features/dashboard/components/FinanceReportScreen";
+import FinanceReportScreen from "@/src/features/dashboard/components/screens/FinanceReportScreen";
 import { getFinanceReportConfig } from "@/src/features/dashboard/reportData";
 
 type PageProps = {

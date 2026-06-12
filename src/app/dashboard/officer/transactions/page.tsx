@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import OfficerTransactionsScreen from "@/src/features/dashboard/components/OfficerTransactionsScreen";
+import OfficerTransactionsScreen from "@/src/features/dashboard/components/screens/OfficerTransactionsScreen";
 
 export const metadata: Metadata = {
   title: "Menu Transaksi Officer | Lumbera",

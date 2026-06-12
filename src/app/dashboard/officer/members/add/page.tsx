@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import AddMemberScreen from "@/src/features/dashboard/components/AddMemberScreen";
+import AddMemberScreen from "@/src/features/dashboard/components/screens/AddMemberScreen";
 
 export const metadata: Metadata = {
   title: "Tambah Anggota | Lumbera",

@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 
 import type { DashboardIconName } from "@/src/features/dashboard/types";
 
-type DashboardIconProps = {
+export type DashboardIconProps = {
   name: DashboardIconName;
   className?: string;
 };
