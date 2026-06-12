@@ -43,7 +43,7 @@ export default function DashboardHeader({
         <h1 className="text-[1.68rem] font-bold leading-[1.18] tracking-[-0.045em]">
           {greeting} {userName}
         </h1>
-        <p className="mt-3 text-[1rem] font-medium text-white/82">
+        <p className="mt-3 text-xs font-medium text-white/82">
           {cooperativeName} · {period}
         </p>
       </div>
