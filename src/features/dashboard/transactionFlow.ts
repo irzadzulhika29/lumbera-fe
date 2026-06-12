@@ -1,4 +1,7 @@
-import type { DashboardAction, DashboardIconName } from "@/src/features/dashboard/types";
+import type {
+  DashboardAction,
+  DashboardIconName,
+} from "@/src/features/dashboard/types";
 
 export type OfficerTransactionType =
   | "savings"
@@ -18,6 +21,8 @@ export type OfficerTransactionTypeConfig = {
   slug: OfficerTransactionType;
   title: string;
   subtitle: string;
+  inputLabel: string;
+  amountOptions?: string[];
   icon: DashboardIconName;
   tone: DashboardAction["tone"];
 };
@@ -27,6 +32,8 @@ export const officerTransactionTypeConfigs: OfficerTransactionTypeConfig[] = [
     slug: "savings",
     title: "Simpanan",
     subtitle: "Sukarela",
+    inputLabel: "Jenis Simpanan",
+    amountOptions: ["Wajib", "Sukarela", "Pokok"],
     icon: "savings",
     tone: "teal",
   },
@@ -34,6 +41,8 @@ export const officerTransactionTypeConfigs: OfficerTransactionTypeConfig[] = [
     slug: "loans",
     title: "Pinjaman",
     subtitle: "Pengajuan",
+    inputLabel: "Jenis Pinjaman",
+    amountOptions: ["Reguler", "Darurat", "Usaha"],
     icon: "loan",
     tone: "blue",
   },
@@ -41,6 +50,8 @@ export const officerTransactionTypeConfigs: OfficerTransactionTypeConfig[] = [
     slug: "installments",
     title: "Angsuran",
     subtitle: "Bayar Cicilan",
+    inputLabel: "Jenis Angsuran",
+    amountOptions: ["Pokok", "Bunga", "Denda"],
     icon: "installment",
     tone: "green",
   },
@@ -58,22 +69,51 @@ export const officerTransactionMenus: DashboardAction[] =
 export const officerMembers: OfficerMember[] = [
   {
     id: "member-001",
-    initials: "SL",
-    name: "Bu Siti Lestari",
+    initials: "BS",
+    name: "Budi Setiawan",
     meta: "No. Ang. 0012 · KSP · Grade AA",
-    selected: true,
   },
   {
     id: "member-002",
-    initials: "LW",
-    name: "Bu Lestari Wahyuni",
-    meta: "No. Ang. 0028 · KSP · Grade B",
+    initials: "AS",
+    name: "Aria Saputra",
+    meta: "No. Ang. 0045 · KSP · Grade B",
   },
   {
     id: "member-003",
+    initials: "DY",
+    name: "Dewi Yuliani",
+    meta: "No. Ang. 0078 · KSP · Grade B",
+  },
+  {
+    id: "member-004",
+    initials: "AR",
+    name: "Arif Rahman",
+    meta: "No. Ang. 0092 · KSP · Grade A",
+  },
+  {
+    id: "member-005",
+    initials: "MT",
+    name: "Mita Tantri",
+    meta: "No. Ang. 0056 · KSP · Grade B",
+  },
+  {
+    id: "member-006",
+    initials: "RS",
+    name: "Rizki Santoso",
+    meta: "No. Ang. 0085 · KSP · Grade C",
+  },
+  {
+    id: "member-007",
     initials: "LS",
-    name: "Pak Lestari Susanto",
-    meta: "No. Ang. 0041 · KSP · Grade A",
+    name: "Lina Sari",
+    meta: "No. Ang. 0101 · KSP · Grade A",
+  },
+  {
+    id: "member-008",
+    initials: "BP",
+    name: "Budi Prasetyo",
+    meta: "No. Ang. 0067 · KSP · Grade B",
   },
 ];
 
@@ -83,4 +123,8 @@ export function getOfficerTransactionTypeConfig(
   return (
     officerTransactionTypeConfigs.find((item) => item.slug === slug) ?? null
   );
+}
+
+export function getOfficerMemberById(memberId: string) {
+  return officerMembers.find((member) => member.id === memberId) ?? null;
 }

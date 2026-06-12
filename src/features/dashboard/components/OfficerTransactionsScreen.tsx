@@ -52,7 +52,7 @@ export default function OfficerTransactionsScreen() {
     <MobileScreen className="bg-white">
       <section className="flex h-[100svh] w-full flex-none flex-col overflow-hidden bg-white sm:h-[860px]">
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:thin] [scrollbar-color:rgba(18,148,144,0.35)_transparent]">
-          <header className="bg-primary px-7 pb-24 pt-[calc(1.3rem+env(safe-area-inset-top))] text-white">
+          <header className="relative bg-primary px-7 pb-24 pt-[calc(1.3rem+env(safe-area-inset-top))] text-white">
             <div className="flex items-center gap-3">
               <Link
                 href="/dashboard"
@@ -65,14 +65,13 @@ export default function OfficerTransactionsScreen() {
                 <h1 className="text-[1.68rem] font-bold leading-none tracking-[-0.045em] text-white">
                   Transaksi
                 </h1>
+                <p className="text-xs mt-1 font-medium text-white/88">
+                  Pilih jenis transaksi yang akan dicatat
+                </p>
               </div>
             </div>
 
-            <p className="mt-6 text-[1rem] font-medium text-white/88">
-              Pilih jenis transaksi yang akan dicatat
-            </p>
-
-            <div className="mt-5 rounded-[18px] border border-[#dfe5ea] bg-white px-5 py-3.5 shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
+            <div className="absolute inset-x-5 bottom-[-20px] rounded-[18px] border border-[#dfe5ea] bg-white px-5 py-3.5 shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
               <div className="flex items-center gap-3">
                 <SearchIcon />
                 <input
@@ -88,13 +87,13 @@ export default function OfficerTransactionsScreen() {
           </header>
 
           <div className="bg-white px-5 pb-7 pt-0">
-            <div className="mt-12 -mx-5 overflow-x-auto px-5 [scrollbar-width:none]">
-              <div className="flex w-max gap-4">
-                {officerTransactionMenus.map((action) => (
+            <div className="mt-12">
+              <div className="grid grid-cols-3 gap-4">
+                {officerTransactionMenus.slice(0, 3).map((action) => (
                   <Link
                     key={action.label}
                     href={action.href}
-                    className="flex w-[100px] shrink-0 flex-col items-center rounded-[22px] bg-[#EEF4F9] px-3 pb-5 pt-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    className="flex min-w-0 flex-col items-center rounded-[22px] bg-[#EEF4F9] px-3 pb-5 pt-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                   >
                     <span
                       className={`flex h-[62px] w-[62px] items-center justify-center rounded-[18px] ${toneClasses[action.tone]}`}
@@ -107,7 +106,7 @@ export default function OfficerTransactionsScreen() {
                         className="h-[30px] w-[30px]"
                       />
                     </span>
-                    <strong className="mt-5 text-center text-[0.96rem] font-bold tracking-[-0.03em] text-secondary">
+                    <strong className="mt-2 text-center text-[0.96rem] font-bold tracking-[-0.03em] text-secondary">
                       {action.label}
                     </strong>
                   </Link>
