@@ -21,30 +21,12 @@ type FormStepFlowShellProps = {
 };
 
 const FORM_STEP_CONFIG = [
-  {
-    pathname: AUTH_PROFILE_ROUTE,
-    step: 1,
-  },
-  {
-    pathname: AUTH_COOPERATIVE_TYPE_ROUTE,
-    step: 2,
-  },
-  {
-    pathname: AUTH_COOPERATIVE_PROFILE_ROUTE,
-    step: 3,
-  },
-  {
-    pathname: AUTH_FINANCIAL_CONFIG_ROUTE,
-    step: 4,
-  },
-  {
-    pathname: AUTH_BANK_ACCOUNT_ROUTE,
-    step: 5,
-  },
-  {
-    pathname: AUTH_ACTIVATION_ROUTE,
-    step: 6,
-  },
+  { pathname: AUTH_PROFILE_ROUTE, step: 1 },
+  { pathname: AUTH_COOPERATIVE_TYPE_ROUTE, step: 2 },
+  { pathname: AUTH_COOPERATIVE_PROFILE_ROUTE, step: 3 },
+  { pathname: AUTH_FINANCIAL_CONFIG_ROUTE, step: 4 },
+  { pathname: AUTH_BANK_ACCOUNT_ROUTE, step: 5 },
+  { pathname: AUTH_ACTIVATION_ROUTE, step: 6 },
 ] as const;
 
 export default function FormStepFlowShell({

@@ -7,6 +7,9 @@ export type OnboardingDraftSession = {
   expiresInSeconds: number;
   onboardingToken?: string;
   nextStep?: number | string;
+  userId?: string;
+  cooperativeId?: string;
+  membershipId?: string;
 };
 
 const getStorageKey = (roleId: RoleOptionId) =>
