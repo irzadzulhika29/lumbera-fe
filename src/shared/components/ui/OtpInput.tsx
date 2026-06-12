@@ -1,17 +1,20 @@
 "use client";
 
 import { useId, useRef, type ClipboardEvent, type KeyboardEvent } from "react";
+import type { ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 
 type OtpInputProps = {
   value: string;
   onChange: (value: string) => void;
   length?: number;
-  label?: string;
+  label?: ReactNode;
   hint?: string;
   error?: string;
   disabled?: boolean;
   className?: string;
+  slotClassName?: string;
+  emptySlotCharacter?: string;
 };
 
 export default function OtpInput({
@@ -23,6 +26,8 @@ export default function OtpInput({
   error,
   disabled = false,
   className,
+  slotClassName,
+  emptySlotCharacter = "",
 }: OtpInputProps) {
   const generatedId = useId();
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
@@ -92,7 +97,7 @@ export default function OtpInput({
         </label>
       ) : null}
 
-      <div className="flex gap-3" onPaste={handlePaste}>
+      <div className="flex w-full gap-2.5" onPaste={handlePaste}>
         {slots.map((slot, index) => (
           <input
             key={`${generatedId}-${index}`}
@@ -100,6 +105,7 @@ export default function OtpInput({
               inputRefs.current[index] = element;
             }}
             value={slot}
+            placeholder={emptySlotCharacter}
             disabled={disabled}
             inputMode="numeric"
             autoComplete="one-time-code"
@@ -108,9 +114,10 @@ export default function OtpInput({
             aria-invalid={error ? "true" : "false"}
             aria-describedby={descriptionId}
             className={twMerge(
-              "h-14 w-12 rounded-lg border bg-card text-center text-lg font-semibold text-text shadow-sm outline-none transition-colors",
+              "h-13 min-w-0 flex-1 rounded-[10px] border bg-card text-center text-lg font-semibold text-text shadow-sm outline-none transition-colors placeholder:text-text/35",
               error ? "border-error/45" : "border-border focus:border-secondary/45",
               disabled ? "cursor-not-allowed opacity-60" : "",
+              slotClassName,
             )}
             onChange={(event) => handleChange(index, event.target.value)}
             onKeyDown={(event) => handleKeyDown(index, event)}

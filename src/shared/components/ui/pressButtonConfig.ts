@@ -22,6 +22,12 @@ export const PRESS_BUTTON_VARIANTS = {
     hoverShadow: "0 2px 0 0 var(--color-primary-shadow)",
     pressShadow: "0 1px 0 0 var(--color-primary-shadow)",
   },
+  primaryFlat: {
+    base: "bg-primary text-white hover:bg-primary/95",
+    shadow: "none",
+    hoverShadow: "none",
+    pressShadow: "none",
+  },
   secondary: {
     base: "bg-secondary text-white hover:bg-secondary/95",
     shadow: "0 4px 0 0 var(--color-secondary-shadow)",

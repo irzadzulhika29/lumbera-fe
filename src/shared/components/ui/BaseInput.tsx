@@ -2,12 +2,14 @@ import { useId, type InputHTMLAttributes, type ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 
 type BaseInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & {
-  label?: string;
+  label?: ReactNode;
   labelClassName?: string;
   hint?: string;
   error?: string;
+  fieldClassName?: string;
   inputClassName?: string;
   startAdornment?: ReactNode;
+  endAdornment?: ReactNode;
 };
 
 export default function BaseInput({
@@ -17,8 +19,10 @@ export default function BaseInput({
   hint,
   error,
   className,
+  fieldClassName,
   inputClassName,
   startAdornment,
+  endAdornment,
   disabled = false,
   type = "text",
   ...props
@@ -46,6 +50,7 @@ export default function BaseInput({
           "rounded-lg border bg-card px-5 py-3.5 shadow-sm transition-colors",
           error ? "border-error/45" : "border-border",
           disabled ? "opacity-60" : "focus-within:border-secondary/45",
+          fieldClassName,
         )}
       >
         <div className="flex items-center gap-4">
@@ -72,6 +77,16 @@ export default function BaseInput({
             )}
             {...props}
           />
+
+          {endAdornment ? (
+            <>
+              <span
+                aria-hidden="true"
+                className="h-8 w-px self-stretch bg-border"
+              />
+              <span className="shrink-0">{endAdornment}</span>
+            </>
+          ) : null}
         </div>
       </div>
 

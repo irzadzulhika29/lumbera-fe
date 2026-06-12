@@ -1,6 +1,14 @@
+"use client";
+
+import { startTransition } from "react";
+import { useRouter } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 
-import { ROLE_OPTIONS } from "@/src/features/onboarding/content";
+import {
+  ROLE_OPTIONS,
+  getAuthPhoneHref,
+  type RoleOptionId,
+} from "@/src/features/onboarding/content";
 import PressButton from "@/src/shared/components/ui/PressButton";
 
 import BrandMark from "./BrandMark";
@@ -47,10 +55,12 @@ function RoleCard({
   title,
   description,
   roleId,
+  onSelect,
 }: {
   title: string;
   description: string;
-  roleId: (typeof ROLE_OPTIONS)[number]["id"];
+  roleId: RoleOptionId;
+  onSelect: (roleId: RoleOptionId) => void;
 }) {
   return (
     <PressButton
@@ -60,6 +70,7 @@ function RoleCard({
         "border-2 border-primary bg-white",
         "shadow-[0_5px_0_0_var(--color-primary-shadow)]",
       )}
+      onClick={() => onSelect(roleId)}
     >
       <div className="flex items-start gap-2.5">
         <div className="mt-0.5 flex h-7 w-7 items-center justify-center">
@@ -79,12 +90,20 @@ function RoleCard({
 }
 
 export default function RoleSelectScreen() {
+  const router = useRouter();
+
+  const handleSelectRole = (roleId: RoleOptionId) => {
+    startTransition(() => {
+      router.push(getAuthPhoneHref(roleId));
+    });
+  };
+
   return (
     <main className="min-h-[100svh] w-full bg-white text-text">
       <section className="mx-auto flex min-h-[100svh] w-full max-w-[430px] flex-col bg-white">
         <div className="flex w-full flex-1 flex-col px-6 pb-12 pt-7">
           <header className="flex justify-center">
-            <BrandMark variant="color" className="scale-95" />
+            <BrandMark variant="color" className="scale-90" />
           </header>
 
           <div className="mt-14">
@@ -96,11 +115,12 @@ export default function RoleSelectScreen() {
             </p>
           </div>
 
-          <div className="mt-14 space-y-10">
+          <div className="mt-14 space-y-8">
             <RoleCard
               title={ROLE_OPTIONS[0].title}
               description={ROLE_OPTIONS[0].description}
               roleId={ROLE_OPTIONS[0].id}
+              onSelect={handleSelectRole}
             />
 
             <p className="text-center text-base italic leading-none text-text/70">
@@ -111,6 +131,7 @@ export default function RoleSelectScreen() {
               title={ROLE_OPTIONS[1].title}
               description={ROLE_OPTIONS[1].description}
               roleId={ROLE_OPTIONS[1].id}
+              onSelect={handleSelectRole}
             />
           </div>
         </div>
