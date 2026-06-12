@@ -21,6 +21,8 @@ export type OfficerTransactionTypeConfig = {
   slug: OfficerTransactionType;
   title: string;
   subtitle: string;
+  inputLabel: string;
+  amountOptions?: string[];
   icon: DashboardIconName;
   tone: DashboardAction["tone"];
 };
@@ -30,6 +32,8 @@ export const officerTransactionTypeConfigs: OfficerTransactionTypeConfig[] = [
     slug: "savings",
     title: "Simpanan",
     subtitle: "Sukarela",
+    inputLabel: "Jenis Simpanan",
+    amountOptions: ["Wajib", "Sukarela", "Pokok"],
     icon: "savings",
     tone: "teal",
   },
@@ -37,6 +41,8 @@ export const officerTransactionTypeConfigs: OfficerTransactionTypeConfig[] = [
     slug: "loans",
     title: "Pinjaman",
     subtitle: "Pengajuan",
+    inputLabel: "Jenis Pinjaman",
+    amountOptions: ["Reguler", "Darurat", "Usaha"],
     icon: "loan",
     tone: "blue",
   },
@@ -44,6 +50,8 @@ export const officerTransactionTypeConfigs: OfficerTransactionTypeConfig[] = [
     slug: "installments",
     title: "Angsuran",
     subtitle: "Bayar Cicilan",
+    inputLabel: "Jenis Angsuran",
+    amountOptions: ["Pokok", "Bunga", "Denda"],
     icon: "installment",
     tone: "green",
   },
@@ -115,4 +123,8 @@ export function getOfficerTransactionTypeConfig(
   return (
     officerTransactionTypeConfigs.find((item) => item.slug === slug) ?? null
   );
+}
+
+export function getOfficerMemberById(memberId: string) {
+  return officerMembers.find((member) => member.id === memberId) ?? null;
 }

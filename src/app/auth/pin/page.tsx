@@ -16,7 +16,7 @@ export default async function AuthPinPage({
   const requestedStep = resolvedSearchParams.step;
 
   const roleId: RoleOptionId =
-    requestedRole && isRoleOptionId(requestedRole) ? requestedRole : "manager";
+    requestedRole && isRoleOptionId(requestedRole) ? requestedRole : "officer";
   const step: PinSetupStep =
     requestedStep && isPinSetupStep(requestedStep) ? requestedStep : "create";
 

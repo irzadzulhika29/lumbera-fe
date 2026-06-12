@@ -12,7 +12,7 @@ export default async function AuthOtpPage({
   const resolvedSearchParams = await searchParams;
   const requestedRole = resolvedSearchParams.role;
   const roleId: RoleOptionId =
-    requestedRole && isRoleOptionId(requestedRole) ? requestedRole : "manager";
+    requestedRole && isRoleOptionId(requestedRole) ? requestedRole : "officer";
 
   return <OtpVerificationScreen roleId={roleId} />;
 }
