@@ -84,7 +84,7 @@ export default function RoleSelectScreen() {
       <section className="mx-auto flex min-h-[100svh] w-full max-w-[430px] flex-col bg-white">
         <div className="flex w-full flex-1 flex-col px-6 pb-12 pt-7">
           <header className="flex justify-center">
-            <BrandMark variant="color" className="scale-95" />
+            <BrandMark variant="color" className="scale-90" />
           </header>
 
           <div className="mt-14">
@@ -96,7 +96,7 @@ export default function RoleSelectScreen() {
             </p>
           </div>
 
-          <div className="mt-14 space-y-10">
+          <div className="mt-14 space-y-8">
             <RoleCard
               title={ROLE_OPTIONS[0].title}
               description={ROLE_OPTIONS[0].description}
