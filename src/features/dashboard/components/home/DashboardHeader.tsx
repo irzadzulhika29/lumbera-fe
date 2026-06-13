@@ -30,7 +30,6 @@ export default function DashboardHeader({
       {syncLabel ? (
         <div className="flex items-center justify-between">
           <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[0.78rem] font-medium leading-none text-primary">
-            <span className="h-2 w-2 rounded-full bg-[#8dd1ca]" />
             {syncLabel}
           </div>
         </div>
