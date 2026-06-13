@@ -114,8 +114,6 @@ export default function OfficerReportScreen({
   });
   const isStalePeriod = summaryState.period !== period;
   const reportData = isStalePeriod ? null : summaryState.data;
-  const errorMessage = isStalePeriod ? null : summaryState.errorMessage;
-  const isLoading = isStalePeriod || summaryState.isLoading;
 
   useEffect(() => {
     let isMounted = true;
