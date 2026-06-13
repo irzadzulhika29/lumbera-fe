@@ -84,7 +84,7 @@ export type DashboardCreditFactor = {
   id: string;
   label: string;
   weightLabel: string;
-  score: number;
+  score: number | null;
 };
 
 export type DashboardLoanCreditProfile = {
@@ -94,6 +94,7 @@ export type DashboardLoanCreditProfile = {
   title: string;
   subtitle: string;
   updatedLabel: string;
+  explanation?: string;
   factors: DashboardCreditFactor[];
 };
 
