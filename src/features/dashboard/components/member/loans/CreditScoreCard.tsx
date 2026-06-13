@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 
 import type { DashboardLoanCreditProfile } from "@/src/features/dashboard/types";
+import PressButton from "@/src/shared/components/ui/PressButton";
 
 import CreditFactors from "./CreditFactors";
 import ScoreRing from "./ScoreRing";
@@ -12,9 +13,19 @@ import ScoreRing from "./ScoreRing";
 export default function CreditScoreCard({
   profile,
 }: {
-  profile: DashboardLoanCreditProfile;
+  profile?: DashboardLoanCreditProfile;
 }) {
   const [expanded, setExpanded] = useState(false);
+
+  if (!profile) {
+    return (
+      <section className="rounded-[16px] border border-border bg-white p-4 shadow-sm">
+        <PressButton className="w-full rounded-[12px] py-3.5 text-[0.98rem] font-bold">
+          Cek Profil Kredit
+        </PressButton>
+      </section>
+    );
+  }
 
   return (
     <section className="overflow-hidden rounded-[16px] border border-border bg-white shadow-sm">

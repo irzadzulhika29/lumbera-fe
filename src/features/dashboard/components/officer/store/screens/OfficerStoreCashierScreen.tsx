@@ -2,12 +2,15 @@
 
 import { Icon } from "@iconify/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { getOfficerStoreProducts } from "@/src/features/dashboard/api";
 import DashboardSearchField from "@/src/features/dashboard/components/common/DashboardSearchField";
 import DashboardScreenShell from "@/src/features/dashboard/components/layout/DashboardScreenShell";
 import StoreCashierHeader from "@/src/features/dashboard/components/officer/store/common/StoreCashierHeader";
+import { storeDashboardData } from "@/src/features/dashboard/storeData";
+import { mapOfficerStoreProductsToItems } from "@/src/features/dashboard/utils/officerStoreMapper";
 import { saveStoreCashierDraft } from "@/src/features/dashboard/utils/storeCashierDraftStorage";
 import PressButton from "@/src/shared/components/ui/PressButton";
 import { formatThousandGroupedNumber } from "@/src/shared/utils/numberFormatting";
@@ -21,9 +24,9 @@ type CashierProduct = {
   unitLabel: string;
 };
 
-const cashierProducts: CashierProduct[] = [
+const fallbackCashierProducts: CashierProduct[] = [
   {
-    id: "cashier-001",
+    id: "produk-001",
     initials: "BP",
     name: "Beras Premium",
     price: 70000,
@@ -31,7 +34,7 @@ const cashierProducts: CashierProduct[] = [
     unitLabel: "Kg",
   },
   {
-    id: "cashier-002",
+    id: "produk-002",
     initials: "GP",
     name: "Gula Pasir",
     price: 15000,
@@ -39,7 +42,7 @@ const cashierProducts: CashierProduct[] = [
     unitLabel: "Kg",
   },
   {
-    id: "cashier-003",
+    id: "produk-003",
     initials: "MG",
     name: "Minyak Goreng",
     price: 25000,
@@ -47,7 +50,7 @@ const cashierProducts: CashierProduct[] = [
     unitLabel: "Liter",
   },
   {
-    id: "cashier-004",
+    id: "produk-004",
     initials: "TT",
     name: "Tepung Terigu",
     price: 12000,
@@ -55,7 +58,7 @@ const cashierProducts: CashierProduct[] = [
     unitLabel: "Kg",
   },
   {
-    id: "cashier-005",
+    id: "produk-005",
     initials: "TA",
     name: "Telur Ayam",
     price: 30000,
@@ -63,7 +66,7 @@ const cashierProducts: CashierProduct[] = [
     unitLabel: "Rak",
   },
   {
-    id: "cashier-006",
+    id: "produk-006",
     initials: "KB",
     name: "Kopi Bubuk",
     price: 8000,
@@ -71,7 +74,7 @@ const cashierProducts: CashierProduct[] = [
     unitLabel: "Pak",
   },
   {
-    id: "cashier-007",
+    id: "produk-007",
     initials: "GM",
     name: "Gula Merah",
     price: 18000,
@@ -79,7 +82,7 @@ const cashierProducts: CashierProduct[] = [
     unitLabel: "Kg",
   },
   {
-    id: "cashier-008",
+    id: "produk-008",
     initials: "KH",
     name: "Kacang Hijau",
     price: 22000,
@@ -94,27 +97,70 @@ function formatRupiah(value: number) {
   return `Rp ${formatThousandGroupedNumber(String(value))}`;
 }
 
+function mapStoreProductItemsToCashierProducts(
+  products: ReturnType<typeof mapOfficerStoreProductsToItems>,
+): CashierProduct[] {
+  return products.map((product) => ({
+    id: product.id,
+    initials: product.initials,
+    name: product.name,
+    price: product.rawSalePrice,
+    stockLabel: `/${product.unit} - ${product.rawStockQuantity}${product.unit}`,
+    unitLabel: product.unit,
+  }));
+}
+
 export default function OfficerStoreCashierScreen() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [activePage, setActivePage] = useState(1);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [products, setProducts] = useState<CashierProduct[]>(fallbackCashierProducts);
   const [cartByProductId, setCartByProductId] =
     useState<Record<string, number>>(initialCart);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getOfficerStoreProducts({
+      page: 1,
+      limit: 100,
+      search: query.trim(),
+    })
+      .then((response) => {
+        if (cancelled) return;
+
+        const mappedProducts = mapStoreProductItemsToCashierProducts(
+          mapOfficerStoreProductsToItems(response.data),
+        );
+        setProducts(mappedProducts);
+      })
+      .catch(() => {
+        if (cancelled) return;
+
+        setProducts(
+          mapStoreProductItemsToCashierProducts(storeDashboardData.products),
+        );
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [query]);
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
     if (!normalizedQuery) {
-      return cashierProducts;
+      return products;
     }
 
-    return cashierProducts.filter(
+    return products.filter(
       (product) =>
         product.name.toLowerCase().includes(normalizedQuery) ||
         product.initials.toLowerCase().includes(normalizedQuery),
     );
-  }, [query]);
+  }, [products, query]);
 
   const itemsPerPage = 6;
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
@@ -126,13 +172,13 @@ export default function OfficerStoreCashierScreen() {
 
   const cartItems = useMemo(
     () =>
-      cashierProducts
+      products
         .filter((product) => (cartByProductId[product.id] ?? 0) > 0)
         .map((product) => ({
           ...product,
           quantity: cartByProductId[product.id],
         })),
-    [cartByProductId],
+    [cartByProductId, products],
   );
 
   const totalAmount = useMemo(
@@ -420,6 +466,7 @@ export default function OfficerStoreCashierScreen() {
                       initials: item.initials,
                       name: item.name,
                       price: item.price,
+                      productId: item.id,
                       quantity: item.quantity,
                     })),
                     receiptNumber: "INV-0001",

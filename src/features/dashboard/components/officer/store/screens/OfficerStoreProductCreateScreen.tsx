@@ -1,11 +1,13 @@
 "use client";
 
+import { isApiError } from "@/src/shared/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import DashboardPageHeader from "@/src/features/dashboard/components/layout/DashboardPageHeader";
 import DashboardScreenShell from "@/src/features/dashboard/components/layout/DashboardScreenShell";
 import { storeCategoryOptions, storeUnitOptions } from "@/src/features/dashboard/storeData";
+import { buildStoreProductDraft } from "@/src/features/dashboard/utils/officerStoreMapper";
 import { saveStoreProductDraft } from "@/src/features/dashboard/utils/storeProductDraftStorage";
 import BaseInput from "@/src/shared/components/ui/BaseInput";
 import CurrencyInput from "@/src/shared/components/ui/CurrencyInput";
@@ -20,6 +22,8 @@ export default function OfficerStoreProductCreateScreen() {
   const [costPrice, setCostPrice] = useState("");
   const [salePrice, setSalePrice] = useState("");
   const [minimumStock, setMinimumStock] = useState("");
+  const [initialStockQuantity, setInitialStockQuantity] = useState("");
+  const [error, setError] = useState("");
 
   return (
     <DashboardScreenShell background="bg-white">
@@ -99,31 +103,77 @@ export default function OfficerStoreProductCreateScreen() {
           <BaseInput
             label={
               <>
+                Stok Awal <span className="text-error">*</span>
+              </>
+            }
+            inputMode="numeric"
+            value={initialStockQuantity}
+            onChange={(event) => {
+              setInitialStockQuantity(event.target.value.replace(/\D/g, ""));
+              if (error) {
+                setError("");
+              }
+            }}
+            placeholder=""
+          />
+
+          <BaseInput
+            label={
+              <>
                 Stok Minimum Peringatan <span className="text-error">*</span>
               </>
             }
             inputMode="numeric"
             value={minimumStock}
-            onChange={(event) => setMinimumStock(event.target.value.replace(/\D/g, ""))}
+            onChange={(event) => {
+              setMinimumStock(event.target.value.replace(/\D/g, ""));
+              if (error) {
+                setError("");
+              }
+            }}
             placeholder=""
           />
         </div>
+
+        {error ? <p className="mt-4 text-sm text-error">{error}</p> : null}
 
         <PressButton
           type="button"
           className="mt-10 w-full rounded-[12px] py-3.5 text-[0.98rem] font-bold"
           onClick={() => {
-            saveStoreProductDraft({
-              name: name || "Beras Premium",
-              unit,
-              category,
-              costPrice: costPrice ? `Rp ${Number(costPrice).toLocaleString("id-ID")}` : "Rp 6.500",
-              salePrice: salePrice ? `Rp ${Number(salePrice).toLocaleString("id-ID")}` : "Rp 8.000",
-              minimumStock: `${minimumStock || "50"} ${unit}`,
-              recordedBy: "Jamaludin",
-              createdAtLabel: "11 Jun 2026, 09:08",
-              hashPreview: "SHA-256: d3f7b2e1...",
-            });
+            const trimmedName = name.trim();
+            const parsedCostPrice = Number(costPrice || "0");
+            const parsedSalePrice = Number(salePrice || "0");
+            const parsedMinimumStock = Number(minimumStock || "0");
+            const parsedInitialStockQuantity = Number(initialStockQuantity || "0");
+
+            if (
+              !trimmedName ||
+              !parsedCostPrice ||
+              !parsedSalePrice ||
+              !parsedMinimumStock ||
+              !parsedInitialStockQuantity
+            ) {
+              setError("Semua field wajib diisi.");
+              return;
+            }
+
+            if (parsedSalePrice < parsedCostPrice) {
+              setError("Harga jual tidak boleh lebih kecil dari HPP.");
+              return;
+            }
+
+            saveStoreProductDraft(
+              buildStoreProductDraft({
+                name: trimmedName,
+                unit,
+                category,
+                costPrice: parsedCostPrice,
+                salePrice: parsedSalePrice,
+                minimumStock: parsedMinimumStock,
+                initialStockQuantity: parsedInitialStockQuantity,
+              }),
+            );
             router.push("/dashboard/officer/store/catalog/new/confirm");
           }}
         >

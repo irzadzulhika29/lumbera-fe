@@ -21,6 +21,7 @@ const fallbackDraft: StoreCashierDraft = {
       initials: "BP",
       name: "Beras Premium",
       price: 70000,
+      productId: "cashier-001",
       quantity: 2,
     },
   ],

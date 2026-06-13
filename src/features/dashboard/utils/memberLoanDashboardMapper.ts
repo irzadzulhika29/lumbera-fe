@@ -35,7 +35,16 @@ function formatDateTimeLabel(value: string) {
 
 export function mapMemberLoanDashboardToCreditProfile(
   data: MemberLoanDashboardResponse["data"],
-): DashboardLoanCreditProfile {
+): DashboardLoanCreditProfile | undefined {
+  if (
+    !data.mcs ||
+    !data.mcs.grade?.trim() ||
+    !data.mcs.profile_text?.trim() ||
+    !data.mcs.last_score_updated_at
+  ) {
+    return undefined;
+  }
+
   return {
     score: data.mcs.score,
     maxScore: data.mcs.max_score,

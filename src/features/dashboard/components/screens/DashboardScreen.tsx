@@ -46,7 +46,7 @@ export default function DashboardScreen({ role }: { role: DashboardRole }) {
           <RecentTransactions
             initialTransactions={dashboard.transactions.slice(0, 5)}
             variant="compact"
-            viewAllHref="/dashboard/transactions"
+            viewAllHref="/dashboard/officer/transactions"
           />
         </div>
       )}

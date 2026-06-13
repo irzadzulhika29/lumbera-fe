@@ -19,6 +19,7 @@ export default function StoreMutationSummaryCard({
           ["Kuantitas Total", mutation.totalQuantity],
           ["HPP", mutation.costPrice],
           ["Harga Jual", mutation.salePrice],
+          ["Keterangan", mutation.description],
           ["Dicatat oleh", mutation.recordedBy],
           ["Tanggal", mutation.createdAtLabel],
           ["Hash", mutation.hashPreview],

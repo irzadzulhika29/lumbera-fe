@@ -36,7 +36,7 @@ export type MemberLoanDashboardResponse = {
         weight: number;
       }>;
       explanation: string;
-    };
+    } | null;
     active_loan: {
       loan_id: string;
       loan_number: string;
