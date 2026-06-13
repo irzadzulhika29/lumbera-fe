@@ -4,6 +4,7 @@ import { getAuthSession } from "@/src/features/auth/utils/authSessionStorage";
 import { ApiError } from "@/src/shared/api";
 
 const MEMBER_LOAN_DASHBOARD_API_ROUTE = "/api/dashboard/member/loan-dashboard";
+const PROFILE_API_ROUTE = "/api/dashboard/profile";
 
 const getRequiredAccessToken = () => {
   const session = getAuthSession();
@@ -97,6 +98,14 @@ export type RunMemberMcsScoringResponse = {
   };
 };
 
+type ProfileMemberLookupResponse = {
+  data?: {
+    profile?: {
+      member_id?: string | null;
+    };
+  };
+};
+
 export async function getMemberLoanDashboard(): Promise<MemberLoanDashboardResponse> {
   const accessToken = getRequiredAccessToken();
   const response = await fetch(MEMBER_LOAN_DASHBOARD_API_ROUTE, {
@@ -128,12 +137,41 @@ export async function getMemberLoanDashboard(): Promise<MemberLoanDashboardRespo
 export async function runMemberMcsScoring(): Promise<RunMemberMcsScoringResponse> {
   const session = getAuthSession();
 
-  if (!session?.accessToken || !session.memberId) {
+  if (!session?.accessToken) {
+    throw new Error("Sesi login tidak ditemukan. Silakan masuk kembali.");
+  }
+
+  let memberId = session.memberId;
+
+  try {
+    const profileResponse = await fetch(PROFILE_API_ROUTE, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        accessToken: session.accessToken,
+      }),
+      cache: "no-store",
+    });
+
+    if (profileResponse.ok) {
+      const profilePayload =
+        (await profileResponse.json()) as ProfileMemberLookupResponse;
+
+      memberId = profilePayload.data?.profile?.member_id ?? memberId;
+    }
+  } catch {
+    // Keep session fallback when profile lookup is temporarily unavailable.
+  }
+
+  if (!memberId) {
     throw new Error("Data anggota tidak ditemukan. Silakan masuk kembali.");
   }
 
   const response = await fetch(
-    `/api/dashboard/member/mcs/${session.memberId}/run`,
+    `/api/dashboard/member/mcs/${memberId}/run`,
     {
       method: "POST",
       headers: {
