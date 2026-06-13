@@ -18,6 +18,7 @@ export default function StoreProductSummaryCard({
           ["Kategori", product.category],
           ["HPP", product.costPrice],
           ["Harga Jual", product.salePrice],
+          ["Stok awal", product.initialStockQuantity],
           ["Stok min. peringatan", product.minimumStock],
           ["Dicatat oleh", product.recordedBy],
           ["Tanggal", product.createdAtLabel],

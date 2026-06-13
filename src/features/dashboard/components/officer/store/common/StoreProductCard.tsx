@@ -1,9 +1,12 @@
+import PressButton from "@/src/shared/components/ui/PressButton";
 import type { StoreProductItem } from "@/src/features/dashboard/storeTypes";
 
 export default function StoreProductCard({
   product,
+  onDetailClick,
 }: {
   product: StoreProductItem;
+  onDetailClick: (product: StoreProductItem) => void;
 }) {
   return (
     <article className="rounded-[18px] bg-[#EEF4F9] px-4 py-4">
@@ -47,6 +50,17 @@ export default function StoreProductCard({
               <p className="text-[0.78rem] font-semibold text-text/82">Margin</p>
               <p className="mt-1 text-[0.96rem] font-bold text-primary">{product.marginLabel}</p>
             </div>
+          </div>
+
+          <div className="mt-4 flex justify-end">
+            <PressButton
+              type="button"
+              variant="outlineFlat"
+              onClick={() => onDetailClick(product)}
+              className="rounded-[10px] px-4 py-2 text-[0.84rem] font-bold text-primary"
+            >
+              Detail
+            </PressButton>
           </div>
         </div>
       </div>
