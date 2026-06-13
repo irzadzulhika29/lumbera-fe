@@ -5,7 +5,7 @@ import type {
   OfficerTransactionTypeConfig,
 } from "@/src/features/dashboard/transactionFlow";
 
-import DashboardScreenShell from "../layout/DashboardScreenShell";
+import DashboardScreenShell from "../../layout/DashboardScreenShell";
 import OfficerFlowHeader from "../layout/OfficerFlowHeader";
 import TransactionConfirmationCard from "../transactions/TransactionConfirmationCard";
 
@@ -25,6 +25,18 @@ export default function OfficerTransactionConfirmScreen({
   transaction,
 }: OfficerTransactionConfirmScreenProps) {
   const hasKeterangan = keterangan.trim().length > 0;
+  const contentTopPadding =
+    transaction.slug === "stock-mutations"
+      ? hasKeterangan
+        ? "pt-[408px]"
+        : "pt-[352px]"
+      : transaction.slug === "installments"
+        ? hasKeterangan
+          ? "pt-[408px]"
+          : "pt-[352px]"
+        : hasKeterangan
+          ? "pt-[388px]"
+          : "pt-[332px]";
   const selectedOption = option || transaction.amountOptions?.[0] || "-";
   const successParams = new URLSearchParams({ memberId: member.id });
 
@@ -53,9 +65,7 @@ export default function OfficerTransactionConfirmScreen({
       />
 
       <div
-        className={`bg-white px-5 pb-8 ${
-          hasKeterangan ? "pt-[388px]" : "pt-[332px]"
-        }`}
+        className={`bg-white px-5 pb-8 ${contentTopPadding}`}
       >
         <Link
           href={successHref}

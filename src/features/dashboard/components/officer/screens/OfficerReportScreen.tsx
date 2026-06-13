@@ -7,7 +7,7 @@ import { getDashboardNavigation } from "@/src/features/dashboard/data";
 import { financePeriodOptions } from "@/src/features/dashboard/reportData";
 import SelectField from "@/src/shared/components/ui/SelectField";
 
-import DashboardScreenShell from "../layout/DashboardScreenShell";
+import DashboardScreenShell from "../../layout/DashboardScreenShell";
 import OfficerFlowHeader from "../layout/OfficerFlowHeader";
 
 const healthBreakdown = [
@@ -93,7 +93,7 @@ type ReportScreenProps = {
   initialPeriod?: string;
 };
 
-export default function ReportScreen({
+export default function OfficerReportScreen({
   initialPeriod = "monthly",
 }: ReportScreenProps) {
   const navigation = getDashboardNavigation("officer", "Laporan");

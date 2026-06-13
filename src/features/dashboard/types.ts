@@ -8,7 +8,8 @@ export type DashboardIconName =
   | "savings"
   | "loan"
   | "installment"
-  | "notification";
+  | "notification"
+  | "withdraw";
 
 export type DashboardMetric = {
   label: string;

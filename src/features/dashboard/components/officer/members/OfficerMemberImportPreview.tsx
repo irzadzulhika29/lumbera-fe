@@ -3,8 +3,8 @@
 import { Icon } from "@iconify/react";
 import { useMemo, useState } from "react";
 
-import FilterChips from "../common/FilterChips";
 import PressButton from "@/src/shared/components/ui/PressButton";
+import FilterChips from "../../common/FilterChips";
 
 type ImportPreviewStatus = "success" | "error";
 
@@ -42,12 +42,14 @@ function SummaryCard({
   );
 }
 
-export default function MemberImportPreview({
+export default function OfficerMemberImportPreview({
   fileName,
+  onSubmit,
   onBackToImport,
   rows,
 }: {
   fileName: string;
+  onSubmit: (successCount: number) => void;
   onBackToImport: () => void;
   rows: ImportPreviewRow[];
 }) {
@@ -184,7 +186,11 @@ export default function MemberImportPreview({
       </p>
 
       <div className="mt-12 flex flex-col gap-4">
-        <PressButton className="h-14 w-full rounded-[12px] text-[1.05rem] font-bold">
+        <PressButton
+          type="button"
+          onClick={() => onSubmit(successCount)}
+          className="h-14 w-full rounded-[12px] text-[1.05rem] font-bold"
+        >
           Submit
         </PressButton>
         <button

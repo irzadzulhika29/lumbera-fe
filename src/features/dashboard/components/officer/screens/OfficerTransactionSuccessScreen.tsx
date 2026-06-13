@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-import DashboardScreenShell from "../layout/DashboardScreenShell";
+import DashboardScreenShell from "../../layout/DashboardScreenShell";
 
 type OfficerTransactionSuccessScreenProps = {
   hash: string;

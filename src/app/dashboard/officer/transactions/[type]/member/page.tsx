@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import OfficerTransactionMemberScreen from "@/src/features/dashboard/components/screens/OfficerTransactionMemberScreen";
+import OfficerTransactionMemberScreen from "@/src/features/dashboard/components/officer/screens/OfficerTransactionMemberScreen";
 import {
   getOfficerTransactionTypeConfig,
   type OfficerTransactionType,

@@ -10,10 +10,10 @@ import {
   type OfficerTransactionType,
 } from "@/src/features/dashboard/transactionFlow";
 
-import DashboardSearchField from "../common/DashboardSearchField";
-import MemberSummary from "../common/MemberSummary";
-import NextIcon from "../common/NextIcon";
-import DashboardScreenShell from "../layout/DashboardScreenShell";
+import DashboardSearchField from "../../common/DashboardSearchField";
+import MemberSummary from "../../common/MemberSummary";
+import NextIcon from "../../common/NextIcon";
+import DashboardScreenShell from "../../layout/DashboardScreenShell";
 import OfficerFlowHeader from "../layout/OfficerFlowHeader";
 
 export default function OfficerTransactionMemberScreen({

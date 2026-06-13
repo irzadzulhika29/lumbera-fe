@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 
 import MobileScreen from "@/src/shared/components/layout/MobileScreen";
 import { getDashboardNavigation } from "@/src/features/dashboard/data";
+import DashboardBottomNavigation from "../../layout/DashboardBottomNavigation";
 
 import DashboardScreenShell from "../layout/DashboardScreenShell";
 

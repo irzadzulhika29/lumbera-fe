@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import CooperativeMembersScreen from "@/src/features/dashboard/components/screens/CooperativeMembersScreen";
+import OfficerMembersScreen from "@/src/features/dashboard/components/officer/screens/OfficerMembersScreen";
 
 export const metadata: Metadata = {
   title: "Anggota Koperasi | Lumbera",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function MembersPage() {
-  return <CooperativeMembersScreen />;
+  return <OfficerMembersScreen />;
 }
