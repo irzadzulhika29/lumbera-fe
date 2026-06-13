@@ -9,7 +9,12 @@ import {
 
 type PageProps = {
   params: Promise<{ type: string }>;
-  searchParams: Promise<{ memberId?: string; option?: string }>;
+  searchParams: Promise<{
+    hash?: string;
+    memberId?: string;
+    memberName?: string;
+    option?: string;
+  }>;
 };
 
 function buildSuccessTitle(type: string) {
@@ -37,7 +42,7 @@ export default async function OfficerTransactionSuccessPage({
   params,
   searchParams,
 }: PageProps) {
-  const [{ type }, { memberId, option }] = await Promise.all([
+  const [{ type }, { hash, memberId, memberName, option }] = await Promise.all([
     params,
     searchParams,
   ]);
@@ -60,8 +65,8 @@ export default async function OfficerTransactionSuccessPage({
 
   return (
     <OfficerTransactionSuccessScreen
-      hash="SHA-256: a3f7b2e1..."
-      memberName={member.name}
+      hash={hash ?? "SHA-256: a3f7b2e1..."}
+      memberName={memberName ?? member.name}
       title={buildSuccessTitle(transaction.slug)}
       transactionLabel={transactionLabel}
     />
