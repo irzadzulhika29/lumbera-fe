@@ -65,10 +65,16 @@ export async function POST(request: Request) {
   upstreamFormData.append("nik_encrypted", nikEncrypted);
   upstreamFormData.append("nik_hash", nikHash);
   upstreamFormData.append("position_code", positionCode);
-  upstreamFormData.append(
-    "existing_cooperative_code",
-    typeof existingCooperativeCode === "string" ? existingCooperativeCode : "",
-  );
+
+  if (
+    typeof existingCooperativeCode === "string" &&
+    existingCooperativeCode.trim()
+  ) {
+    upstreamFormData.append(
+      "existing_cooperative_code",
+      existingCooperativeCode.trim(),
+    );
+  }
 
   const upstreamResponse = await fetch(
     `${getApiBaseUrl()}/onboarding/drafts/${onboardingDraftId}/personal-data`,

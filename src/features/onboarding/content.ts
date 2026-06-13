@@ -2,6 +2,9 @@ export const START_ROUTE = "/role-select";
 export const AUTH_PHONE_ROUTE = "/auth/phone";
 export const AUTH_OTP_ROUTE = "/auth/otp";
 export const AUTH_PIN_ROUTE = "/auth/pin";
+export const AUTH_FORGOT_PIN_ROUTE = "/auth/forgot-pin";
+export const AUTH_FORGOT_PIN_OTP_ROUTE = "/auth/forgot-pin/otp";
+export const AUTH_FORGOT_PIN_PIN_ROUTE = "/auth/forgot-pin/pin";
 export const AUTH_PROFILE_ROUTE = "/auth/profile";
 export const AUTH_COOPERATIVE_TYPE_ROUTE = "/auth/cooperative-type";
 export const AUTH_COOPERATIVE_PROFILE_ROUTE = "/auth/cooperative-profile";
@@ -45,10 +48,17 @@ export const ROLE_OPTIONS = [
 ] as const;
 
 export type RoleOptionId = (typeof ROLE_OPTIONS)[number]["id"];
-export type PinSetupStep = "create" | "confirm";
+export type PinSetupStep = "create" | "confirm" | "login";
+export type AuthEntryFlow = "login" | "register";
 
-export const getAuthPhoneHref = (roleId: RoleOptionId) =>
-  `${AUTH_PHONE_ROUTE}?role=${roleId}`;
+export const getAuthPhoneHref = (
+  roleId: RoleOptionId,
+  flow: AuthEntryFlow = "login",
+) =>
+  `${AUTH_PHONE_ROUTE}?role=${roleId}${flow === "register" ? "&flow=register" : ""}`;
+
+export const getAuthRegisterPhoneHref = (roleId: RoleOptionId) =>
+  getAuthPhoneHref(roleId, "register");
 
 export const getAuthOtpHref = (roleId: RoleOptionId) =>
   `${AUTH_OTP_ROUTE}?role=${roleId}`;
@@ -58,6 +68,15 @@ export const getAuthPinHref = (roleId: RoleOptionId, step: PinSetupStep) =>
 
 export const getAuthProfileHref = (roleId: RoleOptionId) =>
   `${AUTH_PROFILE_ROUTE}?role=${roleId}&step=1`;
+
+export const getForgotPinPhoneHref = (roleId: RoleOptionId) =>
+  `${AUTH_FORGOT_PIN_ROUTE}?role=${roleId}`;
+
+export const getForgotPinOtpHref = (roleId: RoleOptionId) =>
+  `${AUTH_FORGOT_PIN_OTP_ROUTE}?role=${roleId}`;
+
+export const getForgotPinPinHref = (roleId: RoleOptionId) =>
+  `${AUTH_FORGOT_PIN_PIN_ROUTE}?role=${roleId}`;
 
 export const getAuthCooperativeTypeHref = (roleId: RoleOptionId) =>
   `${AUTH_COOPERATIVE_TYPE_ROUTE}?role=${roleId}`;
@@ -77,11 +96,17 @@ export const getAuthActivationHref = (roleId: RoleOptionId) =>
 export const getAuthActivationSuccessHref = (roleId: RoleOptionId) =>
   `${AUTH_ACTIVATION_SUCCESS_ROUTE}?role=${roleId}`;
 
+export const getPostActivationHref = (roleId: RoleOptionId) =>
+  roleId === "officer" ? "/dashboard" : "/transactions";
+
 export const isRoleOptionId = (value: string): value is RoleOptionId =>
   ROLE_OPTIONS.some((option) => option.id === value);
 
 export const isPinSetupStep = (value: string): value is PinSetupStep =>
-  value === "create" || value === "confirm";
+  value === "create" || value === "confirm" || value === "login";
+
+export const isAuthEntryFlow = (value: string): value is AuthEntryFlow =>
+  value === "login" || value === "register";
 
 export const getRolePhoneErrorMessage = (roleId: RoleOptionId) =>
   roleId === "officer"
@@ -90,3 +115,6 @@ export const getRolePhoneErrorMessage = (roleId: RoleOptionId) =>
 
 export const getRoleOption = (roleId: RoleOptionId) =>
   ROLE_OPTIONS.find((option) => option.id === roleId) ?? ROLE_OPTIONS[0];
+
+export const getPostLoginHref = (roleCode?: string | null) =>
+  roleCode === "PENGURUS_KOPERASI" ? "/dashboard" : "/transactions";

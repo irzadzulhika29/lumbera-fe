@@ -3,6 +3,9 @@ import type { RoleOptionId } from "@/src/features/onboarding/content";
 export const getPendingPinStorageKey = (roleId: RoleOptionId) =>
   `lumbera.pending-pin.${roleId}`;
 
+export const getPendingLoginPhoneStorageKey = (roleId: RoleOptionId) =>
+  `lumbera.pending-login-phone.${roleId}`;
+
 export const validatePinConfirmation = (
   originalPin: string,
   confirmationPin: string,

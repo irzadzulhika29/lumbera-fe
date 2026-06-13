@@ -23,10 +23,7 @@ export default function AuthBackLink({ href, onClick }: AuthBackLinkProps) {
   }
 
   return (
-    <Link
-      href={href ?? "#"}
-      className={backLinkClassName}
-    >
+    <Link href={href ?? "#"} className={backLinkClassName}>
       <span aria-hidden="true" className="text-lg leading-none">
         {"<"}
       </span>

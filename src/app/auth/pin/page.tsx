@@ -18,7 +18,7 @@ export default async function AuthPinPage({
   const roleId: RoleOptionId =
     requestedRole && isRoleOptionId(requestedRole) ? requestedRole : "officer";
   const step: PinSetupStep =
-    requestedStep && isPinSetupStep(requestedStep) ? requestedStep : "create";
+    requestedStep && isPinSetupStep(requestedStep) ? requestedStep : "login";
 
   return <PinSetupScreen key={`${roleId}-${step}`} roleId={roleId} step={step} />;
 }

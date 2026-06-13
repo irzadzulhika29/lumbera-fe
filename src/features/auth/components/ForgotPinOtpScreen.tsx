@@ -3,10 +3,10 @@
 import { startTransition, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { verifyOnboardingOtp } from "@/src/features/auth/api/authApi";
+import { verifyForgotPinOtp } from "@/src/features/auth/api/authApi";
 import {
-  getAuthRegisterPhoneHref,
-  getAuthPinHref,
+  getForgotPinPhoneHref,
+  getForgotPinPinHref,
   type RoleOptionId,
 } from "@/src/features/onboarding/content";
 import { isApiError } from "@/src/shared/api";
@@ -14,15 +14,18 @@ import OtpInput from "@/src/shared/components/ui/OtpInput";
 
 import AuthBackLink from "./common/AuthBackLink";
 import AuthPageFrame from "./common/AuthPageFrame";
-import { getOnboardingDraftSession } from "../utils/onboardingDraftStorage";
+import {
+  getForgotPinSession,
+  saveForgotPinSession,
+} from "../utils/forgotPinSessionStorage";
 
-type OtpVerificationScreenProps = {
+type ForgotPinOtpScreenProps = {
   roleId: RoleOptionId;
 };
 
-export default function OtpVerificationScreen({
+export default function ForgotPinOtpScreen({
   roleId,
-}: OtpVerificationScreenProps) {
+}: ForgotPinOtpScreenProps) {
   const router = useRouter();
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
@@ -40,13 +43,13 @@ export default function OtpVerificationScreen({
     let isCancelled = false;
 
     void (async () => {
-      const onboardingDraft = getOnboardingDraftSession(roleId);
+      const forgotPinSession = getForgotPinSession(roleId);
 
-      if (!onboardingDraft?.onboardingDraftId) {
+      if (!forgotPinSession?.challengeId || !forgotPinSession.phoneNumber) {
         lastSubmittedOtpRef.current = null;
 
         if (!isCancelled) {
-          setError("Sesi onboarding tidak ditemukan. Ulangi dari awal.");
+          setError("Sesi lupa PIN tidak ditemukan. Ulangi dari awal.");
         }
 
         return;
@@ -55,16 +58,23 @@ export default function OtpVerificationScreen({
       lastSubmittedOtpRef.current = otp;
 
       try {
-        await verifyOnboardingOtp({
-          roleId,
-          onboardingDraftId: onboardingDraft.onboardingDraftId,
+        const verificationResponse = await verifyForgotPinOtp({
+          challengeId: forgotPinSession.challengeId,
+          phoneNumber: forgotPinSession.phoneNumber,
           otp,
         });
 
         if (!isCancelled) {
+          saveForgotPinSession(roleId, {
+            ...forgotPinSession,
+            challengeId: verificationResponse.challenge_id,
+            pinResetToken: verificationResponse.pin_reset_token,
+            expiresInSeconds: verificationResponse.expires_in_seconds,
+          });
+
           setError("");
           startTransition(() => {
-            router.push(getAuthPinHref(roleId, "create"));
+            router.push(getForgotPinPinHref(roleId));
           });
         }
       } catch (requestError) {
@@ -87,7 +97,7 @@ export default function OtpVerificationScreen({
 
   return (
     <AuthPageFrame>
-      <AuthBackLink href={getAuthRegisterPhoneHref(roleId)} />
+      <AuthBackLink href={getForgotPinPhoneHref(roleId)} />
 
       <div className="mt-16">
         <h1 className="text-[2.15rem] font-bold leading-none tracking-[-0.04em]">

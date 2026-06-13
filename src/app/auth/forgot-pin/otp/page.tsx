@@ -1,10 +1,10 @@
-import CooperativeReadyScreen from "@/src/features/auth/components/CooperativeReadyScreen";
+import ForgotPinOtpScreen from "@/src/features/auth/components/ForgotPinOtpScreen";
 import {
   isRoleOptionId,
   type RoleOptionId,
 } from "@/src/features/onboarding/content";
 
-export default async function AuthActivationSuccessPage({
+export default async function ForgotPinOtpPage({
   searchParams,
 }: {
   searchParams: Promise<{ role?: string }>;
@@ -14,5 +14,5 @@ export default async function AuthActivationSuccessPage({
   const roleId: RoleOptionId =
     requestedRole && isRoleOptionId(requestedRole) ? requestedRole : "officer";
 
-  return <CooperativeReadyScreen roleId={roleId} />;
+  return <ForgotPinOtpScreen roleId={roleId} />;
 }

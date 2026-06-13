@@ -7,7 +7,7 @@ import { twMerge } from "tailwind-merge";
 
 import {
   ROLE_OPTIONS,
-  getAuthPhoneHref,
+  getAuthRegisterPhoneHref,
   type RoleOptionId,
 } from "@/src/features/onboarding/content";
 import PressButton from "@/src/shared/components/ui/PressButton";
@@ -71,7 +71,7 @@ export default function RoleSelectScreen() {
 
   const handleSelectRole = (roleId: RoleOptionId) => {
     startTransition(() => {
-      router.push(getAuthPhoneHref(roleId));
+      router.push(getAuthRegisterPhoneHref(roleId));
     });
   };
 

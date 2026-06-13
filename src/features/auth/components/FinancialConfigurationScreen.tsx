@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { startTransition } from "react";
 import { useRouter } from "next/navigation";
 
-import {
-  getAuthBankAccountHref,
-  getAuthCooperativeProfileHref,
-  type RoleOptionId,
-} from "@/src/features/onboarding/content";
+import { getAuthCooperativeProfileHref, type RoleOptionId } from "@/src/features/onboarding/content";
 import BaseInput from "@/src/shared/components/ui/BaseInput";
 import CurrencyInput from "@/src/shared/components/ui/CurrencyInput";
-import PressButton from "@/src/shared/components/ui/PressButton";
 import SelectField from "@/src/shared/components/ui/SelectField";
+
+import AuthFooterNote from "./common/AuthFooterNote";
+import AuthStepActions from "./common/AuthStepActions";
+import { useFinancialConfigurationForm } from "../hooks/useFinancialConfigurationForm";
 
 const LOAN_DURATION_OPTIONS = [
   { label: "12 Bulan", value: "12" },
@@ -40,10 +39,22 @@ export default function FinancialConfigurationScreen({
   roleId,
 }: FinancialConfigurationScreenProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [loanDuration, setLoanDuration] = useState("24");
-  const [maxLoanPerMember, setMaxLoanPerMember] = useState("");
-  const [monthlyMandatorySavings, setMonthlyMandatorySavings] = useState("");
+  const {
+    isPending,
+    isSubmitting,
+    formError,
+    loanDuration,
+    maxLoanPerMember,
+    loanInterestRate,
+    lateFeeRate,
+    monthlyMandatorySavings,
+    setLoanDuration,
+    setMaxLoanPerMember,
+    setLoanInterestRate,
+    setLateFeeRate,
+    setMonthlyMandatorySavings,
+    handleSubmit,
+  } = useFinancialConfigurationForm(roleId);
 
   return (
     <>
@@ -60,8 +71,7 @@ export default function FinancialConfigurationScreen({
         <CurrencyInput
           label={
             <>
-              Batas Pinjaman Maks per Anggota{" "}
-              <span className="text-error">*</span>
+              Batas Pinjaman Maks per Anggota <span className="text-error">*</span>
             </>
           }
           value={maxLoanPerMember}
@@ -82,6 +92,12 @@ export default function FinancialConfigurationScreen({
             inputClassName="text-base"
             inputMode="decimal"
             endAdornment={<PercentageAdornment period="bulan" />}
+            value={loanInterestRate}
+            onChange={(event) =>
+              setLoanInterestRate(
+                event.target.value.replace(",", ".").replace(/[^0-9.]/g, ""),
+              )
+            }
           />
 
           <BaseInput
@@ -94,6 +110,12 @@ export default function FinancialConfigurationScreen({
             inputClassName="text-base"
             inputMode="decimal"
             endAdornment={<PercentageAdornment period="hari" />}
+            value={lateFeeRate}
+            onChange={(event) =>
+              setLateFeeRate(
+                event.target.value.replace(",", ".").replace(/[^0-9.]/g, ""),
+              )
+            }
           />
         </div>
 
@@ -131,36 +153,18 @@ export default function FinancialConfigurationScreen({
       </div>
 
       <div className="mt-auto pt-12">
-        <div className="flex items-center gap-3">
-          <PressButton
-            type="button"
-            className="h-14 w-14 shrink-0 px-0 py-0 text-xl"
-            aria-label="Kembali"
-            onClick={() =>
-              startTransition(() => {
-                router.push(getAuthCooperativeProfileHref(roleId));
-              })
-            }
-          >
-            {"<"}
-          </PressButton>
-          <PressButton
-            type="button"
-            className="h-14 flex-1 text-base font-semibold"
-            disabled={isPending}
-            onClick={() =>
-              startTransition(() => {
-                router.push(getAuthBankAccountHref(roleId));
-              })
-            }
-          >
-            Lanjut
-          </PressButton>
-        </div>
-
-        <div className="pt-6 text-center text-[0.82rem] text-text/22">
-          Diawasi OJK - Sesuai UU PDP No.27/2022
-        </div>
+        <AuthStepActions
+          onBack={() =>
+            startTransition(() => {
+              router.push(getAuthCooperativeProfileHref(roleId));
+            })
+          }
+          onNext={handleSubmit}
+          isNextDisabled={isPending || isSubmitting}
+          nextLabel={isSubmitting ? "Menyimpan..." : "Lanjut"}
+        />
+        {formError ? <p className="mt-3 text-sm text-error">{formError}</p> : null}
+        <AuthFooterNote />
       </div>
     </>
   );

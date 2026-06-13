@@ -1,29 +1,18 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import { useTransition } from "react";
+import { startTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import {
-  getAuthActivationSuccessHref,
   getAuthBankAccountHref,
   type RoleOptionId,
 } from "@/src/features/onboarding/content";
-import PressButton from "@/src/shared/components/ui/PressButton";
 
-const PERSONAL_SUMMARY = [
-  { label: "Nama", value: "Asep Suryadi" },
-  { label: "NIK", value: "3215 **** **** 0003" },
-  { label: "No. HP", value: "081234567890" },
-  { label: "Jabatan", value: "Bendahara" },
-] as const;
-
-const COOPERATIVE_SUMMARY = [
-  { label: "Tipe Koperasi", value: "KSP" },
-  { label: "Profil", value: "Koperasi Padiwangi" },
-  { label: "Batas Pinjaman", value: "Rp 5.000.000 - 1,5%/bln" },
-  { label: "Rekening", value: "BRI - xxxx-4321" },
-] as const;
+import AuthFooterNote from "./common/AuthFooterNote";
+import AuthStepActions from "./common/AuthStepActions";
+import { useActivationSummary } from "../hooks/useActivationSummary";
+import { useActivationSubmission } from "../hooks/useActivationSubmission";
 
 function CheckCircleIcon() {
   return (
@@ -45,7 +34,10 @@ export default function CooperativeActivationScreen({
   roleId,
 }: CooperativeActivationScreenProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const { personalSummary, cooperativeSummary, isLoading, summaryError } =
+    useActivationSummary(roleId);
+  const { isPending, isSubmitting, formError, handleActivate } =
+    useActivationSubmission(roleId);
 
   return (
     <>
@@ -64,19 +56,22 @@ export default function CooperativeActivationScreen({
             Ringkasan data diri
           </h2>
           <div className="mt-4 space-y-3">
-            {PERSONAL_SUMMARY.map((item) => (
+            {(isLoading ? [] : personalSummary).map((item) => (
               <div
                 key={item.label}
-                className="flex items-center justify-between gap-4"
+                className="grid grid-cols-[6.5rem_minmax(0,1fr)] items-start gap-4"
               >
                 <span className="text-[1.02rem] leading-none text-text/75">
                   {item.label}
                 </span>
-                <span className="text-[1.02rem] leading-none font-semibold text-text/82">
+                <span className="text-right text-[1.02rem] leading-snug font-semibold text-text/82">
                   {item.value}
                 </span>
               </div>
             ))}
+            {isLoading ? (
+              <p className="text-sm text-text/50">Memuat ringkasan...</p>
+            ) : null}
           </div>
         </section>
 
@@ -85,10 +80,10 @@ export default function CooperativeActivationScreen({
             Ringkasan data koperasi
           </h2>
           <div className="mt-4 space-y-3">
-            {COOPERATIVE_SUMMARY.map((item) => (
+            {(isLoading ? [] : cooperativeSummary).map((item) => (
               <div
                 key={item.label}
-                className="flex items-center justify-between gap-4"
+                className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] items-start gap-4"
               >
                 <span className="flex items-center gap-2 text-[1.02rem] leading-none text-text/75">
                   <span className="text-primary">
@@ -101,41 +96,29 @@ export default function CooperativeActivationScreen({
                 </span>
               </div>
             ))}
+            {isLoading ? (
+              <p className="text-sm text-text/50">Memuat ringkasan...</p>
+            ) : null}
           </div>
         </section>
       </div>
 
       <div className="mt-auto pt-12">
-        <div className="flex items-center gap-3">
-          <PressButton
-            type="button"
-            className="h-14 w-14 shrink-0 px-0 py-0 text-xl"
-            aria-label="Kembali"
-            onClick={() =>
-              startTransition(() => {
-                router.push(getAuthBankAccountHref(roleId));
-              })
-            }
-          >
-            {"<"}
-          </PressButton>
-          <PressButton
-            type="button"
-            className="h-14 flex-1 text-base font-semibold"
-            disabled={isPending}
-            onClick={() =>
-              startTransition(() => {
-                router.push(getAuthActivationSuccessHref(roleId));
-              })
-            }
-          >
-            Aktifkan Koperasi
-          </PressButton>
-        </div>
-
-        <div className="pt-6 text-center text-[0.82rem] text-text/22">
-          Diawasi OJK - Sesuai UU PDP No.27/2022
-        </div>
+        <AuthStepActions
+          onBack={() =>
+            startTransition(() => {
+              router.push(getAuthBankAccountHref(roleId));
+            })
+          }
+          onNext={handleActivate}
+          isNextDisabled={isPending || isSubmitting}
+          nextLabel={isSubmitting ? "Mengaktifkan..." : "Aktifkan Koperasi"}
+        />
+        {formError ? <p className="mt-3 text-sm text-error">{formError}</p> : null}
+        {!formError && summaryError ? (
+          <p className="mt-3 text-sm text-error">{summaryError}</p>
+        ) : null}
+        <AuthFooterNote />
       </div>
     </>
   );
