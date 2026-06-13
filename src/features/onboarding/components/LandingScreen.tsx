@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import DesktopLanding from "./landing/DesktopLanding";
 import DesktopInstallModal from "./landing/DesktopInstallModal";
-import MobileLanding from "./landing/MobileLanding";
+import InstalledMobileOnboarding from "./landing/InstalledMobileOnboarding";
 import { DESKTOP_NAV_ITEMS, type DesktopNavId } from "./landing/landingData";
 
 export default function LandingScreen() {
@@ -76,7 +76,7 @@ export default function LandingScreen() {
         activeDesktopNavId={activeDesktopNavId}
         onOpenInstallModal={() => setIsInstallModalOpen(true)}
       />
-      <MobileLanding onOpenInstallModal={() => setIsInstallModalOpen(true)} />
+      <InstalledMobileOnboarding />
 
       <DesktopInstallModal
         isOpen={isInstallModalOpen}

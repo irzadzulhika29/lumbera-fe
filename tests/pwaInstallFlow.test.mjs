@@ -9,6 +9,7 @@ const requiredFiles = [
   "public/logo/icon-invert.svg",
   "src/features/onboarding/components/landing/DesktopLanding.tsx",
   "src/features/onboarding/components/landing/DesktopInstallModal.tsx",
+  "src/features/onboarding/components/landing/InstalledMobileOnboarding.tsx",
   "src/features/onboarding/components/landing/MobileLanding.tsx",
   "src/features/onboarding/components/landing/LandingFooter.tsx",
   "src/features/onboarding/components/landing/landingData.ts",
@@ -30,6 +31,10 @@ const desktopInstallModalSource = readFileSync(
   resolve("src/features/onboarding/components/landing/DesktopInstallModal.tsx"),
   "utf8",
 );
+const installedMobileOnboardingSource = readFileSync(
+  resolve("src/features/onboarding/components/landing/InstalledMobileOnboarding.tsx"),
+  "utf8",
+);
 const mobileLandingSource = readFileSync(
   resolve("src/features/onboarding/components/landing/MobileLanding.tsx"),
   "utf8",
@@ -46,6 +51,7 @@ const landingModulesSource = [
   landingSource,
   desktopLandingSource,
   desktopInstallModalSource,
+  installedMobileOnboardingSource,
   mobileLandingSource,
   landingFooterSource,
   landingDataSource,
@@ -81,18 +87,21 @@ assert.doesNotMatch(landingSource, /OnboardingStartButton/);
 assert.match(landingSource, /activeDesktopNavId|setActiveDesktopNavId/);
 assert.match(landingSource, /IntersectionObserver/);
 assert.match(landingSource, /DesktopLanding/);
-assert.match(landingSource, /MobileLanding/);
+assert.match(landingSource, /InstalledMobileOnboarding/);
+assert.doesNotMatch(landingSource, /MobileLanding/);
+assert.doesNotMatch(landingSource, /display-mode: standalone/);
 assert.match(desktopInstallModalSource, /path="\/install"|path='\/install'/);
 assert.match(desktopInstallModalSource, /beforeinstallprompt/);
 assert.match(desktopInstallModalSource, /Add to Home Screen/);
 assert.match(desktopInstallModalSource, /Chrome atau Safari|Chrome di Android/);
-assert.match(mobileLandingSource, /onOpenInstallModal/);
-assert.doesNotMatch(mobileLandingSource, /href="\/install"|href='\/install'|START_ROUTE/);
-assert.doesNotMatch(landingSource, /isStandaloneMode|setIsStandaloneMode/);
 assert.doesNotMatch(landingModulesSource, /START_ROUTE/);
 assert.doesNotMatch(landingModulesSource, /Daftarkan Koperasi/);
 assert.doesNotMatch(landingModulesSource, /Buka Lumbera/);
 assert.match(desktopInstallModalSource, /Setelah terpasang, buka lagi dari ikon Lumbera di layar utama/);
+assert.match(installedMobileOnboardingSource, /LANDING_HEADLINE/);
+assert.match(installedMobileOnboardingSource, /LANDING_FEATURES/);
+assert.match(installedMobileOnboardingSource, /OnboardingStartButton/);
+assert.match(installedMobileOnboardingSource, /onboard-video\.mp4/);
 
 const installPageSource = readFileSync(resolve("src/app/install/page.tsx"), "utf8");
 
