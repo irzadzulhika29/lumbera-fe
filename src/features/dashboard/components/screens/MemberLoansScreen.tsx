@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { getMemberLoanDashboard } from "@/src/features/dashboard/api";
+import {
+  getMemberLoanDashboard,
+  runMemberMcsScoring,
+} from "@/src/features/dashboard/api";
 import { getDashboardData, getDashboardNavigation } from "@/src/features/dashboard/data";
 import type {
   DashboardActiveLoanSummary,
@@ -16,9 +19,16 @@ import {
   mapMemberLoanDashboardToActiveLoan,
   mapMemberLoanDashboardToCreditProfile,
 } from "@/src/features/dashboard/utils/memberLoanDashboardMapper";
+import { isApiError } from "@/src/shared/api";
+
+const wait = (ms: number) =>
+  new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
 
 export default function MemberLoansScreen() {
   const dashboard = getDashboardData("member");
+  const isMountedRef = useRef(true);
   const [profile, setProfile] = useState<DashboardLoanCreditProfile | undefined>(
     dashboard.loanCreditProfile,
   );
@@ -30,28 +40,89 @@ export default function MemberLoansScreen() {
     loan_application_enabled: true,
     credit_access_enabled: true,
   });
+  const [isCheckingCreditProfile, setIsCheckingCreditProfile] = useState(false);
+  const [creditProfileMessage, setCreditProfileMessage] = useState("");
+
+  const loadLoanDashboard = async () => {
+    const response = await getMemberLoanDashboard();
+
+    if (!isMountedRef.current) {
+      return undefined;
+    }
+
+    const nextProfile = mapMemberLoanDashboardToCreditProfile(response.data);
+
+    setProfile(nextProfile);
+    setActiveLoan(mapMemberLoanDashboardToActiveLoan(response.data));
+    setActionsState(response.data.actions);
+
+    return nextProfile;
+  };
 
   useEffect(() => {
-    let cancelled = false;
+    isMountedRef.current = true;
 
-    getMemberLoanDashboard()
-      .then((response) => {
-        if (cancelled) return;
-
-        setProfile(mapMemberLoanDashboardToCreditProfile(response.data));
-        setActiveLoan(mapMemberLoanDashboardToActiveLoan(response.data));
-        setActionsState(response.data.actions);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setProfile(dashboard.loanCreditProfile);
-        setActiveLoan(dashboard.activeLoanSummary);
-      });
+    loadLoanDashboard().catch(() => {
+      if (!isMountedRef.current) return;
+      setProfile(dashboard.loanCreditProfile);
+      setActiveLoan(dashboard.activeLoanSummary);
+      setCreditProfileMessage("");
+    });
 
     return () => {
-      cancelled = true;
+      isMountedRef.current = false;
     };
   }, [dashboard.activeLoanSummary, dashboard.loanCreditProfile]);
+
+  const handleRequestCreditProfileCheck = async () => {
+    setIsCheckingCreditProfile(true);
+    setCreditProfileMessage("");
+
+    try {
+      await runMemberMcsScoring();
+
+      if (!isMountedRef.current) {
+        return;
+      }
+
+      setCreditProfileMessage("Permintaan cek profil kredit sedang diproses.");
+
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        await wait(3000);
+
+        const nextProfile = await loadLoanDashboard().catch(() => undefined);
+
+        if (!isMountedRef.current) {
+          return;
+        }
+
+        if (nextProfile) {
+          setCreditProfileMessage("");
+          break;
+        }
+      }
+
+      if (!profile && isMountedRef.current) {
+        setCreditProfileMessage(
+          "Permintaan sudah dikirim. Silakan cek kembali beberapa saat lagi.",
+        );
+      }
+    } catch (requestError) {
+      if (!isMountedRef.current) {
+        return;
+      }
+
+      setCreditProfileMessage(
+        isApiError(requestError)
+          ? requestError.message
+          : "Terjadi kesalahan saat memproses cek profil kredit.",
+      );
+    } finally {
+      if (isMountedRef.current) {
+        setIsCheckingCreditProfile(false);
+      }
+    }
+  };
 
   return (
     <DashboardScreenShell
@@ -69,7 +140,12 @@ export default function MemberLoansScreen() {
         </header>
 
         <div className="mt-6">
-          <CreditScoreCard profile={profile} />
+          <CreditScoreCard
+            profile={profile}
+            onRequestCheck={handleRequestCreditProfileCheck}
+            isChecking={isCheckingCreditProfile}
+            helperMessage={creditProfileMessage}
+          />
         </div>
       </div>
 

@@ -12,17 +12,32 @@ import ScoreRing from "./ScoreRing";
 
 export default function CreditScoreCard({
   profile,
+  onRequestCheck,
+  isChecking = false,
+  helperMessage = "",
 }: {
   profile?: DashboardLoanCreditProfile;
+  onRequestCheck?: () => void;
+  isChecking?: boolean;
+  helperMessage?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
 
   if (!profile) {
     return (
       <section className="rounded-[16px] border border-border bg-white p-4 shadow-sm">
-        <PressButton className="w-full rounded-[12px] py-3.5 text-[0.98rem] font-bold">
-          Cek Profil Kredit
+        <PressButton
+          disabled={isChecking}
+          onClick={onRequestCheck}
+          className="w-full rounded-[12px] py-3.5 text-[0.98rem] font-bold"
+        >
+          {isChecking ? "Memproses..." : "Cek Profil Kredit"}
         </PressButton>
+        {helperMessage ? (
+          <p className="mt-3 text-center text-[0.82rem] font-medium text-text/56">
+            {helperMessage}
+          </p>
+        ) : null}
       </section>
     );
   }
