@@ -11,10 +11,15 @@ import {
   createOfficerStockMutationTransaction,
   type OfficerSavingsType,
 } from "@/src/features/dashboard/api";
+import { isApiError } from "@/src/shared/api";
 import type {
   OfficerMember,
   OfficerTransactionTypeConfig,
 } from "@/src/features/dashboard/transactionFlow";
+import {
+  saveOfflineOfficerTransaction,
+  type OfflineOfficerTransaction,
+} from "@/src/features/dashboard/utils/officerTransactionOfflineStorage";
 
 import DashboardScreenShell from "../../layout/DashboardScreenShell";
 import OfficerFlowHeader from "../layout/OfficerFlowHeader";
@@ -48,6 +53,11 @@ function formatRecordedAt(date: Date) {
     `T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`,
     `${offsetSign}${offsetHours}:${offsetRemainder}`,
   ].join("");
+}
+
+function extractMemberNumber(meta: string) {
+  const match = meta.match(/No\.\s*Ang\.\s*([0-9]+)/i);
+  return match?.[1] ? `No. ${match[1]}` : meta;
 }
 
 export default function OfficerTransactionConfirmScreen({
@@ -122,9 +132,65 @@ export default function OfficerTransactionConfirmScreen({
     return params;
   };
 
+  const handleOfflineSuccess = async ({
+    amountValue,
+    description,
+    operationType,
+    payload,
+    transactionGroup,
+    transactionTypeLabel,
+  }: {
+    amountValue: number;
+    description: string;
+    operationType: string;
+    payload: Record<string, unknown>;
+    transactionGroup: "SIMPANAN" | "PINJAMAN" | "ANGSURAN" | "PENARIKAN";
+    transactionTypeLabel: string;
+  }) => {
+    const recordedAt = formatRecordedAt(new Date());
+    const client_operation_id = crypto.randomUUID();
+    const preview: NonNullable<OfflineOfficerTransaction["preview"]> = {
+      amount: amountValue,
+      description,
+      member_id: member.id,
+      member_name: member.name,
+      member_number: extractMemberNumber(member.meta),
+      transaction_group: transactionGroup,
+      transaction_type_label: transactionTypeLabel,
+    };
+
+    await saveOfflineOfficerTransaction({
+      client_operation_id,
+      operation_type: operationType,
+      recorded_at: recordedAt,
+      payload,
+      status: "pending",
+      retry_count: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      preview,
+    });
+
+    const params = buildSuccessParams({
+      memberId: member.id,
+      memberName: member.name,
+      hashPreview: "Menunggu sinkronisasi",
+    });
+
+    router.push(
+      `/dashboard/officer/transactions/${transaction.slug}/success?${params.toString()}`,
+    );
+  };
+
+  const shouldQueueOffline = (error: unknown) =>
+    typeof window !== "undefined" &&
+    (!window.navigator.onLine || !isApiError(error));
+
   const handleSavingsSubmit = async () => {
     const savingsType = savingsTypeByOption[selectedOption];
     const numericAmount = Number(amount);
+    const description =
+      keterangan.trim() || `Simpanan ${selectedOption.toLowerCase()} ${member.name}`;
 
     if (!savingsType || !Number.isFinite(numericAmount) || numericAmount <= 0) {
       setSubmitError("Data transaksi simpanan tidak valid.");
@@ -138,9 +204,7 @@ export default function OfficerTransactionConfirmScreen({
         member_id: member.id,
         savings_type: savingsType,
         amount: numericAmount,
-        description:
-          keterangan.trim() ||
-          `Simpanan ${selectedOption.toLowerCase()} ${member.name}`,
+        description,
         recorded_at: formatRecordedAt(new Date()),
         is_offline_created: false,
         client_transaction_id: crypto.randomUUID(),
@@ -157,6 +221,24 @@ export default function OfficerTransactionConfirmScreen({
         `/dashboard/officer/transactions/${transaction.slug}/success?${params.toString()}`,
       );
     } catch (error) {
+      if (shouldQueueOffline(error)) {
+        await handleOfflineSuccess({
+          amountValue: numericAmount,
+          description,
+          operationType: "CREATE_SAVINGS_TRANSACTION",
+          payload: {
+            member_id: member.id,
+            savings_type: savingsType,
+            amount: numericAmount,
+            description,
+            client_transaction_id: crypto.randomUUID(),
+          },
+          transactionGroup: "SIMPANAN",
+          transactionTypeLabel: "Simpanan",
+        });
+        return;
+      }
+
       setSubmitError(
         error instanceof Error
           ? error.message
@@ -169,6 +251,7 @@ export default function OfficerTransactionConfirmScreen({
 
   const handleLoanSubmit = async () => {
     const numericAmount = Number(amount);
+    const description = keterangan.trim() || "Pencairan pinjaman";
 
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
       setSubmitError("Data transaksi pinjaman tidak valid.");
@@ -181,7 +264,7 @@ export default function OfficerTransactionConfirmScreen({
       const response = await createOfficerLoanTransaction({
         member_id: member.id,
         amount: numericAmount,
-        description: keterangan.trim() || "Pencairan pinjaman",
+        description,
         recorded_at: formatRecordedAt(new Date()),
         is_offline_created: false,
         client_transaction_id: `loan-${member.id}-${Date.now()}`,
@@ -198,6 +281,23 @@ export default function OfficerTransactionConfirmScreen({
         `/dashboard/officer/transactions/${transaction.slug}/success?${params.toString()}`,
       );
     } catch (error) {
+      if (shouldQueueOffline(error)) {
+        await handleOfflineSuccess({
+          amountValue: numericAmount,
+          description,
+          operationType: "CREATE_LOAN_TRANSACTION",
+          payload: {
+            member_id: member.id,
+            amount: numericAmount,
+            description,
+            client_transaction_id: `loan-${member.id}-${Date.now()}`,
+          },
+          transactionGroup: "PINJAMAN",
+          transactionTypeLabel: "Pinjaman",
+        });
+        return;
+      }
+
       setSubmitError(
         error instanceof Error
           ? error.message
@@ -210,6 +310,7 @@ export default function OfficerTransactionConfirmScreen({
 
   const handleInstallmentSubmit = async () => {
     const numericAmount = Number(amount);
+    const description = keterangan.trim() || `Angsuran pinjaman ${member.name}`;
 
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
       setSubmitError("Data transaksi angsuran tidak valid.");
@@ -227,7 +328,7 @@ export default function OfficerTransactionConfirmScreen({
       const response = await createOfficerInstallmentTransaction({
         loan_id: loanId,
         amount: numericAmount,
-        description: keterangan.trim() || `Angsuran pinjaman ${member.name}`,
+        description,
         recorded_at: formatRecordedAt(new Date()),
         is_offline_created: false,
         client_transaction_id: `installment-${member.id}-${Date.now()}`,
@@ -244,6 +345,23 @@ export default function OfficerTransactionConfirmScreen({
         `/dashboard/officer/transactions/${transaction.slug}/success?${params.toString()}`,
       );
     } catch (error) {
+      if (shouldQueueOffline(error)) {
+        await handleOfflineSuccess({
+          amountValue: numericAmount,
+          description,
+          operationType: "CREATE_INSTALLMENT_TRANSACTION",
+          payload: {
+            loan_id: loanId,
+            amount: numericAmount,
+            description,
+            client_transaction_id: `installment-${member.id}-${Date.now()}`,
+          },
+          transactionGroup: "ANGSURAN",
+          transactionTypeLabel: "Angsuran",
+        });
+        return;
+      }
+
       setSubmitError(
         error instanceof Error
           ? error.message
@@ -256,6 +374,7 @@ export default function OfficerTransactionConfirmScreen({
 
   const handleStockMutationSubmit = async () => {
     const numericAmount = Number(amount);
+    const description = keterangan.trim() || `Penarikan tunai ${member.name}`;
 
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
       setSubmitError("Data transaksi penarikan tidak valid.");
@@ -268,7 +387,7 @@ export default function OfficerTransactionConfirmScreen({
       const response = await createOfficerStockMutationTransaction({
         member_id: member.id,
         amount: numericAmount,
-        description: keterangan.trim() || `Penarikan tunai ${member.name}`,
+        description,
         recorded_at: formatRecordedAt(new Date()),
         is_offline_created: false,
         client_transaction_id: `cash-withdrawal-${member.id}-${Date.now()}`,
@@ -285,6 +404,23 @@ export default function OfficerTransactionConfirmScreen({
         `/dashboard/officer/transactions/${transaction.slug}/success?${params.toString()}`,
       );
     } catch (error) {
+      if (shouldQueueOffline(error)) {
+        await handleOfflineSuccess({
+          amountValue: numericAmount,
+          description,
+          operationType: "CREATE_CASH_WITHDRAWAL",
+          payload: {
+            member_id: member.id,
+            amount: numericAmount,
+            description,
+            client_transaction_id: `cash-withdrawal-${member.id}-${Date.now()}`,
+          },
+          transactionGroup: "PENARIKAN",
+          transactionTypeLabel: "Penarikan",
+        });
+        return;
+      }
+
       setSubmitError(
         error instanceof Error
           ? error.message

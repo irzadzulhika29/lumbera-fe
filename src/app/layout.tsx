@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Poppins } from "next/font/google";
 import "@/src/shared/styles/globals.css";
 import PwaRegistration from "@/src/shared/components/system/PwaRegistration";
+import OfflineSyncRuntime from "@/src/features/sync/offlineSyncRuntime";
 
 const poppins = Poppins({
   variable: "--font-sans",
@@ -47,6 +48,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[#4a4a4a] font-[family-name:var(--font-sans)]">
         <PwaRegistration />
+        <OfflineSyncRuntime />
         {children}
       </body>
     </html>
