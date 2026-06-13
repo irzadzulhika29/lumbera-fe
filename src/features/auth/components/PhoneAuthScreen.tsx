@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   getAuthPhoneHref,
   getAuthRegisterPhoneHref,
+  supportsRoleOnboarding,
   type AuthEntryFlow,
   type RoleOptionId,
 } from "@/src/features/onboarding/content";
@@ -32,6 +33,7 @@ export default function PhoneAuthScreen({
     handlePhoneChange,
     handleSubmit,
   } = usePhoneAuthFlow(roleId, flow);
+  const canRegister = supportsRoleOnboarding(roleId);
 
   return (
     <AuthPageFrame>
@@ -87,19 +89,21 @@ export default function PhoneAuthScreen({
         </PressButton>
       </div>
 
-      <p className="mt-6 text-center text-[0.95rem] text-text/78">
-        {isRegisterFlow ? "Sudah punya akun? " : "Koperasi baru? "}
-        <Link
-          href={
-            isRegisterFlow
-              ? getAuthPhoneHref(roleId)
-              : getAuthRegisterPhoneHref(roleId)
-          }
-          className="font-semibold text-primary"
-        >
-          {isRegisterFlow ? "Masuk di sini" : "Daftar di sini"}
-        </Link>
-      </p>
+      {canRegister ? (
+        <p className="mt-6 text-center text-[0.95rem] text-text/78">
+          {isRegisterFlow ? "Sudah punya akun? " : "Koperasi baru? "}
+          <Link
+            href={
+              isRegisterFlow
+                ? getAuthPhoneHref(roleId)
+                : getAuthRegisterPhoneHref(roleId)
+            }
+            className="font-semibold text-primary"
+          >
+            {isRegisterFlow ? "Masuk di sini" : "Daftar di sini"}
+          </Link>
+        </p>
+      ) : null}
 
       <div className="mt-auto pt-12">
         <AuthFooterNote />
