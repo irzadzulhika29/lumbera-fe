@@ -77,6 +77,7 @@ const officerDashboard: DashboardViewModel = {
   transactions: [
     {
       id: "trx-001",
+      href: "/dashboard/officer/transactions/detail/trx-001?amount=50000&description=Simpanan%20Wajib&hash=SHA-256%3A%20a3f7b2e1...&memberName=Budi%20Setiawan&memberNumber=0012&officerName=Jamaludin&recordedAt=2026-06-11T09%3A12%3A00%2B07%3A00&status=SYNCED&transactionGroup=SIMPANAN&transactionTypeLabel=Simpanan%20Wajib",
       initials: "BS",
       name: "Budi Setiawan",
       description: "Simpanan Wajib · 09.12",
@@ -87,6 +88,7 @@ const officerDashboard: DashboardViewModel = {
     },
     {
       id: "trx-002",
+      href: "/dashboard/officer/transactions/detail/trx-002?amount=50000&description=Angsuran%20Pinjaman&hash=SHA-256%3A%20a3f7b2e1...&memberName=Rahmad%20Pambudi&memberNumber=0013&officerName=Jamaludin&recordedAt=2026-06-11T02%3A12%3A00%2B07%3A00&status=PENDING&transactionGroup=ANGSURAN&transactionTypeLabel=Angsuran%20Pinjaman",
       initials: "RP",
       name: "Rahmad Pambudi",
       description: "Angsuran Pinjaman · 02.12",
@@ -97,6 +99,7 @@ const officerDashboard: DashboardViewModel = {
     },
     {
       id: "trx-003",
+      href: "/dashboard/officer/transactions/detail/trx-003?amount=50000&description=Simpanan%20Wajib&hash=SHA-256%3A%20a3f7b2e1...&memberName=Rahmad%20Pambudi&memberNumber=0013&officerName=Jamaludin&recordedAt=2026-06-11T01%3A12%3A00%2B07%3A00&status=SYNCED&transactionGroup=SIMPANAN&transactionTypeLabel=Simpanan%20Wajib",
       initials: "RP",
       name: "Rahmad Pambudi",
       description: "Simpanan Wajib · 01.12",
@@ -107,6 +110,7 @@ const officerDashboard: DashboardViewModel = {
     },
     {
       id: "trx-004",
+      href: "/dashboard/officer/transactions/detail/trx-004?amount=50000&description=Simpanan%20Wajib&hash=SHA-256%3A%20a3f7b2e1...&memberName=Rahmad%20Pambudi&memberNumber=0013&officerName=Jamaludin&recordedAt=2026-06-11T01%3A12%3A00%2B07%3A00&status=SYNCED&transactionGroup=SIMPANAN&transactionTypeLabel=Simpanan%20Wajib",
       initials: "RP",
       name: "Rahmad Pambudi",
       description: "Simpanan Wajib · 01.12",

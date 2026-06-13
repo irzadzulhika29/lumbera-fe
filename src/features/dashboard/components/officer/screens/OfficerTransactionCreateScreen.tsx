@@ -111,24 +111,42 @@ function WithdrawMemberSummaryCard({ member }: { member: OfficerMember }) {
 }
 
 type OfficerTransactionCreateScreenProps = {
+  initialAmount?: string;
+  initialKeterangan?: string;
+  initialOption?: string;
+  loanId?: string;
   memberId: string;
   member: OfficerMember;
   transaction: OfficerTransactionTypeConfig;
 };
 
 export default function OfficerTransactionCreateScreen({
+  initialAmount = "",
+  initialKeterangan = "",
+  initialOption = "",
+  loanId,
   memberId,
   member,
   transaction,
 }: OfficerTransactionCreateScreenProps) {
   const [selectedOption, setSelectedOption] = useState(
-    transaction.amountOptions?.[0] ?? "",
+    initialOption || transaction.amountOptions?.[0] || "",
   );
-  const [amount, setAmount] = useState("");
-  const [keterangan, setKeterangan] = useState("");
+  const [amount, setAmount] = useState(initialAmount);
+  const [keterangan, setKeterangan] = useState(initialKeterangan);
 
   const confirmHref = useMemo(() => {
-    const params = new URLSearchParams({ memberId, amount });
+    const params = new URLSearchParams({
+      memberId,
+      amount,
+      memberName: member.name,
+      initials: member.initials,
+      meta: member.meta,
+    });
+
+    if (loanId) {
+      params.set("loanId", loanId);
+    }
 
     if (selectedOption) {
       params.set("option", selectedOption);
@@ -139,7 +157,17 @@ export default function OfficerTransactionCreateScreen({
     }
 
     return `/dashboard/officer/transactions/${transaction.slug}/confirm?${params.toString()}`;
-  }, [amount, keterangan, memberId, selectedOption, transaction.slug]);
+  }, [
+    amount,
+    keterangan,
+    loanId,
+    member.initials,
+    member.meta,
+    member.name,
+    memberId,
+    selectedOption,
+    transaction.slug,
+  ]);
 
   const usesLoanSummaryCard = transaction.slug === "loans";
   const usesInstallmentSummaryCard = transaction.slug === "installments";

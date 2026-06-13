@@ -50,7 +50,7 @@ export default async function OfficerTransactionSuccessPage({
   const transaction = getOfficerTransactionTypeConfig(type);
   const member = memberId ? getOfficerMemberById(memberId) : null;
 
-  if (!transaction || !member) {
+  if (!transaction || (!member && !memberName)) {
     notFound();
   }
 
@@ -66,7 +66,7 @@ export default async function OfficerTransactionSuccessPage({
   return (
     <OfficerTransactionSuccessScreen
       hash={hash ?? "SHA-256: a3f7b2e1..."}
-      memberName={memberName ?? member.name}
+      memberName={memberName ?? member?.name ?? ""}
       title={buildSuccessTitle(transaction.slug)}
       transactionLabel={transactionLabel}
     />
