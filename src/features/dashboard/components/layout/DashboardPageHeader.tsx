@@ -22,7 +22,7 @@ export default function DashboardPageHeader({
     <header
       className={twMerge(
         "flex gap-4",
-        variant === "compact" ? "items-center" : "items-start",
+        variant === "compact" ? "items-center pt-1" : "items-start",
       )}
     >
       <Link
@@ -42,7 +42,7 @@ export default function DashboardPageHeader({
         />
       </Link>
 
-      <div className={twMerge("min-w-0", variant === "compact" ? "pt-0" : "pt-1")}>
+      <div className={twMerge("min-w-0", variant === "compact" ? "pt-0.5" : "pt-1")}>
         <h1
           className={twMerge(
             "text-[1.95rem] font-bold leading-none tracking-[-0.04em] text-primary",

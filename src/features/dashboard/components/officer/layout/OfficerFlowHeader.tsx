@@ -5,6 +5,7 @@ import BackIcon from "../../common/BackIcon";
 
 type OfficerFlowHeaderProps = {
   backHref: string;
+  bodyContent?: React.ReactNode;
   floatingContent?: React.ReactNode;
   floatingClassName?: string;
   subtitle: string;
@@ -13,13 +14,14 @@ type OfficerFlowHeaderProps = {
 
 export default function OfficerFlowHeader({
   backHref,
+  bodyContent,
   floatingContent,
   floatingClassName,
   subtitle,
   title,
 }: OfficerFlowHeaderProps) {
   return (
-    <header className="relative bg-primary px-7 pb-24 pt-[calc(1.3rem+env(safe-area-inset-top))] text-white">
+    <header className="relative bg-primary-deep px-7 pb-24 pt-[calc(1.95rem+env(safe-area-inset-top))] text-white">
       <div className="flex items-center gap-3">
         <Link
           href={backHref}
@@ -36,6 +38,8 @@ export default function OfficerFlowHeader({
           <p className="mt-1 text-xs font-medium text-white/82">{subtitle}</p>
         </div>
       </div>
+
+      {bodyContent ? <div className="mt-6">{bodyContent}</div> : null}
 
       {floatingContent ? (
         <div

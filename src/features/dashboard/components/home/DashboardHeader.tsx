@@ -24,7 +24,7 @@ export default function DashboardHeader({
   return (
     <header
       className={`relative px-6 pb-24 pt-[calc(1.3rem+env(safe-area-inset-top))] text-white ${
-        backgroundClassName ?? "bg-primary"
+        backgroundClassName ?? "bg-primary-deep"
       }`}
     >
       {syncLabel ? (
