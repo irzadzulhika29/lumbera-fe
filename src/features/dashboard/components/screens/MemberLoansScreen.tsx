@@ -53,10 +53,6 @@ export default function MemberLoansScreen() {
     };
   }, [dashboard.activeLoanSummary, dashboard.loanCreditProfile]);
 
-  if (!profile) {
-    return null;
-  }
-
   return (
     <DashboardScreenShell
       background="bg-white"
