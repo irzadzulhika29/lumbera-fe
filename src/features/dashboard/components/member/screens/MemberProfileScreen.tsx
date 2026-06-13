@@ -1,8 +1,19 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+
+import { getUserProfile, type UserProfileResponse } from "@/src/features/dashboard/api";
 import { useLogout } from "@/src/features/auth/hooks/useLogout";
 import MobileScreen from "@/src/shared/components/layout/MobileScreen";
 import { getDashboardNavigation } from "@/src/features/dashboard/data";
+import {
+  buildProfileInitials,
+  formatProfileDisplayName,
+  formatProfileJoinedDate,
+  formatProfilePhoneNumber,
+  getProfileRoleLabel,
+  getProfileSubtitle,
+} from "@/src/features/dashboard/utils/profileMapper";
 import DashboardScreenShell from "../../layout/DashboardScreenShell";
 import ProfileHeader from "../../common/profile/ProfileHeader";
 import ProfileLogoutButton from "../../common/profile/ProfileLogoutButton";
@@ -35,15 +46,74 @@ const creditDataMenus = [
   },
 ] as const;
 
-const profileSummary = [
-  { label: "Bergabung", value: "2018", wideLabel: true },
-  { label: "MCS Grade", value: "AA · 780", wideLabel: true },
-  { label: "Pinjaman", value: "3 selesai", wideLabel: true },
-] as const;
-
 export default function MemberProfileScreen() {
   const navigationItems = getDashboardNavigation("member", "Profil");
   const { isSubmitting, handleLogout } = useLogout();
+  const [profileData, setProfileData] = useState<UserProfileResponse["data"] | null>(
+    null,
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getUserProfile()
+      .then((response) => {
+        if (cancelled) return;
+        setProfileData(response.data);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setProfileData(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const profileSummary = useMemo(() => {
+    if (!profileData) {
+      return [
+        { label: "No. Anggota", value: "-", wideLabel: true },
+        { label: "Koperasi", value: "-", wideLabel: true },
+        { label: "Peran", value: "Anggota", wideLabel: true },
+      ];
+    }
+
+    return [
+      {
+        label: "No. Anggota",
+        value: profileData.profile.member_number?.trim() || "-",
+        wideLabel: true,
+      },
+      {
+        label: "Koperasi",
+        value: profileData.profile.cooperative_name?.trim() || "-",
+        wideLabel: true,
+      },
+      {
+        label: "Peran",
+        value: getProfileRoleLabel(profileData),
+        wideLabel: true,
+      },
+      {
+        label: "Nomor HP",
+        value: formatProfilePhoneNumber(profileData.profile.phone_number),
+        wideLabel: true,
+      },
+      {
+        label: "Bergabung",
+        value: formatProfileJoinedDate(profileData.profile.joined_date),
+        wideLabel: true,
+      },
+    ] as const;
+  }, [profileData]);
+
+  const initials = profileData ? buildProfileInitials(profileData.profile) : "NA";
+  const name = profileData
+    ? formatProfileDisplayName(profileData.profile.full_name)
+    : "Pengguna";
+  const subtitle = profileData ? getProfileSubtitle(profileData) : "Anggota";
 
   return (
     <MobileScreen className="bg-surface">
@@ -54,9 +124,9 @@ export default function MemberProfileScreen() {
       >
         <ProfileHeader
           backgroundClassName="bg-primary-deep"
-          initials="BS"
-          name="Broto Aselole"
-          subtitle="0012 · Koperasi Padiwangi"
+          initials={initials}
+          name={name}
+          subtitle={subtitle}
         />
 
         <div className="-mt-7 px-4 pb-10">

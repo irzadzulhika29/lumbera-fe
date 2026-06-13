@@ -8,3 +8,4 @@ export * from "./memberDashboardApi";
 export * from "./memberLoanApplicationApi";
 export * from "./memberLoanDashboardApi";
 export * from "./memberSavingsBookApi";
+export * from "./profileApi";
