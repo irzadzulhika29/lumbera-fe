@@ -1,22 +1,71 @@
+"use client";
+
+import { useState } from "react";
 import { Icon } from "@iconify/react";
 
+import {
+  downloadOfficerMemberImportTemplate,
+  type OfficerMemberImportData,
+  uploadOfficerMemberImport,
+} from "@/src/features/dashboard/api";
 import PressButton from "@/src/shared/components/ui/PressButton";
 
 export default function OfficerMemberImportForm({
   onImportSuccess,
   onSwitchMode,
 }: {
-  onImportSuccess: (fileName: string) => void;
+  onImportSuccess: (data: OfficerMemberImportData) => void;
   onSwitchMode: () => void;
 }) {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [downloadError, setDownloadError] = useState("");
+  const [uploadError, setUploadError] = useState("");
+  const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
-    if (!file) {
+    setUploadError("");
+    setSelectedFile(file ?? null);
+  };
+
+  const handleTemplateDownload = async () => {
+    try {
+      setDownloadError("");
+      setIsDownloadingTemplate(true);
+      await downloadOfficerMemberImportTemplate();
+    } catch (error) {
+      setDownloadError(
+        error instanceof Error
+          ? error.message
+          : "Gagal mengunduh template. Coba lagi.",
+      );
+    } finally {
+      setIsDownloadingTemplate(false);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      setUploadError("Pilih file Excel terlebih dahulu.");
       return;
     }
 
-    onImportSuccess(file.name);
+    try {
+      setUploadError("");
+      setIsUploading(true);
+      const response = await uploadOfficerMemberImport(selectedFile);
+      onImportSuccess(response.data);
+    } catch (error) {
+      setUploadError(
+        error instanceof Error
+          ? error.message
+          : "Gagal mengunggah file anggota. Coba lagi.",
+      );
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -54,23 +103,42 @@ export default function OfficerMemberImportForm({
             />
             <span className="text-[0.92rem] font-bold">Upload file excel</span>
           </div>
-          <div className="flex-1 px-4 text-[0.95rem] text-[#94a3b8]">
-            data.xlsx
+          <div className="min-w-0 flex-1 truncate px-4 text-[0.95rem] text-[#94a3b8]">
+            {selectedFile?.name ?? "Pilih file Excel"}
           </div>
         </div>
+        {uploadError ? (
+          <p className="mt-1 text-[0.88rem] font-medium text-[#e74c3c]">
+            {uploadError}
+          </p>
+        ) : null}
       </div>
 
       <div className="my-6 flex items-center justify-center">
         <span className="text-[0.9rem] italic text-[#475569]">atau</span>
       </div>
 
-      <PressButton className="h-12 w-full rounded-[8px] text-[0.95rem] font-bold">
-        Unduh template
+      <PressButton
+        onClick={handleTemplateDownload}
+        disabled={isDownloadingTemplate}
+        className="h-12 w-full rounded-[8px] text-[0.95rem] font-bold"
+      >
+        {isDownloadingTemplate ? "Mengunduh template..." : "Unduh template"}
       </PressButton>
+      {downloadError ? (
+        <p className="mt-3 text-center text-[0.88rem] font-medium text-[#e74c3c]">
+          {downloadError}
+        </p>
+      ) : null}
 
       <div className="mt-auto flex flex-col gap-4 pt-24">
-        <PressButton className="h-14 w-full rounded-[12px] text-[1.05rem] font-bold">
-          Lanjut
+        <PressButton
+          type="button"
+          onClick={handleUpload}
+          disabled={!selectedFile || isUploading}
+          className="h-14 w-full rounded-[12px] text-[1.05rem] font-bold"
+        >
+          {isUploading ? "Mengunggah..." : "Lanjut"}
         </PressButton>
         <button
           type="button"

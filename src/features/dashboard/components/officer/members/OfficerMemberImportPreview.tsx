@@ -1,27 +1,36 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import {
+  getOfficerMemberImportPreview,
+  type OfficerMemberImportData,
+  type OfficerMemberImportRow,
+  type OfficerMemberImportRowStatus,
+  submitOfficerMemberImport,
+} from "@/src/features/dashboard/api";
 import PressButton from "@/src/shared/components/ui/PressButton";
 import FilterChips from "../../common/FilterChips";
 
-type ImportPreviewStatus = "success" | "error";
-
-type ImportPreviewRow = {
-  address: string;
-  joinedAt: string;
-  phoneNumber: string;
-  id: string;
-  name: string;
-  nik: string;
-  status: ImportPreviewStatus;
-};
-
 const statusTabs = [
-  { label: "Berhasil", value: "success" },
-  { label: "Error", value: "error" },
+  { label: "Berhasil", value: "VALID" },
+  { label: "Error", value: "ERROR" },
 ] as const;
+
+const formatJoinedDate = (value: string) => {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+};
 
 function SummaryCard({
   label,
@@ -35,7 +44,9 @@ function SummaryCard({
   return (
     <div className="flex-1 border-r border-[#edf0f3] px-5 py-4 last:border-r-0">
       <p className="text-[0.9rem] font-bold text-[#b9b9b9]">{label}</p>
-      <p className={`mt-2 text-[1.2rem] font-bold text-[#2b2b2b] ${toneClassName ?? ""}`}>
+      <p
+        className={`mt-2 text-[1.2rem] font-bold text-[#2b2b2b] ${toneClassName ?? ""}`}
+      >
         {value}
       </p>
     </div>
@@ -43,28 +54,119 @@ function SummaryCard({
 }
 
 export default function OfficerMemberImportPreview({
-  fileName,
-  onSubmit,
+  initialData,
+  onSubmitSuccess,
   onBackToImport,
-  rows,
 }: {
-  fileName: string;
-  onSubmit: (successCount: number) => void;
+  initialData: OfficerMemberImportData;
+  onSubmitSuccess: (importedRows: number) => void;
   onBackToImport: () => void;
-  rows: ImportPreviewRow[];
 }) {
-  const [activeTab, setActiveTab] = useState<ImportPreviewStatus>("success");
+  const uploadedValidRows = useMemo(
+    () => initialData.rows.filter((row) => row.status === "VALID"),
+    [initialData.rows],
+  );
+  const uploadedErrorRows = useMemo(
+    () => initialData.rows.filter((row) => row.status === "ERROR"),
+    [initialData.rows],
+  );
+  const initialTab: OfficerMemberImportRowStatus =
+    uploadedValidRows.length > 0 ? "VALID" : "ERROR";
+  const [activeTab, setActiveTab] =
+    useState<OfficerMemberImportRowStatus>(initialTab);
+  const [rows, setRows] = useState<OfficerMemberImportRow[]>(
+    initialTab === "VALID" ? uploadedValidRows : uploadedErrorRows,
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const summary = initialData.summary;
+  const successCount =
+    summary.success_rows > 0
+      ? summary.success_rows
+      : uploadedValidRows.length;
+  const errorCount =
+    summary.error_rows > 0 ? summary.error_rows : uploadedErrorRows.length;
+  const totalCount = Math.max(
+    summary.total_rows,
+    successCount + errorCount,
+    initialData.rows.length,
+  );
+  const isErrorTab = activeTab === "ERROR";
 
-  const successCount = useMemo(
-    () => rows.filter((row) => row.status === "success").length,
-    [rows],
-  );
-  const errorCount = rows.length - successCount;
-  const filteredRows = useMemo(
-    () => rows.filter((row) => row.status === activeTab),
-    [activeTab, rows],
-  );
-  const isErrorTab = activeTab === "error";
+  useEffect(() => {
+    let isActive = true;
+
+    const loadPreview = async () => {
+      try {
+        setErrorMessage("");
+        setIsLoading(true);
+        const response = await getOfficerMemberImportPreview(
+          summary.import_batch_id,
+          {
+            status: activeTab,
+            page: 1,
+            limit: 20,
+          },
+        );
+
+        if (isActive) {
+          const uploadedRowsForStatus =
+            activeTab === "VALID" ? uploadedValidRows : uploadedErrorRows;
+          setRows(
+            response.data.rows.length > 0
+              ? response.data.rows
+              : uploadedRowsForStatus,
+          );
+        }
+      } catch (error) {
+        if (isActive) {
+          setRows(
+            activeTab === "VALID" ? uploadedValidRows : uploadedErrorRows,
+          );
+          setErrorMessage(
+            error instanceof Error
+              ? error.message
+              : "Gagal mengambil pratinjau data anggota.",
+          );
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadPreview();
+
+    return () => {
+      isActive = false;
+    };
+  }, [
+    activeTab,
+    summary.import_batch_id,
+    uploadedErrorRows,
+    uploadedValidRows,
+  ]);
+
+  const handleSubmit = async () => {
+    try {
+      setErrorMessage("");
+      setIsSubmitting(true);
+      const response = await submitOfficerMemberImport(
+        summary.import_batch_id,
+      );
+      onSubmitSuccess(response.data.imported_rows);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Gagal menyimpan data anggota.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -79,7 +181,7 @@ export default function OfficerMemberImportPreview({
 
       <div className="overflow-hidden rounded-[22px] border border-[#e3e4e7] bg-white shadow-[0_8px_18px_rgba(15,23,42,0.06)]">
         <div className="flex">
-          <SummaryCard label="Total" value={rows.length} />
+          <SummaryCard label="Total" value={totalCount} />
           <SummaryCard
             label="Berhasil"
             value={successCount}
@@ -128,70 +230,94 @@ export default function OfficerMemberImportPreview({
           </div>
 
           <div className="max-h-[310px] overflow-y-auto">
-            {filteredRows.map((row) => (
-              <div
-                key={row.id}
-                className="grid grid-cols-[1.1fr_1fr_0.9fr_2.4fr_1fr_0.8fr] border-t border-[#e7ebef] bg-white"
-              >
-                <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
-                  {row.name}
-                </div>
-                <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
-                  {row.nik}
-                </div>
-                <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
-                  {row.phoneNumber}
-                </div>
-                <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
-                  {row.address}
-                </div>
-                <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
-                  {row.joinedAt}
-                </div>
-                <div className="px-4 py-4">
-                  {isErrorTab ? (
-                    <div className="flex items-center gap-4">
-                      <button
-                        type="button"
-                        aria-label={`Edit ${row.name}`}
-                        className="inline-flex h-10 w-[54px] items-center justify-center rounded-[8px] bg-[#f6a313] text-white"
-                      >
-                        <Icon icon="solar:pen-linear" className="text-[1.2rem]" />
-                      </button>
-                      <button
-                        type="button"
-                        aria-label={`Hapus ${row.name}`}
-                        className="inline-flex h-10 w-[54px] items-center justify-center rounded-[8px] bg-[#eb2b2b] text-white"
-                      >
-                        <Icon
-                          icon="solar:trash-bin-trash-linear"
-                          className="text-[1.2rem]"
-                        />
-                      </button>
-                    </div>
-                  ) : (
-                    <span className="inline-flex rounded-[10px] bg-[#d8f5d9] px-3 py-2 text-xs font-bold text-[#20a84e]">
-                      Berhasil
-                    </span>
-                  )}
-                </div>
+            {isLoading ? (
+              <div className="flex min-h-28 items-center justify-center text-sm font-medium text-[#7c8a9b]">
+                Memuat pratinjau...
               </div>
-            ))}
+            ) : rows.length === 0 ? (
+              <div className="flex min-h-28 items-center justify-center text-sm font-medium text-[#7c8a9b]">
+                Tidak ada data pada status ini.
+              </div>
+            ) : (
+              rows.map((row) => (
+                <div
+                  key={row.import_row_id}
+                  className="grid grid-cols-[1.1fr_1fr_0.9fr_2.4fr_1fr_0.8fr] border-t border-[#e7ebef] bg-white"
+                >
+                  <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
+                    {row.full_name}
+                  </div>
+                  <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
+                    {row.nik_masked}
+                  </div>
+                  <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
+                    {row.phone_number}
+                  </div>
+                  <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
+                    {row.address}
+                    {row.error_message ? (
+                      <p className="mt-1 font-semibold text-[#e53935]">
+                        {row.error_message}
+                      </p>
+                    ) : null}
+                  </div>
+                  <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
+                    {formatJoinedDate(row.joined_date)}
+                  </div>
+                  <div className="px-4 py-4">
+                    {isErrorTab ? (
+                      <div className="flex items-center gap-4">
+                        <button
+                          type="button"
+                          aria-label={`Edit ${row.full_name}`}
+                          className="inline-flex h-10 w-[54px] items-center justify-center rounded-[8px] bg-[#f6a313] text-white"
+                        >
+                          <Icon
+                            icon="solar:pen-linear"
+                            className="text-[1.2rem]"
+                          />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={`Hapus ${row.full_name}`}
+                          className="inline-flex h-10 w-[54px] items-center justify-center rounded-[8px] bg-[#eb2b2b] text-white"
+                        >
+                          <Icon
+                            icon="solar:trash-bin-trash-linear"
+                            className="text-[1.2rem]"
+                          />
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="inline-flex rounded-[10px] bg-[#d8f5d9] px-3 py-2 text-xs font-bold text-[#20a84e]">
+                        Berhasil
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
 
       <p className="mt-3 text-[0.82rem] font-medium text-[#7c8a9b]">
-        File aktif: {fileName}
+        File aktif: {summary.file_name}
       </p>
+      {errorMessage ? (
+        <p className="mt-3 text-center text-[0.88rem] font-medium text-[#e74c3c]">
+          {errorMessage}
+        </p>
+      ) : null}
 
       <div className="mt-12 flex flex-col gap-4">
         <PressButton
           type="button"
-          onClick={() => onSubmit(successCount)}
+          onClick={handleSubmit}
+          disabled={isSubmitting || successCount === 0}
           className="h-14 w-full rounded-[12px] text-[1.05rem] font-bold"
         >
-          Submit
+          {isSubmitting ? "Menyimpan..." : "Submit"}
         </PressButton>
         <button
           type="button"

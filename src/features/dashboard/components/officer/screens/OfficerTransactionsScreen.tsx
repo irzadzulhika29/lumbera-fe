@@ -1,6 +1,13 @@
+ "use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
+import {
+  getOfficerTransactions,
+  mapOfficerTransactionToDashboardTransaction,
+} from "@/src/features/dashboard/api";
 import { getDashboardData } from "@/src/features/dashboard/data";
 import type { DashboardIconName } from "@/src/features/dashboard/types";
 import { officerTransactionMenus } from "@/src/features/dashboard/transactionFlow";
@@ -37,6 +44,43 @@ const filterChips = ["Semua", "Simpanan", "Pinjaman", "Angsuran"].map(
 
 export default function OfficerTransactionsScreen() {
   const dashboard = getDashboardData("officer");
+  const [search, setSearch] = useState("");
+  const [activeType, setActiveType] = useState("Semua");
+  const [transactions, setTransactions] = useState(dashboard.transactions);
+
+  const queryType = useMemo(() => {
+    if (activeType === "Simpanan") return "SIMPANAN";
+    if (activeType === "Pinjaman") return "PINJAMAN";
+    if (activeType === "Angsuran") return "ANGSURAN";
+    return "";
+  }, [activeType]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getOfficerTransactions({
+      limit: 10,
+      page: 1,
+      search: search.trim() || undefined,
+      type: queryType || undefined,
+    })
+      .then((response) => {
+        if (cancelled) return;
+
+        setTransactions(
+          response.data.items.map(mapOfficerTransactionToDashboardTransaction),
+        );
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setTransactions(dashboard.transactions);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dashboard.transactions, queryType, search]);
 
   return (
     <DashboardScreenShell background="bg-white">
@@ -47,9 +91,10 @@ export default function OfficerTransactionsScreen() {
         floatingContent={
           <DashboardSearchField
             ariaLabel="Cari transaksi"
-            value=""
+            value={search}
             placeholder="Cari transaksi"
             iconClassName="text-text/55"
+            onChange={setSearch}
           />
         }
       />
@@ -100,12 +145,13 @@ export default function OfficerTransactionsScreen() {
             Semua transaksi
           </h2>
           <FilterChips
-            activeValue="Semua"
+            activeValue={activeType}
             className="mt-4"
+            onChange={setActiveType}
             options={filterChips}
           />
           <div className="mt-7">
-            <TransactionList transactions={dashboard.transactions} />
+            <TransactionList transactions={transactions} />
           </div>
         </section>
       </div>
