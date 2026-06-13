@@ -111,6 +111,9 @@ function WithdrawMemberSummaryCard({ member }: { member: OfficerMember }) {
 }
 
 type OfficerTransactionCreateScreenProps = {
+  initialAmount?: string;
+  initialKeterangan?: string;
+  initialOption?: string;
   loanId?: string;
   memberId: string;
   member: OfficerMember;
@@ -118,16 +121,19 @@ type OfficerTransactionCreateScreenProps = {
 };
 
 export default function OfficerTransactionCreateScreen({
+  initialAmount = "",
+  initialKeterangan = "",
+  initialOption = "",
   loanId,
   memberId,
   member,
   transaction,
 }: OfficerTransactionCreateScreenProps) {
   const [selectedOption, setSelectedOption] = useState(
-    transaction.amountOptions?.[0] ?? "",
+    initialOption || transaction.amountOptions?.[0] || "",
   );
-  const [amount, setAmount] = useState("");
-  const [keterangan, setKeterangan] = useState("");
+  const [amount, setAmount] = useState(initialAmount);
+  const [keterangan, setKeterangan] = useState(initialKeterangan);
 
   const confirmHref = useMemo(() => {
     const params = new URLSearchParams({

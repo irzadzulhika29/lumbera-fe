@@ -11,11 +11,14 @@ import {
 type PageProps = {
   params: Promise<{ type: string }>;
   searchParams: Promise<{
+    amount?: string;
     initials?: string;
+    keterangan?: string;
     loanId?: string;
     memberId?: string;
     memberName?: string;
     meta?: string;
+    option?: string;
   }>;
 };
 
@@ -37,7 +40,7 @@ export default async function OfficerTransactionCreatePage({
   params,
   searchParams,
 }: PageProps) {
-  const [{ type }, { initials, loanId, memberId, memberName, meta }] =
+  const [{ type }, { amount, initials, keterangan, loanId, memberId, memberName, meta, option }] =
     await Promise.all([params, searchParams]);
 
   const transaction = getOfficerTransactionTypeConfig(type);
@@ -62,6 +65,9 @@ export default async function OfficerTransactionCreatePage({
 
   return (
     <OfficerTransactionCreateScreen
+      initialAmount={amount ?? ""}
+      initialKeterangan={keterangan ?? ""}
+      initialOption={option ?? ""}
       loanId={resolvedLoanId}
       memberId={memberId}
       member={member}

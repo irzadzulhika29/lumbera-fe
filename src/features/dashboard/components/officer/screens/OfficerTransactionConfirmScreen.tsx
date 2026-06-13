@@ -75,6 +75,23 @@ export default function OfficerTransactionConfirmScreen({
           ? "pt-[388px]"
           : "pt-[332px]";
   const selectedOption = option || transaction.amountOptions?.[0] || "-";
+  const backParams = new URLSearchParams({
+    amount,
+    initials: member.initials,
+    keterangan,
+    memberId: member.id,
+    memberName: member.name,
+    meta: member.meta,
+  });
+
+  if (loanId) {
+    backParams.set("loanId", loanId);
+  }
+
+  if (option) {
+    backParams.set("option", option);
+  }
+
   const successParams = new URLSearchParams({ memberId: member.id });
 
   if (selectedOption !== "-") {
@@ -292,7 +309,7 @@ export default function OfficerTransactionConfirmScreen({
   return (
     <DashboardScreenShell background="bg-white">
       <OfficerFlowHeader
-        backHref={`/dashboard/officer/transactions/${transaction.slug}/create?memberId=${member.id}`}
+        backHref={`/dashboard/officer/transactions/${transaction.slug}/create?${backParams.toString()}`}
         title="Konfirmasi input"
         subtitle={`Transaksi / ${transaction.title} / Input / Konfirmasi`}
         floatingClassName="top-30 bottom-auto p-0"

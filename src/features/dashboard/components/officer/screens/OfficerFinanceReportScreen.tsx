@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import {
+  downloadOfficerFinancialReportExport,
   getOfficerFinancialReport,
   type OfficerFinancialReportData,
 } from "@/src/features/dashboard/api";
@@ -37,6 +38,7 @@ export default function OfficerFinanceReportScreen({
   type,
 }: FinanceReportScreenProps) {
   const fallbackReport = getFinanceReportConfig(period);
+  const [isExporting, setIsExporting] = useState(false);
   const [reportState, setReportState] = useState<FinancialReportState>({
     data: null,
     errorMessage: null,
@@ -132,9 +134,20 @@ export default function OfficerFinanceReportScreen({
         <div className="mt-8">
           <button
             type="button"
-            className="w-full rounded-[14px] bg-primary px-4 py-5 text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)]"
+            onClick={async () => {
+              setIsExporting(true);
+              try {
+                await downloadOfficerFinancialReportExport(period);
+              } catch (error) {
+                console.error(error);
+              } finally {
+                setIsExporting(false);
+              }
+            }}
+            disabled={isExporting}
+            className="w-full rounded-[14px] bg-primary px-4 py-5 text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
           >
-            {activeTable.exportLabel}
+            {isExporting ? "Mengekspor..." : activeTable.exportLabel}
           </button>
         </div>
       </div>

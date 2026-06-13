@@ -73,3 +73,60 @@ export async function getOfficerFinancialReport(
 
   return (await response.json()) as OfficerFinancialReportResponse;
 }
+
+const FINANCIAL_REPORT_EXPORT_API_ROUTE =
+  "/api/dashboard/officer/reports/financial/export";
+
+const triggerFileDownload = (blob: Blob, fileName: string) => {
+  const downloadUrl = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = downloadUrl;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(downloadUrl);
+};
+
+const extractFilename = (period: string) => {
+  return `laporan-keuangan-${period}.xlsx`;
+};
+
+export async function downloadOfficerFinancialReportExport(period: string) {
+  const accessToken = getRequiredAccessToken();
+  const response = await fetch(FINANCIAL_REPORT_EXPORT_API_ROUTE, {
+    method: "POST",
+    headers: {
+      Accept: "application/octet-stream",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ accessToken, period }),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const errorPayload = (await response.json().catch(() => null)) as {
+      message?: string;
+    } | null;
+
+    throw new ApiError({
+      message:
+        errorPayload?.message ||
+        "Gagal mengekspor laporan keuangan. Silakan coba lagi.",
+      status: response.status,
+    });
+  }
+
+  const contentDisposition = response.headers.get("content-disposition") ?? "";
+  const encodedMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+  const plainMatch = contentDisposition.match(/filename="?([^"]+)"?/i);
+  const fileName =
+    encodedMatch?.[1]
+      ? decodeURIComponent(encodedMatch[1])
+      : plainMatch?.[1] ?? extractFilename(period);
+
+  const blob = await response.blob();
+  triggerFileDownload(blob, fileName);
+
+  return { fileName };
+}
