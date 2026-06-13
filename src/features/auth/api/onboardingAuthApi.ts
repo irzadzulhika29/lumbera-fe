@@ -3,6 +3,10 @@ import { ApiError, apiClient } from "@/src/shared/api";
 
 import type {
   ApiEnvelope,
+  CheckMemberPhoneData,
+  CheckMemberPhoneRequest,
+  SetMemberPinData,
+  SetMemberPinRequest,
   SetPinData,
   SetPinRequest,
   StartOnboardingData,
@@ -69,6 +73,32 @@ export const startOnboarding = async ({
   return response.data;
 };
 
+export const checkMemberPhone = async ({
+  phoneNumber,
+}: {
+  phoneNumber: string;
+}) => {
+  const payload: CheckMemberPhoneRequest = {
+    phone_number: normalizePhoneNumberForApi(phoneNumber),
+  };
+
+  const response = await apiClient.post<
+    ApiEnvelope<CheckMemberPhoneData>,
+    CheckMemberPhoneRequest
+  >("/onboarding/member/check-phone", payload);
+
+  if (!response.status?.isSuccess) {
+    throw new ApiError({
+      message: response.message || "Gagal memeriksa nomor anggota",
+      status: response.status?.code ?? 500,
+      code: "AUTH_CHECK_MEMBER_PHONE_FAILED",
+      details: response,
+    });
+  }
+
+  return response.data;
+};
+
 export const verifyOnboardingOtp = async ({
   roleId,
   onboardingDraftId,
@@ -125,6 +155,41 @@ export const setOnboardingPin = async ({
       message: response.message || "Gagal menyimpan PIN",
       status: response.status?.code ?? 500,
       code: "AUTH_SET_PIN_FAILED",
+      details: response,
+    });
+  }
+
+  return response.data;
+};
+
+export const setMemberPin = async ({
+  activationChallengeId,
+  activationToken,
+  pin,
+  confirmPin,
+}: {
+  activationChallengeId: string;
+  activationToken: string;
+  pin: string;
+  confirmPin: string;
+}) => {
+  const payload: SetMemberPinRequest = {
+    activation_challenge_id: activationChallengeId,
+    activation_token: activationToken,
+    pin,
+    confirm_pin: confirmPin,
+  };
+
+  const response = await apiClient.post<
+    ApiEnvelope<SetMemberPinData>,
+    SetMemberPinRequest
+  >("/onboarding/member/set-pin", payload);
+
+  if (!response.status?.isSuccess) {
+    throw new ApiError({
+      message: response.message || "Gagal menyimpan PIN anggota",
+      status: response.status?.code ?? 500,
+      code: "AUTH_SET_MEMBER_PIN_FAILED",
       details: response,
     });
   }

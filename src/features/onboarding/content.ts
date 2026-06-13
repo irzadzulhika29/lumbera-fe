@@ -116,5 +116,12 @@ export const getRolePhoneErrorMessage = (roleId: RoleOptionId) =>
 export const getRoleOption = (roleId: RoleOptionId) =>
   ROLE_OPTIONS.find((option) => option.id === roleId) ?? ROLE_OPTIONS[0];
 
+export const supportsRoleOnboarding = (roleId: RoleOptionId) =>
+  roleId === "officer";
+
 export const getPostLoginHref = (roleCode?: string | null) =>
-  roleCode === "PENGURUS_KOPERASI" ? "/dashboard" : "/transactions";
+  roleCode === "PENGURUS_KOPERASI"
+    ? "/dashboard"
+    : roleCode === "ANGGOTA"
+      ? "/dashboard/member"
+      : "/transactions";

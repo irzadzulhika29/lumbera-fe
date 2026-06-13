@@ -8,7 +8,7 @@ type DashboardPageHeaderProps = {
   subtitle: string;
   title: string;
   titleClassName?: string;
-  variant?: "default" | "form";
+  variant?: "default" | "form" | "compact";
 };
 
 export default function DashboardPageHeader({
@@ -19,7 +19,12 @@ export default function DashboardPageHeader({
   variant = "default",
 }: DashboardPageHeaderProps) {
   return (
-    <header className="flex items-start gap-4">
+    <header
+      className={twMerge(
+        "flex gap-4",
+        variant === "compact" ? "items-center" : "items-start",
+      )}
+    >
       <Link
         href={backHref}
         aria-label="Kembali"
@@ -27,13 +32,17 @@ export default function DashboardPageHeader({
           "flex shrink-0 items-center justify-center bg-primary text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
           variant === "form"
             ? "h-14 w-14 rounded-[12px]"
-            : "h-[54px] w-[54px] rounded-[14px]",
+            : variant === "compact"
+              ? "h-[40px] w-[40px] rounded-[10px]"
+              : "h-[54px] w-[54px] rounded-[14px]",
         )}
       >
-        <BackIcon className="text-[1.55rem]" />
+        <BackIcon
+          className={variant === "compact" ? "text-[1.2rem]" : "text-[1.55rem]"}
+        />
       </Link>
 
-      <div className="min-w-0 pt-1">
+      <div className={twMerge("min-w-0", variant === "compact" ? "pt-0" : "pt-1")}>
         <h1
           className={twMerge(
             "text-[1.95rem] font-bold leading-none tracking-[-0.04em] text-primary",
