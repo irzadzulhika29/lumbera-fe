@@ -7,10 +7,17 @@ import { useEffect, useMemo, useState } from "react";
 import {
   getOfficerTransactions,
   mapOfficerTransactionToDashboardTransaction,
+  type OfficerTransactionItem,
 } from "@/src/features/dashboard/api";
 import { getDashboardData } from "@/src/features/dashboard/data";
 import type { DashboardIconName } from "@/src/features/dashboard/types";
 import { officerTransactionMenus } from "@/src/features/dashboard/transactionFlow";
+import {
+  countOfflineOfficerTransactions,
+  getOfflineOfficerTransactions,
+  mapOfflineOfficerTransactionToDashboardTransaction,
+} from "@/src/features/dashboard/utils/officerTransactionOfflineStorage";
+import { getCachedEntityRecords } from "@/src/features/sync/offlineSyncDb";
 
 import DashboardSearchField from "../../common/DashboardSearchField";
 import FilterChips from "../../common/FilterChips";
@@ -47,6 +54,7 @@ export default function OfficerTransactionsScreen() {
   const [search, setSearch] = useState("");
   const [activeType, setActiveType] = useState("Semua");
   const [transactions, setTransactions] = useState(dashboard.transactions);
+  const [pendingCount, setPendingCount] = useState(0);
 
   const queryType = useMemo(() => {
     if (activeType === "Simpanan") return "SIMPANAN";
@@ -57,6 +65,34 @@ export default function OfficerTransactionsScreen() {
 
   useEffect(() => {
     let cancelled = false;
+    const syncPendingBanner = () => {
+      void countOfflineOfficerTransactions().then((count) => {
+        if (!cancelled) {
+          setPendingCount(count);
+        }
+      });
+    };
+
+    syncPendingBanner();
+
+    const loadOfflineItems = async () => {
+      const [offlineOperations, cachedTransactions] = await Promise.all([
+        getOfflineOfficerTransactions({
+          search: search.trim() || undefined,
+          type: queryType || undefined,
+        }),
+        getCachedEntityRecords("transaction"),
+      ]);
+
+      const offlineItems = offlineOperations.map(
+        mapOfflineOfficerTransactionToDashboardTransaction,
+      );
+      const cachedItems = cachedTransactions
+        .map((item) => item.data as OfficerTransactionItem)
+        .map(mapOfficerTransactionToDashboardTransaction);
+
+      return [...offlineItems, ...cachedItems];
+    };
 
     getOfficerTransactions({
       limit: 10,
@@ -67,13 +103,30 @@ export default function OfficerTransactionsScreen() {
       .then((response) => {
         if (cancelled) return;
 
-        setTransactions(
-          response.data.items.map(mapOfficerTransactionToDashboardTransaction),
-        );
+        void getOfflineOfficerTransactions({
+          search: search.trim() || undefined,
+          type: queryType || undefined,
+        }).then((offlineOperations) => {
+          if (cancelled) return;
+
+          const offlineItems = offlineOperations.map(
+            mapOfflineOfficerTransactionToDashboardTransaction,
+          );
+
+          setTransactions([
+            ...offlineItems,
+            ...response.data.items.map(mapOfficerTransactionToDashboardTransaction),
+          ]);
+          syncPendingBanner();
+        });
       })
       .catch(() => {
         if (!cancelled) {
-          setTransactions(dashboard.transactions);
+          void loadOfflineItems().then((items) => {
+            if (cancelled) return;
+            setTransactions(items.length > 0 ? items : dashboard.transactions);
+            syncPendingBanner();
+          });
         }
       });
 
@@ -127,18 +180,20 @@ export default function OfficerTransactionsScreen() {
           </div>
         </div>
 
-        <div className="mt-6 -mx-5 flex items-center justify-between bg-[#FFF0F0] px-5 py-2.5">
-          <p className="text-[0.82rem] font-medium text-[#ef4444]">
-            3 transaksi menunggu sinkronisasi
-          </p>
-          <Link
-            href="/dashboard/officer/transactions"
-            className="inline-flex items-center gap-2 text-[0.9rem] font-bold text-[#ef4444] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ef4444]"
-          >
-            Lihat
-            <NextIcon className="text-[1rem] text-[#ef4444]" />
-          </Link>
-        </div>
+        {pendingCount > 0 ? (
+          <div className="mt-6 -mx-5 flex items-center justify-between bg-[#FFF0F0] px-5 py-2.5">
+            <p className="text-[0.82rem] font-medium text-[#ef4444]">
+              {pendingCount} transaksi menunggu sinkronisasi
+            </p>
+            <Link
+              href="/dashboard/officer/transactions"
+              className="inline-flex items-center gap-2 text-[0.9rem] font-bold text-[#ef4444] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ef4444]"
+            >
+              Lihat
+              <NextIcon className="text-[1rem] text-[#ef4444]" />
+            </Link>
+          </div>
+        ) : null}
 
         <section className="mt-8">
           <h2 className="text-[1.05rem] font-bold text-primary">

@@ -7,6 +7,11 @@ const requiredFiles = [
   "src/features/pwa/components/InstallExperience.tsx",
   "src/features/pwa/components/InstallQrPanel.tsx",
   "public/logo/icon-invert.svg",
+  "src/features/onboarding/components/landing/DesktopLanding.tsx",
+  "src/features/onboarding/components/landing/DesktopInstallModal.tsx",
+  "src/features/onboarding/components/landing/MobileLanding.tsx",
+  "src/features/onboarding/components/landing/LandingFooter.tsx",
+  "src/features/onboarding/components/landing/landingData.ts",
 ];
 
 for (const file of requiredFiles) {
@@ -17,37 +22,77 @@ const landingSource = readFileSync(
   resolve("src/features/onboarding/components/LandingScreen.tsx"),
   "utf8",
 );
+const desktopLandingSource = readFileSync(
+  resolve("src/features/onboarding/components/landing/DesktopLanding.tsx"),
+  "utf8",
+);
+const desktopInstallModalSource = readFileSync(
+  resolve("src/features/onboarding/components/landing/DesktopInstallModal.tsx"),
+  "utf8",
+);
+const mobileLandingSource = readFileSync(
+  resolve("src/features/onboarding/components/landing/MobileLanding.tsx"),
+  "utf8",
+);
+const landingFooterSource = readFileSync(
+  resolve("src/features/onboarding/components/landing/LandingFooter.tsx"),
+  "utf8",
+);
+const landingDataSource = readFileSync(
+  resolve("src/features/onboarding/components/landing/landingData.ts"),
+  "utf8",
+);
+const landingModulesSource = [
+  landingSource,
+  desktopLandingSource,
+  desktopInstallModalSource,
+  mobileLandingSource,
+  landingFooterSource,
+  landingDataSource,
+].join("\n");
 
-assert.match(landingSource, /Fitur/);
-assert.match(landingSource, /Cara Kerja/);
-assert.match(landingSource, /Mitra/);
-assert.match(landingSource, /Install PWA/);
-assert.match(landingSource, /Koperasi yang Tidak Bisa Dimanipulasi/);
-assert.match(landingSource, /Daftarkan Koperasi/);
-assert.match(landingSource, /Lihat Demo/);
-assert.match(landingSource, /landing-img\.webp/);
-assert.match(landingSource, /Kenyataan hari ini/);
-assert.match(landingSource, /222\.000 koperasi hampir tidak tersentuh digital/);
-assert.match(landingSource, /82%/);
-assert.match(landingSource, /Rp 4,7T/);
-assert.match(landingSource, /Anggota Tanpa Riwayat Kredit/);
-assert.match(landingSource, /Yang mereka katakan/);
-assert.match(landingSource, /Bukan kata kami/);
-assert.match(landingSource, /Sebelum LUMBERA, laporan bulanan butuh 2 hari/);
-assert.match(landingSource, /Rini Puspitasari/);
-assert.match(landingSource, /Digitalkan Koperasi Anda dalam 10 Menit/);
-assert.match(landingSource, /Tidak butuh IT, tidak butuh server, install langsung dari browser/);
-assert.match(landingSource, /Platform Multi-Koperasi Berbasis Verifiable Ledger/);
-assert.match(landingSource, /icon-invert\.svg/);
-assert.match(landingSource, /Pasang dulu sebelum pakai Lumbera/);
-assert.match(landingSource, /Lumbera baru bisa diakses penuh setelah dipasang ke layar utama HP/);
-assert.match(landingSource, /InstallQrPanel/);
+assert.match(landingModulesSource, /Fitur/);
+assert.match(landingModulesSource, /Cara Kerja/);
+assert.match(landingModulesSource, /Mitra/);
+assert.match(landingModulesSource, /Install PWA/);
+assert.match(landingModulesSource, /Koperasi yang Tidak Bisa Dimanipulasi/);
+assert.match(landingModulesSource, /Scan QR untuk pasang Lumbera/);
+assert.match(landingModulesSource, /landing-img\.webp/);
+assert.match(landingModulesSource, /Kenyataan hari ini/);
+assert.match(landingModulesSource, /222\.000 koperasi hampir tidak tersentuh digital/);
+assert.match(landingModulesSource, /82%/);
+assert.match(landingModulesSource, /Rp 4,7T/);
+assert.match(landingModulesSource, /Anggota Tanpa Riwayat Kredit/);
+assert.match(landingModulesSource, /Yang mereka katakan/);
+assert.match(landingModulesSource, /Bukan kata kami/);
+assert.match(landingModulesSource, /Sebelum LUMBERA, laporan bulanan butuh 2 hari/);
+assert.match(landingModulesSource, /Rini Puspitasari/);
+assert.match(landingModulesSource, /Digitalkan Koperasi Anda dalam 10 Menit/);
+assert.match(landingModulesSource, /Tidak butuh IT, tidak butuh server, install langsung dari browser/);
+assert.match(landingModulesSource, /icon-invert\.svg/);
+assert.match(landingModulesSource, /Pasang dulu sebelum pakai Lumbera/);
+assert.match(
+  landingModulesSource,
+  /Lumbera baru bisa diakses penuh setelah dipasang ke layar utama\s+HP/,
+);
+assert.match(landingModulesSource, /InstallQrPanel/);
 assert.match(landingSource, /isInstallModalOpen|setIsInstallModalOpen/);
 assert.doesNotMatch(landingSource, /OnboardingStartButton/);
 assert.match(landingSource, /activeDesktopNavId|setActiveDesktopNavId/);
 assert.match(landingSource, /IntersectionObserver/);
-assert.match(landingSource, /path="\/install"|path='\/install'|href="\/install"|href='\/install'/);
-assert.match(landingSource, /Scan QR untuk pasang Lumbera/);
+assert.match(landingSource, /DesktopLanding/);
+assert.match(landingSource, /MobileLanding/);
+assert.match(desktopInstallModalSource, /path="\/install"|path='\/install'/);
+assert.match(desktopInstallModalSource, /beforeinstallprompt/);
+assert.match(desktopInstallModalSource, /Add to Home Screen/);
+assert.match(desktopInstallModalSource, /Chrome atau Safari|Chrome di Android/);
+assert.match(mobileLandingSource, /onOpenInstallModal/);
+assert.doesNotMatch(mobileLandingSource, /href="\/install"|href='\/install'|START_ROUTE/);
+assert.doesNotMatch(landingSource, /isStandaloneMode|setIsStandaloneMode/);
+assert.doesNotMatch(landingModulesSource, /START_ROUTE/);
+assert.doesNotMatch(landingModulesSource, /Daftarkan Koperasi/);
+assert.doesNotMatch(landingModulesSource, /Buka Lumbera/);
+assert.match(desktopInstallModalSource, /Setelah terpasang, buka lagi dari ikon Lumbera di layar utama/);
 
 const installPageSource = readFileSync(resolve("src/app/install/page.tsx"), "utf8");
 
