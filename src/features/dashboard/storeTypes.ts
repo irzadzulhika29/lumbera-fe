@@ -12,9 +12,8 @@ export type StoreActionSection = {
 };
 
 export type StoreDashboardStats = {
-  failedCount: number;
   lowStockCount: number;
-  successCount: number;
+  safeCount: number;
   totalCount: number;
 };
 
@@ -23,16 +22,23 @@ export type StoreMutationFilter = "all" | "incoming" | "outgoing" | "adjustment"
 export type StoreProductStatusTone = "safe" | "low";
 
 export type StoreProductItem = {
+  category: string;
   costPrice: string;
   id: string;
   initials: string;
   marginLabel: string;
+  minimumStockLabel: string;
   name: string;
+  rawCostPrice: number;
+  rawSalePrice: number;
+  rawStockQuantity: number;
+  rawMinimumStockQuantity: number;
   sku: string;
   sellPrice: string;
   statusLabel: string;
   statusTone: StoreProductStatusTone;
   stockLabel: string;
+  unit: string;
 };
 
 export type StoreProductDraft = {
@@ -40,11 +46,27 @@ export type StoreProductDraft = {
   costPrice: string;
   createdAtLabel: string;
   hashPreview: string;
+  initialStockQuantity: string;
   minimumStock: string;
   name: string;
+  payload: {
+    category: string;
+    costPrice: number;
+    initialStockQuantity: number;
+    minimumStock: number;
+    name: string;
+    salePrice: number;
+    unit: string;
+  };
   recordedBy: string;
   salePrice: string;
   unit: string;
+};
+
+export type StoreProductSuccess = {
+  code: string;
+  hashPreview: string;
+  name: string;
 };
 
 export type StoreStockInDraft = {
@@ -87,6 +109,7 @@ export type StoreCashierDraftItem = {
   initials: string;
   name: string;
   price: number;
+  productId: string;
   quantity: number;
 };
 
@@ -98,6 +121,7 @@ export type StoreCashierDraft = {
   items: StoreCashierDraftItem[];
   receiptNumber: string;
   recordedBy: string;
+  saleId?: string;
   totalAmount: string;
 };
 
