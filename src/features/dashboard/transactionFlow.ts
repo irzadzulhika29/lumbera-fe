@@ -12,6 +12,7 @@ export type OfficerTransactionType =
 export type OfficerMember = {
   financialSummary?: {
     currentInstallment?: number;
+    loanId?: string;
     loanNumber?: string;
     remainingLoan?: number;
     savingsBalance?: number;
@@ -85,6 +86,7 @@ export const officerMembers: OfficerMember[] = [
   {
     financialSummary: {
       currentInstallment: 350_000,
+      loanId: "11111111-1111-4111-8111-111111111111",
       loanNumber: "P-041",
       remainingLoan: 2_000_000,
       savingsBalance: 5_300_000,
@@ -97,6 +99,7 @@ export const officerMembers: OfficerMember[] = [
   {
     financialSummary: {
       currentInstallment: 275_000,
+      loanId: "22222222-2222-4222-8222-222222222222",
       loanNumber: "P-042",
       remainingLoan: 1_250_000,
       savingsBalance: 4_750_000,
@@ -121,6 +124,7 @@ export const officerMembers: OfficerMember[] = [
   {
     financialSummary: {
       currentInstallment: 425_000,
+      loanId: "44444444-4444-4444-8444-444444444444",
       loanNumber: "P-044",
       remainingLoan: 3_500_000,
       savingsBalance: 6_100_000,
@@ -133,6 +137,7 @@ export const officerMembers: OfficerMember[] = [
   {
     financialSummary: {
       currentInstallment: 180_000,
+      loanId: "55555555-5555-4555-8555-555555555555",
       loanNumber: "P-045",
       remainingLoan: 900_000,
       savingsBalance: 2_450_000,
@@ -145,6 +150,7 @@ export const officerMembers: OfficerMember[] = [
   {
     financialSummary: {
       currentInstallment: 120_000,
+      loanId: "66666666-6666-4666-8666-666666666666",
       loanNumber: "P-046",
       remainingLoan: 450_000,
       savingsBalance: 1_950_000,
@@ -169,6 +175,7 @@ export const officerMembers: OfficerMember[] = [
   {
     financialSummary: {
       currentInstallment: 310_000,
+      loanId: "88888888-8888-4888-8888-888888888888",
       loanNumber: "P-048",
       remainingLoan: 1_700_000,
       savingsBalance: 3_200_000,

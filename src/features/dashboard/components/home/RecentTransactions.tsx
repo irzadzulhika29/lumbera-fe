@@ -49,7 +49,7 @@ export default function RecentTransactions({
           Transaksi Terbaru
         </h2>
         <Link
-          href="/dashboard/transactions"
+          href="/dashboard/officer/transactions"
           className="text-[0.78rem] font-medium text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
           Lihat semua

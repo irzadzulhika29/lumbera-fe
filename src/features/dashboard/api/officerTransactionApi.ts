@@ -83,6 +83,28 @@ export type CreateOfficerSavingsTransactionResponse = {
   };
 };
 
+export type CreateOfficerLoanTransactionParams = {
+  amount: number;
+  client_transaction_id: string;
+  description: string;
+  is_offline_created: boolean;
+  member_id: string;
+  recorded_at: string;
+};
+
+export type CreateOfficerLoanTransactionResponse = {
+  status: {
+    code: number;
+    isSuccess: boolean;
+  };
+  message: string;
+  data: OfficerTransactionItem & {
+    member_loan_outstanding: number;
+    member_savings_balance: number;
+    prev_hash: string;
+  };
+};
+
 function formatDateTime(recordedAt: string) {
   const date = new Date(recordedAt);
 
@@ -191,4 +213,159 @@ export async function createOfficerSavingsTransaction(
   }
 
   return (await response.json()) as CreateOfficerSavingsTransactionResponse;
+}
+
+export type CreateOfficerInstallmentTransactionParams = {
+  amount: number;
+  client_transaction_id: string;
+  description: string;
+  is_offline_created: boolean;
+  loan_id: string;
+  recorded_at: string;
+};
+
+export type CreateOfficerInstallmentTransactionResponse = {
+  status: {
+    code: number;
+    isSuccess: boolean;
+  };
+  message: string;
+  data: OfficerTransactionItem & {
+    loan_id: string;
+    loan_number: string;
+    monthly_installment_amount: number;
+    member_loan_outstanding: number;
+    member_savings_balance: number;
+    prev_hash: string;
+    loan: {
+      loan_id: string;
+      loan_number: string;
+      status: string;
+      principal_amount: number;
+      total_payable_amount: number;
+      monthly_installment_amount: number;
+      remaining_payable_amount: number;
+      current_month_due_amount: number;
+      term_months: number;
+    };
+    allocations: Array<{
+      schedule_id: string;
+      installment_no: number;
+      due_date: string;
+      allocated_amount: number;
+      schedule_status: string;
+    }>;
+  };
+};
+
+export async function createOfficerInstallmentTransaction(
+  params: CreateOfficerInstallmentTransactionParams,
+): Promise<CreateOfficerInstallmentTransactionResponse> {
+  const accessToken = getRequiredAccessToken();
+  const response = await fetch(`${TRANSACTIONS_API_ROUTE}/installments`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ accessToken, ...params }),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const errorPayload = (await response.json().catch(() => null)) as {
+      message?: string;
+    } | null;
+
+    throw new ApiError({
+      message:
+        errorPayload?.message ||
+        "Gagal menyimpan transaksi angsuran. Silakan coba lagi.",
+      status: response.status,
+    });
+  }
+
+  return (await response.json()) as CreateOfficerInstallmentTransactionResponse;
+}
+
+export type CreateOfficerStockMutationTransactionParams = {
+  amount: number;
+  client_transaction_id: string;
+  description: string;
+  is_offline_created: boolean;
+  member_id: string;
+  recorded_at: string;
+};
+
+export type CreateOfficerStockMutationTransactionResponse = {
+  status: {
+    code: number;
+    isSuccess: boolean;
+  };
+  message: string;
+  data: OfficerTransactionItem & {
+    member_loan_outstanding: number;
+    member_savings_balance: number;
+    prev_hash: string;
+  };
+};
+
+export async function createOfficerStockMutationTransaction(
+  params: CreateOfficerStockMutationTransactionParams,
+): Promise<CreateOfficerStockMutationTransactionResponse> {
+  const accessToken = getRequiredAccessToken();
+  const response = await fetch(`${TRANSACTIONS_API_ROUTE}/stock-mutations`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ accessToken, ...params }),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const errorPayload = (await response.json().catch(() => null)) as {
+      message?: string;
+    } | null;
+
+    throw new ApiError({
+      message:
+        errorPayload?.message ||
+        "Gagal menyimpan transaksi penarikan. Silakan coba lagi.",
+      status: response.status,
+    });
+  }
+
+  return (await response.json()) as CreateOfficerStockMutationTransactionResponse;
+}
+
+export async function createOfficerLoanTransaction(
+  params: CreateOfficerLoanTransactionParams,
+): Promise<CreateOfficerLoanTransactionResponse> {
+  const accessToken = getRequiredAccessToken();
+  const response = await fetch(`${TRANSACTIONS_API_ROUTE}/loans`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ accessToken, ...params }),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const errorPayload = (await response.json().catch(() => null)) as {
+      message?: string;
+    } | null;
+
+    throw new ApiError({
+      message:
+        errorPayload?.message ||
+        "Gagal menyimpan transaksi pinjaman. Silakan coba lagi.",
+      status: response.status,
+    });
+  }
+
+  return (await response.json()) as CreateOfficerLoanTransactionResponse;
 }
