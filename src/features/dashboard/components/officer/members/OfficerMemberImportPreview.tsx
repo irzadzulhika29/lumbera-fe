@@ -10,6 +10,9 @@ import {
   type OfficerMemberImportRowStatus,
   submitOfficerMemberImport,
 } from "@/src/features/dashboard/api";
+import DashboardDataTable, {
+  type DashboardDataTableRow,
+} from "@/src/features/dashboard/components/common/DashboardDataTable";
 import PressButton from "@/src/shared/components/ui/PressButton";
 import FilterChips from "../../common/FilterChips";
 
@@ -31,6 +34,72 @@ const formatJoinedDate = (value: string) => {
     year: "numeric",
   }).format(date);
 };
+
+function buildImportPreviewRows(
+  rows: OfficerMemberImportRow[],
+  isErrorTab: boolean,
+): DashboardDataTableRow[] {
+  return rows.map((row) => ({
+    key: row.import_row_id,
+    label: row.full_name,
+    type: "row",
+    cells: [
+      {
+        align: "left",
+        content: row.nik_masked,
+      },
+      {
+        align: "left",
+        content: row.phone_number,
+      },
+      {
+        align: "left",
+        content: (
+          <div>
+            <span>{row.address}</span>
+            {row.error_message ? (
+              <p className="mt-1 font-semibold text-[#e53935]">
+                {row.error_message}
+              </p>
+            ) : null}
+          </div>
+        ),
+      },
+      {
+        align: "left",
+        content: formatJoinedDate(row.joined_date),
+      },
+      {
+        align: "center",
+        content: isErrorTab ? (
+          <div className="flex items-center justify-center gap-3">
+            <button
+              type="button"
+              aria-label={`Edit ${row.full_name}`}
+              className="inline-flex h-10 w-[54px] items-center justify-center rounded-[8px] bg-[#f6a313] text-white"
+            >
+              <Icon icon="solar:pen-linear" className="text-[1.2rem]" />
+            </button>
+            <button
+              type="button"
+              aria-label={`Hapus ${row.full_name}`}
+              className="inline-flex h-10 w-[54px] items-center justify-center rounded-[8px] bg-[#eb2b2b] text-white"
+            >
+              <Icon
+                icon="solar:trash-bin-trash-linear"
+                className="text-[1.2rem]"
+              />
+            </button>
+          </div>
+        ) : (
+          <span className="inline-flex rounded-[10px] bg-[#d8f5d9] px-3 py-2 text-xs font-bold text-[#20a84e]">
+            Berhasil
+          </span>
+        ),
+      },
+    ],
+  }));
+}
 
 function SummaryCard({
   label,
@@ -93,6 +162,10 @@ export default function OfficerMemberImportPreview({
     initialData.rows.length,
   );
   const isErrorTab = activeTab === "ERROR";
+  const previewRows = useMemo(
+    () => buildImportPreviewRows(rows, isErrorTab),
+    [isErrorTab, rows],
+  );
 
   useEffect(() => {
     let isActive = true;
@@ -206,100 +279,25 @@ export default function OfficerMemberImportPreview({
         }))}
       />
 
-      <div className="mt-3 overflow-x-auto rounded-[18px] border border-[#d8e0e6] bg-white shadow-[0_8px_18px_rgba(15,23,42,0.05)] [scrollbar-color:rgba(18,148,144,0.2)_transparent] [scrollbar-width:thin]">
-        <div className="min-w-[1180px]">
-          <div className="grid grid-cols-[1.1fr_1fr_0.9fr_2.4fr_1fr_0.8fr] bg-[#147b78] text-white">
-            <div className="px-4 py-3 text-xs font-bold uppercase tracking-[-0.02em]">
-              Nama lengkap
-            </div>
-            <div className="px-4 py-3 text-xs font-bold uppercase tracking-[-0.02em]">
-              NIK
-            </div>
-            <div className="px-4 py-3 text-xs font-bold uppercase tracking-[-0.02em]">
-              No. handphone
-            </div>
-            <div className="px-4 py-3 text-xs font-bold uppercase tracking-[-0.02em]">
-              Alamat
-            </div>
-            <div className="px-4 py-3 text-xs font-bold uppercase tracking-[-0.02em]">
-              Tanggal bergabung
-            </div>
-            <div className="px-4 py-3 text-xs font-bold uppercase tracking-[-0.02em]">
-              {isErrorTab ? "Action" : "Status"}
-            </div>
-          </div>
-
-          <div className="max-h-[310px] overflow-y-auto">
-            {isLoading ? (
-              <div className="flex min-h-28 items-center justify-center text-sm font-medium text-[#7c8a9b]">
-                Memuat pratinjau...
-              </div>
-            ) : rows.length === 0 ? (
-              <div className="flex min-h-28 items-center justify-center text-sm font-medium text-[#7c8a9b]">
-                Tidak ada data pada status ini.
-              </div>
-            ) : (
-              rows.map((row) => (
-                <div
-                  key={row.import_row_id}
-                  className="grid grid-cols-[1.1fr_1fr_0.9fr_2.4fr_1fr_0.8fr] border-t border-[#e7ebef] bg-white"
-                >
-                  <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
-                    {row.full_name}
-                  </div>
-                  <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
-                    {row.nik_masked}
-                  </div>
-                  <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
-                    {row.phone_number}
-                  </div>
-                  <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
-                    {row.address}
-                    {row.error_message ? (
-                      <p className="mt-1 font-semibold text-[#e53935]">
-                        {row.error_message}
-                      </p>
-                    ) : null}
-                  </div>
-                  <div className="px-4 py-5 text-xs font-medium text-[#2f3744]">
-                    {formatJoinedDate(row.joined_date)}
-                  </div>
-                  <div className="px-4 py-4">
-                    {isErrorTab ? (
-                      <div className="flex items-center gap-4">
-                        <button
-                          type="button"
-                          aria-label={`Edit ${row.full_name}`}
-                          className="inline-flex h-10 w-[54px] items-center justify-center rounded-[8px] bg-[#f6a313] text-white"
-                        >
-                          <Icon
-                            icon="solar:pen-linear"
-                            className="text-[1.2rem]"
-                          />
-                        </button>
-                        <button
-                          type="button"
-                          aria-label={`Hapus ${row.full_name}`}
-                          className="inline-flex h-10 w-[54px] items-center justify-center rounded-[8px] bg-[#eb2b2b] text-white"
-                        >
-                          <Icon
-                            icon="solar:trash-bin-trash-linear"
-                            className="text-[1.2rem]"
-                          />
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="inline-flex rounded-[10px] bg-[#d8f5d9] px-3 py-2 text-xs font-bold text-[#20a84e]">
-                        Berhasil
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
+      <DashboardDataTable
+        columns={[
+          "NIK",
+          "NO. HANDPHONE",
+          "ALAMAT",
+          "TANGGAL BERGABUNG",
+          isErrorTab ? "ACTION" : "STATUS",
+        ]}
+        headerLabel="NAMA LENGKAP"
+        labelColumnWidth={228}
+        columnWidths={[188, 174, 290, 176, 164]}
+        rows={previewRows}
+        isLoading={isLoading}
+        loadingMessage="Memuat pratinjau..."
+        emptyMessage="Tidak ada data pada status ini."
+        bodyMaxHeightClassName="max-h-[310px] overflow-y-auto"
+        showScrollIndicator={false}
+        stickyLastColumn
+      />
 
       <p className="mt-3 text-[0.82rem] font-medium text-[#7c8a9b]">
         File aktif: {summary.file_name}
