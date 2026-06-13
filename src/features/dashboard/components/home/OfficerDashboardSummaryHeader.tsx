@@ -49,7 +49,7 @@ export default function OfficerDashboardSummaryHeader({
           formatDashboardName(profileResponse.data.profile.full_name),
         );
         setDashboardCooperativeName(
-          profileResponse.data.profile.cooperative_name?.trim() ||
+          profileResponse.data.profile.cooperative?.name?.trim() ||
             getProfileSubtitle(profileResponse.data),
         );
         setMetrics([

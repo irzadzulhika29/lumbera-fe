@@ -27,9 +27,12 @@ export type UserProfileResponse = {
       user_id: string;
       member_id?: string | null;
       officer_id?: string | null;
-      cooperative_id?: string | null;
-      cooperative_code?: string | null;
-      cooperative_name?: string | null;
+      cooperative?: {
+        cooperative_id: string;
+        name: string;
+        cooperative_code?: string;
+        registration_number?: string;
+      } | null;
       member_number?: string | null;
       full_name: string;
       initials?: string | null;

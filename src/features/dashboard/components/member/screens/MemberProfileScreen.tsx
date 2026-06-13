@@ -88,7 +88,7 @@ export default function MemberProfileScreen() {
       },
       {
         label: "Koperasi",
-        value: profileData.profile.cooperative_name?.trim() || "-",
+        value: profileData.profile.cooperative?.name?.trim() || "-",
         wideLabel: true,
       },
       {

@@ -83,12 +83,12 @@ export default function OfficerProfileScreen() {
     return [
       {
         label: "Koperasi",
-        value: profileData.profile.cooperative_name?.trim() || "-",
+        value: profileData.profile.cooperative?.name?.trim() || "-",
         wideLabel: true,
       },
       {
         label: "Kode Koperasi",
-        value: profileData.profile.cooperative_code?.trim() || "-",
+        value: profileData.profile.cooperative?.cooperative_code?.trim() || "-",
         wideLabel: true,
       },
       {
