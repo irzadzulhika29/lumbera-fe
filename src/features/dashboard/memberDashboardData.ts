@@ -36,6 +36,7 @@ export const memberDashboard: DashboardViewModel = {
   transactions: [
     {
       id: "member-trx-001",
+      href: "/dashboard/member/savings",
       initials: "IN",
       name: "Simpanan Sukarela",
       description: "11 Juni 2026 - Pak Asep",
@@ -47,6 +48,7 @@ export const memberDashboard: DashboardViewModel = {
     },
     {
       id: "member-trx-002",
+      href: "/dashboard/member/loans",
       initials: "OUT",
       name: "Angsuran Pinjaman",
       description: "11 Juni 2026 - Otomatis",
@@ -58,6 +60,7 @@ export const memberDashboard: DashboardViewModel = {
     },
     {
       id: "member-trx-003",
+      href: "/dashboard/member/savings",
       initials: "IN",
       name: "Simpanan Sukarela",
       description: "11 Juni 2026 - Pak Asep",
@@ -69,6 +72,7 @@ export const memberDashboard: DashboardViewModel = {
     },
     {
       id: "member-trx-004",
+      href: "/dashboard/member/savings",
       initials: "IN",
       name: "Simpanan Sukarela",
       description: "11 Juni 2026 - Pak Asep",
