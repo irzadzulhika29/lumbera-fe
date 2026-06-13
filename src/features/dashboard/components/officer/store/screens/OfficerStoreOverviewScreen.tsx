@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import FilterChips from "@/src/features/dashboard/components/common/FilterChips";
 import TransactionList from "@/src/features/dashboard/components/common/TransactionList";
+import { getOfficerStoreDashboard } from "@/src/features/dashboard/api";
 import DashboardScreenShell from "@/src/features/dashboard/components/layout/DashboardScreenShell";
 import OfficerFlowHeader from "@/src/features/dashboard/components/officer/layout/OfficerFlowHeader";
 import StoreActionGrid from "@/src/features/dashboard/components/officer/store/common/StoreActionGrid";
@@ -12,19 +13,50 @@ import StoreWarningBanner from "@/src/features/dashboard/components/officer/stor
 import { getDashboardNavigation } from "@/src/features/dashboard/data";
 import { storeDashboardData } from "@/src/features/dashboard/storeData";
 import type { StoreMutationFilter } from "@/src/features/dashboard/storeTypes";
+import {
+  mapOfficerStoreDashboardToAlertLabel,
+  mapOfficerStoreDashboardToMutations,
+  mapOfficerStoreDashboardToStats,
+} from "@/src/features/dashboard/utils/officerStoreMapper";
 
 export default function OfficerStoreOverviewScreen() {
   const [activeFilter, setActiveFilter] = useState<StoreMutationFilter>("all");
+  const [stats, setStats] = useState(storeDashboardData.stats);
+  const [alertLabel, setAlertLabel] = useState(storeDashboardData.alertLabel);
+  const [mutations, setMutations] = useState(storeDashboardData.mutations);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getOfficerStoreDashboard()
+      .then((response) => {
+        if (cancelled) return;
+
+        setStats(mapOfficerStoreDashboardToStats(response.data));
+        setAlertLabel(mapOfficerStoreDashboardToAlertLabel(response.data));
+        setMutations(mapOfficerStoreDashboardToMutations(response.data));
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setStats(storeDashboardData.stats);
+        setAlertLabel(storeDashboardData.alertLabel);
+        setMutations(storeDashboardData.mutations);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredMutations = useMemo(() => {
     if (activeFilter === "all") {
-      return storeDashboardData.mutations;
+      return mutations;
     }
 
-    return storeDashboardData.mutations.filter(
+    return mutations.filter(
       (mutation) => mutation.mutationType === activeFilter,
     );
-  }, [activeFilter]);
+  }, [activeFilter, mutations]);
 
   return (
     <DashboardScreenShell
@@ -35,7 +67,7 @@ export default function OfficerStoreOverviewScreen() {
         backHref="/dashboard"
         title="Toko & Stok"
         subtitle="Kelola stok produk koperasi anda"
-        floatingContent={<StoreStatsCard stats={storeDashboardData.stats} />}
+        floatingContent={<StoreStatsCard stats={stats} />}
         floatingClassName="px-0 py-0"
       />
 
@@ -43,7 +75,7 @@ export default function OfficerStoreOverviewScreen() {
         <div className="mt-12">
           <StoreWarningBanner
             href={storeDashboardData.alertHref}
-            label={storeDashboardData.alertLabel}
+            label={alertLabel}
           />
         </div>
 
@@ -68,7 +100,13 @@ export default function OfficerStoreOverviewScreen() {
           />
 
           <div className="mt-6">
-            <TransactionList transactions={filteredMutations} />
+            {filteredMutations.length > 0 ? (
+              <TransactionList transactions={filteredMutations} />
+            ) : (
+              <div className="rounded-[14px] border border-border bg-white px-4 py-5 text-[0.84rem] font-medium text-text/56 shadow-sm">
+                Belum ada mutasi stok yang tercatat.
+              </div>
+            )}
           </div>
         </section>
       </div>

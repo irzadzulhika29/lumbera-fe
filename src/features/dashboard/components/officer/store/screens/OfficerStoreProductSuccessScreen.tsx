@@ -10,7 +10,11 @@ import { getStoreProductSuccess } from "@/src/features/dashboard/utils/storeProd
 import PressButton from "@/src/shared/components/ui/PressButton";
 
 export default function OfficerStoreProductSuccessScreen() {
-  const productName = getStoreProductSuccess() || "Beras Premium";
+  const product = getStoreProductSuccess() ?? {
+    name: "Beras Premium",
+    code: "ST001",
+    hashPreview: "SHA-256: c6e4f983...",
+  };
 
   return (
     <DashboardScreenShell background="bg-white" scrollable={false}>
@@ -90,7 +94,19 @@ export default function OfficerStoreProductSuccessScreen() {
               <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-4">
                 <span className="text-[0.96rem] font-semibold text-text/72">Produk</span>
                 <span className="text-right text-[0.96rem] font-bold text-text/82">
-                  {productName}
+                  {product.name}
+                </span>
+              </div>
+              <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-4">
+                <span className="text-[0.96rem] font-semibold text-text/72">Kode</span>
+                <span className="text-right text-[0.96rem] font-bold text-text/82">
+                  {product.code}
+                </span>
+              </div>
+              <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-4">
+                <span className="text-[0.96rem] font-semibold text-text/72">Hash</span>
+                <span className="max-w-[11rem] truncate text-right text-[0.96rem] text-text/46">
+                  {product.hashPreview}
                 </span>
               </div>
             </motion.section>

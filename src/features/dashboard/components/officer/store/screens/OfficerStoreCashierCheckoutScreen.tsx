@@ -3,10 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
+import { createOfficerStoreSale } from "@/src/features/dashboard/api";
 import DashboardScreenShell from "@/src/features/dashboard/components/layout/DashboardScreenShell";
 import StoreCashierHeader from "@/src/features/dashboard/components/officer/store/common/StoreCashierHeader";
 import type { StoreCashierDraft } from "@/src/features/dashboard/storeTypes";
 import { getStoreCashierDraft, saveStoreCashierDraft } from "@/src/features/dashboard/utils/storeCashierDraftStorage";
+import { isApiError } from "@/src/shared/api";
 import CurrencyInput from "@/src/shared/components/ui/CurrencyInput";
 import PressButton from "@/src/shared/components/ui/PressButton";
 import { formatThousandGroupedNumber, sanitizeDigitInput } from "@/src/shared/utils/numberFormatting";
@@ -22,6 +24,7 @@ const fallbackDraft: StoreCashierDraft = {
       initials: "BP",
       name: "Beras Premium",
       price: 70000,
+      productId: "cashier-001",
       quantity: 2,
     },
   ],
@@ -38,10 +41,12 @@ export default function OfficerStoreCashierCheckoutScreen() {
   const router = useRouter();
   const draft = getStoreCashierDraft() ?? fallbackDraft;
   const [cashReceived, setCashReceived] = useState(draft.cashReceived);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const totalAmount = draft.totalAmount;
+  const totalValue = Number(totalAmount) || 0;
   const changeAmount = useMemo(() => {
-    const totalValue = Number(totalAmount) || 0;
     const receivedValue = Number(sanitizeDigitInput(cashReceived)) || 0;
 
     return String(Math.max(receivedValue - totalValue, 0));
@@ -102,7 +107,12 @@ export default function OfficerStoreCashierCheckoutScreen() {
             <CurrencyInput
               label="Uang diterima"
               value={cashReceived}
-              onValueChange={setCashReceived}
+              onValueChange={(value) => {
+                setCashReceived(value);
+                if (error) {
+                  setError("");
+                }
+              }}
               placeholder=""
               startAdornment={
                 <span className="text-[1.05rem] font-bold text-text/72">Rp</span>
@@ -116,22 +126,74 @@ export default function OfficerStoreCashierCheckoutScreen() {
               {formatRupiah(changeAmount)}
             </span>
           </div>
+
+          {error ? <p className="mt-4 text-sm text-error">{error}</p> : null}
         </div>
 
         <div className="sticky bottom-0 mt-auto border-t border-[#e2e6ea] bg-white/96 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 backdrop-blur">
           <PressButton
             type="button"
             className="w-full rounded-[12px] py-3.5 text-[0.98rem] font-bold"
-            onClick={() => {
-              saveStoreCashierDraft({
-                ...draft,
-                cashReceived,
-                changeAmount,
-              });
-              router.push("/dashboard/officer/store/cashier/success");
+            disabled={isSubmitting}
+            onClick={async () => {
+              const receivedValue =
+                Number(sanitizeDigitInput(cashReceived)) || 0;
+
+              if (receivedValue < totalValue) {
+                setError("Uang diterima belum mencukupi total belanja.");
+                return;
+              }
+
+              setError("");
+              setIsSubmitting(true);
+
+              try {
+                const response = await createOfficerStoreSale({
+                  clientSaleId: `sale-${Date.now()}`,
+                  cashReceived: receivedValue,
+                  items: draft.items.map((item) => ({
+                    productId: item.productId,
+                    quantity: item.quantity,
+                  })),
+                });
+
+                saveStoreCashierDraft({
+                  ...draft,
+                  cashReceived: String(receivedValue),
+                  changeAmount:
+                    response.data.change_amount !== undefined
+                      ? String(response.data.change_amount)
+                      : changeAmount,
+                  receiptNumber:
+                    response.data.sale_number || draft.receiptNumber,
+                  recordedBy:
+                    response.data.officer_name || draft.recordedBy,
+                  createdAtLabel:
+                    response.data.recorded_at || draft.createdAtLabel,
+                  hashPreview:
+                    response.data.hash_preview ||
+                    response.data.current_hash ||
+                    draft.hashPreview,
+                  saleId: response.data.store_sale_id,
+                  totalAmount:
+                    response.data.total_amount !== undefined
+                      ? String(response.data.total_amount)
+                      : draft.totalAmount,
+                });
+
+                router.push("/dashboard/officer/store/cashier/success");
+              } catch (requestError) {
+                setError(
+                  isApiError(requestError)
+                    ? requestError.message
+                    : "Terjadi kesalahan saat memproses pembayaran",
+                );
+              } finally {
+                setIsSubmitting(false);
+              }
             }}
           >
-            Proses Pembayaran
+            {isSubmitting ? "Memproses..." : "Proses Pembayaran"}
           </PressButton>
         </div>
       </div>
