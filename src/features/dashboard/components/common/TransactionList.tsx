@@ -1,4 +1,5 @@
 import { Icon } from "@iconify/react";
+import Link from "next/link";
 
 import type { DashboardTransaction } from "@/src/features/dashboard/types";
 import NextIcon from "./NextIcon";
@@ -72,33 +73,36 @@ export default function TransactionList({
             className={`shrink-0 ${compact ? "pt-0.5" : ""} flex items-start gap-2`}
           >
             <div className="text-right">
-            <p
-              className={`font-bold leading-tight ${
-                member
-                  ? transaction.direction === "outgoing"
-                    ? "text-[1.02rem] text-[#ef4444]"
-                    : "text-[1.02rem] text-primary"
-                  : compact
-                    ? "text-[0.95rem] text-text/70"
-                    : "text-[0.96rem] text-text/66"
-              }`}
-            >
-              {transaction.amount}
-            </p>
-
-            {member ? null : (
               <p
-                className={`mt-2 font-semibold ${
-                  compact ? "text-[0.72rem]" : "text-[0.76rem]"
-                } ${
-                  transaction.statusTone === "success"
-                    ? "text-primary"
-                    : "text-warning"
+                className={`font-bold leading-tight ${
+                  member
+                    ? transaction.direction === "outgoing"
+                      ? "text-[1.02rem] text-[#ef4444]"
+                      : "text-[1.02rem] text-primary"
+                    : compact
+                      ? "text-[0.95rem] text-text/70"
+                      : "text-[0.96rem] text-text/66"
                 }`}
               >
-                {transaction.status}
+                {transaction.amount}
               </p>
-            )}
+
+              {member ? null : (
+                <p
+                  className={`mt-2 font-semibold ${
+                    compact ? "text-[0.72rem]" : "text-[0.76rem]"
+                  } ${
+                    transaction.statusTone === "success"
+                      ? "text-primary"
+                      : "text-warning"
+                  }`}
+                >
+                  {transaction.status}
+                </p>
+              )}
+            </div>
+
+            {member ? null : <NextIcon className="mt-[1px] text-text/28" />}
           </div>
         </Link>
       ))}

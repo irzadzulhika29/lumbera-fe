@@ -52,6 +52,7 @@ export const officerDashboard: DashboardViewModel = {
   transactions: [
     {
       id: "trx-001",
+      href: "/dashboard/officer/transactions",
       initials: "BS",
       name: "Budi Setiawan",
       description: "Simpanan Wajib - 09.12",
@@ -62,6 +63,7 @@ export const officerDashboard: DashboardViewModel = {
     },
     {
       id: "trx-002",
+      href: "/dashboard/officer/transactions",
       initials: "RP",
       name: "Rahmad Pambudi",
       description: "Angsuran Pinjaman - 02.12",
@@ -72,6 +74,7 @@ export const officerDashboard: DashboardViewModel = {
     },
     {
       id: "trx-003",
+      href: "/dashboard/officer/transactions",
       initials: "RP",
       name: "Rahmad Pambudi",
       description: "Simpanan Wajib - 01.12",
@@ -82,6 +85,7 @@ export const officerDashboard: DashboardViewModel = {
     },
     {
       id: "trx-004",
+      href: "/dashboard/officer/transactions",
       initials: "RP",
       name: "Rahmad Pambudi",
       description: "Simpanan Wajib - 01.12",
