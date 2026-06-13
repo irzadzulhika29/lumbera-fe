@@ -3,27 +3,31 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 
-import { downloadOfficerMemberImportTemplate } from "@/src/features/dashboard/api";
+import {
+  downloadOfficerMemberImportTemplate,
+  type OfficerMemberImportData,
+  uploadOfficerMemberImport,
+} from "@/src/features/dashboard/api";
 import PressButton from "@/src/shared/components/ui/PressButton";
 
 export default function OfficerMemberImportForm({
   onImportSuccess,
   onSwitchMode,
 }: {
-  onImportSuccess: (fileName: string) => void;
+  onImportSuccess: (data: OfficerMemberImportData) => void;
   onSwitchMode: () => void;
 }) {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [downloadError, setDownloadError] = useState("");
+  const [uploadError, setUploadError] = useState("");
   const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
-    if (!file) {
-      return;
-    }
-
-    onImportSuccess(file.name);
+    setUploadError("");
+    setSelectedFile(file ?? null);
   };
 
   const handleTemplateDownload = async () => {
@@ -39,6 +43,28 @@ export default function OfficerMemberImportForm({
       );
     } finally {
       setIsDownloadingTemplate(false);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      setUploadError("Pilih file Excel terlebih dahulu.");
+      return;
+    }
+
+    try {
+      setUploadError("");
+      setIsUploading(true);
+      const response = await uploadOfficerMemberImport(selectedFile);
+      onImportSuccess(response.data);
+    } catch (error) {
+      setUploadError(
+        error instanceof Error
+          ? error.message
+          : "Gagal mengunggah file anggota. Coba lagi.",
+      );
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -77,10 +103,15 @@ export default function OfficerMemberImportForm({
             />
             <span className="text-[0.92rem] font-bold">Upload file excel</span>
           </div>
-          <div className="flex-1 px-4 text-[0.95rem] text-[#94a3b8]">
-            data.xlsx
+          <div className="min-w-0 flex-1 truncate px-4 text-[0.95rem] text-[#94a3b8]">
+            {selectedFile?.name ?? "Pilih file Excel"}
           </div>
         </div>
+        {uploadError ? (
+          <p className="mt-1 text-[0.88rem] font-medium text-[#e74c3c]">
+            {uploadError}
+          </p>
+        ) : null}
       </div>
 
       <div className="my-6 flex items-center justify-center">
@@ -101,8 +132,13 @@ export default function OfficerMemberImportForm({
       ) : null}
 
       <div className="mt-auto flex flex-col gap-4 pt-24">
-        <PressButton className="h-14 w-full rounded-[12px] text-[1.05rem] font-bold">
-          Lanjut
+        <PressButton
+          type="button"
+          onClick={handleUpload}
+          disabled={!selectedFile || isUploading}
+          className="h-14 w-full rounded-[12px] text-[1.05rem] font-bold"
+        >
+          {isUploading ? "Mengunggah..." : "Lanjut"}
         </PressButton>
         <button
           type="button"
