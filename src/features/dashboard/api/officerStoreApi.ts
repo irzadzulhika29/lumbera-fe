@@ -113,6 +113,52 @@ export type CreateOfficerStoreSaleResponse = {
   };
 };
 
+export type CreateOfficerStoreStockInResponse = {
+  status: {
+    code: number;
+    isSuccess: boolean;
+  };
+  message: string;
+  data: {
+    stock_movement_id: string;
+    product_id: string;
+    product_code: string;
+    product_name: string;
+    unit: string;
+    officer_name: string;
+    quantity_delta: number;
+    resulting_stock_quantity: number;
+    unit_cost: number;
+    sale_price: number;
+    description: string;
+    recorded_at: string;
+    current_hash: string;
+    hash_preview: string;
+  };
+};
+
+export type CreateOfficerStoreAdjustmentResponse = {
+  status: {
+    code: number;
+    isSuccess: boolean;
+  };
+  message: string;
+  data: {
+    stock_movement_id: string;
+    product_id: string;
+    product_code: string;
+    product_name: string;
+    unit: string;
+    officer_name: string;
+    quantity_delta: number;
+    resulting_stock_quantity: number;
+    description: string;
+    recorded_at: string;
+    current_hash: string;
+    hash_preview: string;
+  };
+};
+
 async function parseError(response: Response, fallbackMessage: string) {
   const errorPayload = (await response.json().catch(() => null)) as {
     message?: string;
@@ -243,4 +289,76 @@ export async function createOfficerStoreSale(input: {
   }
 
   return (await response.json()) as CreateOfficerStoreSaleResponse;
+}
+
+export async function createOfficerStoreStockIn(input: {
+  productId: string;
+  quantity: number;
+  unitCost: number;
+  salePrice: number;
+  description: string;
+  isOfflineCreated?: boolean;
+  clientReferenceId?: string;
+}): Promise<CreateOfficerStoreStockInResponse> {
+  const accessToken = getRequiredAccessToken();
+  const response = await fetch(
+    `/api/dashboard/officer/store/products/${input.productId}/stock-in`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        accessToken,
+        quantity: input.quantity,
+        unit_cost: input.unitCost,
+        sale_price: input.salePrice,
+        description: input.description,
+        is_offline_created: input.isOfflineCreated ?? false,
+        client_reference_id: input.clientReferenceId,
+      }),
+      cache: "no-store",
+    },
+  );
+
+  if (!response.ok) {
+    await parseError(response, "Gagal menambah stok produk.");
+  }
+
+  return (await response.json()) as CreateOfficerStoreStockInResponse;
+}
+
+export async function createOfficerStoreAdjustment(input: {
+  productId: string;
+  quantityDelta: number;
+  description: string;
+  isOfflineCreated?: boolean;
+  clientReferenceId?: string;
+}): Promise<CreateOfficerStoreAdjustmentResponse> {
+  const accessToken = getRequiredAccessToken();
+  const response = await fetch(
+    `/api/dashboard/officer/store/products/${input.productId}/adjustments`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        accessToken,
+        quantity_delta: input.quantityDelta,
+        description: input.description,
+        is_offline_created: input.isOfflineCreated ?? false,
+        client_reference_id: input.clientReferenceId,
+      }),
+      cache: "no-store",
+    },
+  );
+
+  if (!response.ok) {
+    await parseError(response, "Gagal menyesuaikan stok produk.");
+  }
+
+  return (await response.json()) as CreateOfficerStoreAdjustmentResponse;
 }

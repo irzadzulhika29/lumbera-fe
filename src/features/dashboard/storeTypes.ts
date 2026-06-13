@@ -72,8 +72,18 @@ export type StoreProductSuccess = {
 export type StoreStockInDraft = {
   costPrice: string;
   createdAtLabel: string;
+  description: string;
   hashPreview: string;
   incomingQuantity: string;
+  payload: {
+    clientReferenceId?: string;
+    description: string;
+    isOfflineCreated?: boolean;
+    productId: string;
+    quantity: number;
+    salePrice: number;
+    unitCost: number;
+  };
   productInitials: string;
   productName: string;
   productSku: string;
@@ -92,6 +102,13 @@ export type StoreStockAdjustmentDraft = {
   costPrice: string;
   createdAtLabel: string;
   hashPreview: string;
+  payload: {
+    clientReferenceId?: string;
+    description: string;
+    isOfflineCreated?: boolean;
+    productId: string;
+    quantityDelta: number;
+  };
   productInitials: string;
   productName: string;
   productSku: string;
