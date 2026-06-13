@@ -129,7 +129,7 @@ export default function OfficerTransactionDetailScreen({
           <button
             type="button"
             onClick={() => setIsCancelModalOpen(true)}
-            className="w-full rounded-[14px] bg-[#E52525] px-4 py-5 text-[1rem] font-bold text-white shadow-[0_6px_0_0_#B91C1C]"
+            className="w-full rounded-[14px] bg-[#E52525] px-4 py-3 text-[1rem] font-bold text-white shadow-[0_6px_0_0_#B91C1C]"
           >
             Batalkan
           </button>

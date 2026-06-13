@@ -97,7 +97,7 @@ export default function ConfirmationModal({
             value={reasonValue}
             onChange={(event) => onReasonChange?.(event.target.value)}
             placeholder={reasonPlaceholder}
-            className="mt-10 h-[76px] w-full rounded-[20px] border-4 border-[#dddddf] bg-white px-8 text-[1.2rem] font-medium text-[#394653] outline-none transition-colors placeholder:text-[#c8c8cc] focus:border-[#cfcfd3] sm:h-[92px] sm:text-[1.5rem]"
+            className="mt-10 h-[64px] w-full rounded-[20px] border-4 border-[#dddddf] bg-white px-8 text-[1rem] font-medium text-[#394653] outline-none transition-colors placeholder:text-[#c8c8cc] focus:border-[#cfcfd3] sm:h-[92px] sm:text-[1.5rem]"
           />
 
           <PressButton
@@ -105,7 +105,7 @@ export default function ConfirmationModal({
             variant="danger"
             disabled={isSubmitting}
             onClick={onConfirm}
-            className="mt-9 h-[72px] w-full rounded-[18px] text-[1.25rem] font-bold shadow-[0_6px_0_0_var(--color-error-shadow)] sm:h-[82px] sm:text-[1.45rem]"
+            className="mt-9 h-[56px] w-full rounded-[18px] text-[1rem] font-bold shadow-[0_6px_0_0_var(--color-error-shadow)] sm:h-[82px] sm:text-[1.45rem]"
           >
             {isSubmitting ? "Memproses..." : actionLabel}
           </PressButton>

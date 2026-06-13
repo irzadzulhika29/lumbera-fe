@@ -340,7 +340,7 @@ export default function OfficerReportScreen({
 
             <Link
               href={`/dashboard/reports/finance?period=${period}`}
-              className="mt-7 block w-full rounded-[14px] bg-primary px-4 py-5 text-center text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
+              className="mt-3 block w-full rounded-[14px] bg-primary px-4 py-3 text-center text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
             >
               Lihat Laporan
             </Link>
@@ -349,10 +349,10 @@ export default function OfficerReportScreen({
           <section className="mt-5 flex items-start gap-5">
             <div className="shrink-0">
               <SecurityQr />
-              <p className="mt-4 text-[0.88rem] font-medium text-primary">
+              <p className="mt-4 text-xs font-medium text-primary">
                 Terakhir di cek
               </p>
-              <p className="mt-2 text-[0.88rem] font-medium text-primary">
+              <p className=" text-xs font-medium text-primary">
                 {latestPeriodLabel}
               </p>
             </div>
@@ -366,7 +366,7 @@ export default function OfficerReportScreen({
 
               <Link
                 href="/dashboard/reports/security"
-                className="block mt-5 rounded-[14px] bg-primary px-6 py-5 text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
+                className="block mt-5 rounded-[14px] bg-primary px-6 py-3 text-[1rem] font-bold text-white shadow-[0_4px_0_0_var(--color-primary-shadow)] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0.5"
               >
                 Cek sekarang
               </Link>
