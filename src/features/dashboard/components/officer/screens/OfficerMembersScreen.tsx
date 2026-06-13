@@ -90,7 +90,7 @@ export default function OfficerMembersScreen() {
       background="bg-[#fafafa]"
       navigationItems={navigationItems}
     >
-      <header className="relative bg-primary px-5 pb-20 pt-[calc(2rem+env(safe-area-inset-top))] text-white">
+      <header className="relative bg-primary-deep px-5 pb-20 pt-[calc(2rem+env(safe-area-inset-top))] text-white">
         <div className="flex items-center justify-between">
           <div className="min-w-0 pr-4">
             <h1 className="text-[1.85rem] font-bold leading-tight tracking-[-0.04em] text-white">

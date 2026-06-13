@@ -28,9 +28,9 @@ export const officerDashboard: DashboardViewModel = {
   ],
   actions: [
     {
-      label: "Atur Stok",
+      label: "Toko & Stok",
       description: "",
-      href: "/dashboard/officer/transactions",
+      href: "/dashboard/officer/store",
       icon: "savings",
       tone: "teal",
     },

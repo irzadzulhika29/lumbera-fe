@@ -12,7 +12,7 @@ export const memberDashboard: DashboardViewModel = {
   metrics: [],
   actions: [
     {
-      label: "Atur Stok",
+      label: "Toko & Stok",
       description: "",
       href: "/dashboard/member",
       icon: "savings",

@@ -4,9 +4,9 @@ import Link from "next/link";
 import type { DashboardAction } from "@/src/features/dashboard/types";
 
 const quickActionIconMap = {
-  "Atur Stok": "/ornament/stock.svg",
-  Transaksi: "/ornament/transaction.svg",
-  Laporan: "/ornament/report.svg",
+  savings: "/ornament/stock.svg",
+  loan: "/ornament/transaction.svg",
+  reports: "/ornament/report.svg",
 } as const;
 
 export default function QuickActions({
@@ -36,14 +36,16 @@ export default function QuickActions({
             <span
               className="flex h-[82px] w-full items-center justify-center rounded-[18px] bg-[linear-gradient(180deg,#E7F1F1_0%,#ACD5D4_100%)]"
             >
-              <Image
-                src={quickActionIconMap[action.label as keyof typeof quickActionIconMap]}
-                alt=""
-                aria-hidden="true"
-                width={56}
-                height={56}
-                className="h-[52px] w-[52px] object-contain"
-              />
+              {action.icon in quickActionIconMap ? (
+                <Image
+                  src={quickActionIconMap[action.icon as keyof typeof quickActionIconMap]}
+                  alt=""
+                  aria-hidden="true"
+                  width={56}
+                  height={56}
+                  className="h-[52px] w-[52px] object-contain"
+                />
+              ) : null}
             </span>
             <span className="min-w-0 text-center">
               <strong className="block text-[0.76rem] font-bold leading-tight tracking-[-0.02em] text-text">
