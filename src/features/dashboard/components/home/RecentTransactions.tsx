@@ -1,14 +1,44 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
+import {
+  getOfficerTransactions,
+  mapOfficerTransactionToDashboardTransaction,
+} from "@/src/features/dashboard/api";
 import type { DashboardTransaction } from "@/src/features/dashboard/types";
 
 import TransactionList from "../common/TransactionList";
 
 export default function RecentTransactions({
-  transactions,
+  initialTransactions,
 }: {
-  transactions: DashboardTransaction[];
+  initialTransactions: DashboardTransaction[];
 }) {
+  const [transactions, setTransactions] = useState(initialTransactions);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getOfficerTransactions({ limit: 5, page: 1 })
+      .then((response) => {
+        if (cancelled) return;
+        setTransactions(
+          response.data.items.map(mapOfficerTransactionToDashboardTransaction),
+        );
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setTransactions(initialTransactions);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialTransactions]);
+
   return (
     <section aria-labelledby="recent-transactions-title" className="mt-10">
       <div className="flex items-center justify-between gap-4">

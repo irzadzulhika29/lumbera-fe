@@ -26,7 +26,7 @@ export default function DashboardScreen({ role }: { role: DashboardRole }) {
 
       <div className="bg-[#f7f8f9] px-5 pb-5 pt-[58px]">
         <QuickActions actions={dashboard.actions} />
-        <RecentTransactions transactions={dashboard.transactions} />
+        <RecentTransactions initialTransactions={dashboard.transactions.slice(0, 5)} />
       </div>
     </DashboardScreenShell>
   );
