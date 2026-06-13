@@ -120,6 +120,23 @@ function formatDateTime(recordedAt: string) {
     .replace(/\//g, ".");
 }
 
+function buildOfficerTransactionDetailHref(item: OfficerTransactionItem) {
+  const params = new URLSearchParams({
+    amount: String(item.amount),
+    description: item.description,
+    hash: item.hash_preview || `SHA-256: ${item.current_hash.slice(0, 8)}...`,
+    memberName: item.member_name,
+    memberNumber: item.member_number,
+    officerName: item.officer_name,
+    recordedAt: item.recorded_at,
+    status: item.sync_status,
+    transactionGroup: item.transaction_group,
+    transactionTypeLabel: item.transaction_type_label,
+  });
+
+  return `/dashboard/officer/transactions/detail/${item.transaction_id}?${params.toString()}`;
+}
+
 function formatAmount(value: number, transactionGroup: OfficerTransactionItem["transaction_group"]) {
   const prefix = transactionGroup === "PENARIKAN" ? "-" : "+";
   return `${prefix}Rp${new Intl.NumberFormat("id-ID").format(value)}`;
@@ -146,6 +163,7 @@ export function mapOfficerTransactionToDashboardTransaction(
 ): DashboardTransaction {
   return {
     id: item.transaction_id,
+    href: buildOfficerTransactionDetailHref(item),
     initials: buildInitials(item.member_name),
     name: item.member_name,
     description: `${item.transaction_type_label} · ${formatDateTime(item.recorded_at)}`,
