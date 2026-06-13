@@ -2,12 +2,16 @@
 
 import { useEffect, useState } from "react";
 
-import { getMemberDashboard } from "@/src/features/dashboard/api";
+import { getMemberDashboard, getUserProfile } from "@/src/features/dashboard/api";
 import type {
   DashboardCreditProfile,
   DashboardMemberSummary,
   DashboardTransaction,
 } from "@/src/features/dashboard/types";
+import {
+  formatDashboardName,
+  getProfileSubtitle,
+} from "@/src/features/dashboard/utils/profileMapper";
 
 import DashboardHeader from "./DashboardHeader";
 import MemberCreditProfileCard from "./MemberCreditProfileCard";
@@ -77,13 +81,20 @@ export default function MemberDashboardContent({
   useEffect(() => {
     let cancelled = false;
 
-    getMemberDashboard()
-      .then((response) => {
+    Promise.all([getMemberDashboard(), getUserProfile()])
+      .then(([response, profileResponse]) => {
         if (cancelled) return;
 
-        setUserName(response.data.profile.full_name);
-        setCooperativeName(response.data.profile.cooperative_name);
-        setPeriod(response.data.profile.member_number);
+        setUserName(formatDashboardName(profileResponse.data.profile.full_name));
+        setCooperativeName(
+          profileResponse.data.profile.cooperative_name?.trim() ||
+            response.data.profile.cooperative_name,
+        );
+        setPeriod(
+          profileResponse.data.profile.member_number?.trim() ||
+            response.data.profile.member_number ||
+            getProfileSubtitle(profileResponse.data),
+        );
         setSummary({
           title: "Total Saldo Tabungan",
           totalAmount: formatCurrency(response.data.savings.total_balance),

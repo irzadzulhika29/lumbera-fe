@@ -2,8 +2,15 @@
 
 import { useEffect, useState } from "react";
 
-import { getOfficerDashboardSummary } from "@/src/features/dashboard/api";
+import {
+  getOfficerDashboardSummary,
+  getUserProfile,
+} from "@/src/features/dashboard/api";
 import type { DashboardMetric } from "@/src/features/dashboard/types";
+import {
+  formatDashboardName,
+  getProfileSubtitle,
+} from "@/src/features/dashboard/utils/profileMapper";
 
 import DashboardHeader from "./DashboardHeader";
 import DashboardStats from "./DashboardStats";
@@ -25,38 +32,51 @@ export default function OfficerDashboardSummaryHeader({
   syncLabel,
   userName,
 }: OfficerDashboardSummaryHeaderProps) {
+  const [dashboardCooperativeName, setDashboardCooperativeName] =
+    useState(cooperativeName);
+  const [dashboardUserName, setDashboardUserName] = useState(userName);
   const [metrics, setMetrics] = useState<DashboardMetric[]>(initialMetrics);
   const [periodLabel, setPeriodLabel] = useState(initialPeriod);
 
   useEffect(() => {
     let cancelled = false;
 
-    getOfficerDashboardSummary()
-      .then((response) => {
+    Promise.all([getOfficerDashboardSummary(), getUserProfile()])
+      .then(([summaryResponse, profileResponse]) => {
         if (cancelled) return;
 
+        setDashboardUserName(
+          formatDashboardName(profileResponse.data.profile.full_name),
+        );
+        setDashboardCooperativeName(
+          profileResponse.data.profile.cooperative_name?.trim() ||
+            getProfileSubtitle(profileResponse.data),
+        );
         setMetrics([
           {
             label: "CHS Score",
-            value: String(response.data.chs.display_score),
-            badge: `Grade ${response.data.chs.grade}`,
-            caption: response.data.chs.category,
+            value: String(summaryResponse.data.chs.display_score),
+            badge: `Grade ${summaryResponse.data.chs.grade}`,
+            caption: summaryResponse.data.chs.category,
             tone:
-              response.data.chs.grade === "A" || response.data.chs.grade === "B"
+              summaryResponse.data.chs.grade === "A" ||
+              summaryResponse.data.chs.grade === "B"
                 ? "success"
                 : "muted",
           },
           {
             label: "Anggota Aktif",
-            value: `${response.data.members.active} Anggota`,
-            caption: `dari ${response.data.members.registered} terdaftar`,
+            value: `${summaryResponse.data.members.active} Anggota`,
+            caption: `dari ${summaryResponse.data.members.registered} terdaftar`,
             tone: "muted",
           },
         ]);
-        setPeriodLabel(`KSP · ${response.data.period_label}`);
+        setPeriodLabel(`KSP · ${summaryResponse.data.period_label}`);
       })
       .catch(() => {
         if (cancelled) return;
+        setDashboardCooperativeName(cooperativeName);
+        setDashboardUserName(userName);
         setMetrics(initialMetrics);
         setPeriodLabel(initialPeriod);
       });
@@ -64,13 +84,13 @@ export default function OfficerDashboardSummaryHeader({
     return () => {
       cancelled = true;
     };
-  }, [initialMetrics, initialPeriod]);
+  }, [cooperativeName, initialMetrics, initialPeriod, userName]);
 
   return (
     <DashboardHeader
       greeting={greeting}
-      userName={userName}
-      cooperativeName={cooperativeName}
+      userName={dashboardUserName}
+      cooperativeName={dashboardCooperativeName}
       period={periodLabel}
       syncLabel={syncLabel ?? ""}
       stats={<DashboardStats metrics={metrics} />}

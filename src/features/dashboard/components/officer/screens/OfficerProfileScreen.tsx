@@ -1,8 +1,19 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+
+import { getUserProfile, type UserProfileResponse } from "@/src/features/dashboard/api";
 import { useLogout } from "@/src/features/auth/hooks/useLogout";
 import MobileScreen from "@/src/shared/components/layout/MobileScreen";
 import { getDashboardNavigation } from "@/src/features/dashboard/data";
+import {
+  buildProfileInitials,
+  formatProfileDisplayName,
+  formatProfileJoinedDate,
+  formatProfilePhoneNumber,
+  getProfileRoleLabel,
+  getProfileSubtitle,
+} from "@/src/features/dashboard/utils/profileMapper";
 import DashboardScreenShell from "../../layout/DashboardScreenShell";
 import ProfileHeader from "../../common/profile/ProfileHeader";
 import ProfileLogoutButton from "../../common/profile/ProfileLogoutButton";
@@ -35,16 +46,75 @@ const cooperativeMenus = [
   },
 ] as const;
 
-const profileSummary = [
-  { label: "Koperasi", value: "Koperasi Padiwangi", wideLabel: true },
-  { label: "Kode Koperasi", value: "Z4Q56T", wideLabel: true },
-  { label: "CHS", value: "78 · A" },
-  { label: "Tanggal Bergabung", value: "12 Juni 2021", tone: "primary", wideLabel: true },
-] as const;
-
 export default function OfficerProfileScreen() {
   const navigationItems = getDashboardNavigation("officer", "Profil");
   const { isSubmitting, handleLogout } = useLogout();
+  const [profileData, setProfileData] = useState<UserProfileResponse["data"] | null>(
+    null,
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getUserProfile()
+      .then((response) => {
+        if (cancelled) return;
+        setProfileData(response.data);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setProfileData(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const profileSummary = useMemo(() => {
+    if (!profileData) {
+      return [
+        { label: "Koperasi", value: "-", wideLabel: true },
+        { label: "Peran", value: "Pengurus", wideLabel: true },
+        { label: "Nomor HP", value: "-", wideLabel: true },
+      ];
+    }
+
+    return [
+      {
+        label: "Koperasi",
+        value: profileData.profile.cooperative_name?.trim() || "-",
+        wideLabel: true,
+      },
+      {
+        label: "Kode Koperasi",
+        value: profileData.profile.cooperative_code?.trim() || "-",
+        wideLabel: true,
+      },
+      {
+        label: "Peran",
+        value: getProfileRoleLabel(profileData),
+        wideLabel: true,
+      },
+      {
+        label: "Nomor HP",
+        value: formatProfilePhoneNumber(profileData.profile.phone_number),
+        wideLabel: true,
+      },
+      {
+        label: "Tanggal Bergabung",
+        value: formatProfileJoinedDate(profileData.profile.joined_date),
+        tone: "primary",
+        wideLabel: true,
+      },
+    ] as const;
+  }, [profileData]);
+
+  const initials = profileData ? buildProfileInitials(profileData.profile) : "NA";
+  const name = profileData
+    ? formatProfileDisplayName(profileData.profile.full_name)
+    : "Pengguna";
+  const subtitle = profileData ? getProfileSubtitle(profileData) : "Pengurus";
 
   return (
     <MobileScreen className="bg-surface">
@@ -53,11 +123,7 @@ export default function OfficerProfileScreen() {
         navigationItems={navigationItems}
         contentClassName="[scrollbar-color:rgba(18,148,144,0.28)_transparent]"
       >
-        <ProfileHeader
-          initials="BS"
-          name="Udin Semleyot"
-          subtitle="Bendahara"
-        />
+        <ProfileHeader initials={initials} name={name} subtitle={subtitle} />
 
         <div className="-mt-7 px-4 pb-10">
           <ProfileSummaryCard items={profileSummary} />
