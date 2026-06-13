@@ -87,7 +87,7 @@ export default function MemberDashboardContent({
 
         setUserName(formatDashboardName(profileResponse.data.profile.full_name));
         setCooperativeName(
-          profileResponse.data.profile.cooperative_name?.trim() ||
+          profileResponse.data.profile.cooperative?.name?.trim() ||
             response.data.profile.cooperative_name,
         );
         setPeriod(

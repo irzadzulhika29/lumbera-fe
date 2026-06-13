@@ -96,9 +96,10 @@ export function formatProfilePhoneNumber(value?: string | null) {
 export function getProfileSubtitle(data: UserProfileResponse["data"]) {
   const { profile } = data;
 
+  const cooperativeName = profile.cooperative?.name?.trim();
+
   if (data.role_code === "ANGGOTA") {
     const memberNumber = profile.member_number?.trim();
-    const cooperativeName = profile.cooperative_name?.trim();
 
     return [memberNumber, cooperativeName].filter(Boolean).join(" · ") || "Anggota";
   }
@@ -106,7 +107,7 @@ export function getProfileSubtitle(data: UserProfileResponse["data"]) {
   return (
     profile.position_label?.trim() ||
     profile.position?.trim() ||
-    profile.cooperative_name?.trim() ||
+    cooperativeName ||
     "Pengurus"
   );
 }
