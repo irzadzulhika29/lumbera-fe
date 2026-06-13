@@ -1,8 +1,8 @@
- "use client";
+"use client";
 
 import { useEffect, useState } from "react";
 
-import { getOfficerCooperativeHealthScore } from "@/src/features/dashboard/api";
+import { getOfficerDashboardSummary } from "@/src/features/dashboard/api";
 import { getDashboardData } from "@/src/features/dashboard/data";
 import type { DashboardMetric, DashboardRole } from "@/src/features/dashboard/types";
 
@@ -15,9 +15,11 @@ import DashboardScreenShell from "../layout/DashboardScreenShell";
 export default function DashboardScreen({ role }: { role: DashboardRole }) {
   const dashboard = getDashboardData(role);
   const [metrics, setMetrics] = useState<DashboardMetric[]>(dashboard.metrics);
+  const [periodLabel, setPeriodLabel] = useState(dashboard.period);
 
   useEffect(() => {
     setMetrics(dashboard.metrics);
+    setPeriodLabel(dashboard.period);
   }, [dashboard.metrics]);
 
   useEffect(() => {
@@ -27,30 +29,34 @@ export default function DashboardScreen({ role }: { role: DashboardRole }) {
 
     let cancelled = false;
 
-    getOfficerCooperativeHealthScore()
+    getOfficerDashboardSummary()
       .then((response) => {
         if (cancelled) return;
 
         const chsMetric: DashboardMetric = {
           label: "CHS Score",
-          value: String(response.data.display_score),
-          badge: `Grade ${response.data.grade}`,
-          caption: response.data.category,
+          value: String(response.data.chs.display_score),
+          badge: `Grade ${response.data.chs.grade}`,
+          caption: response.data.chs.category,
           tone:
-            response.data.grade === "A" || response.data.grade === "B"
+            response.data.chs.grade === "A" || response.data.chs.grade === "B"
               ? "success"
               : "muted",
         };
+        const activeMembersMetric: DashboardMetric = {
+          label: "Anggota Aktif",
+          value: `${response.data.members.active} Anggota`,
+          caption: `dari ${response.data.members.registered} terdaftar`,
+          tone: "muted",
+        };
 
-        setMetrics((currentMetrics) =>
-          currentMetrics.map((metric, index) =>
-            index === 0 || metric.label === "CHS Score" ? chsMetric : metric,
-          ),
-        );
+        setMetrics([chsMetric, activeMembersMetric]);
+        setPeriodLabel(`KSP · ${response.data.period_label}`);
       })
       .catch(() => {
         if (!cancelled) {
           setMetrics(dashboard.metrics);
+          setPeriodLabel(dashboard.period);
         }
       });
 
@@ -68,7 +74,7 @@ export default function DashboardScreen({ role }: { role: DashboardRole }) {
         greeting={dashboard.greeting}
         userName={dashboard.userName}
         cooperativeName={dashboard.cooperativeName}
-        period={dashboard.period}
+        period={periodLabel}
         syncLabel={dashboard.syncLabel}
         stats={<DashboardStats metrics={metrics} />}
       />

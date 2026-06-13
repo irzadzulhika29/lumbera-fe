@@ -1,3 +1,4 @@
+export * from "./officerDashboardSummaryApi";
 export * from "./officerCooperativeHealthScoreApi";
 export * from "./officerFinancialReportApi";
 export * from "./officerMemberApi";
