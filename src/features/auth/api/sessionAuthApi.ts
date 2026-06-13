@@ -9,6 +9,8 @@ import type {
   ForgotPinVerifyOtpRequest,
   LoginData,
   LoginRequest,
+  LogoutData,
+  LogoutRequest,
 } from "./authTypes";
 import {
   normalizePhoneNumberForApi,
@@ -130,6 +132,32 @@ export const setForgotPin = async ({
       message: response.message || "Gagal menyimpan PIN baru",
       status: response.status?.code ?? 500,
       code: "AUTH_FORGOT_PIN_SET_PIN_FAILED",
+      details: response,
+    });
+  }
+
+  return response.data;
+};
+
+export const logout = async ({
+  refreshToken,
+}: {
+  refreshToken: string;
+}) => {
+  const payload: LogoutRequest = {
+    refresh_token: refreshToken,
+  };
+
+  const response = await apiClient.post<ApiEnvelope<LogoutData>, LogoutRequest>(
+    "/auth/logout",
+    payload,
+  );
+
+  if (!response.status?.isSuccess) {
+    throw new ApiError({
+      message: response.message || "Gagal keluar dari akun",
+      status: response.status?.code ?? 500,
+      code: "AUTH_LOGOUT_FAILED",
       details: response,
     });
   }

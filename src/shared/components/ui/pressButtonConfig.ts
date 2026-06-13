@@ -94,6 +94,12 @@ export const PRESS_BUTTON_VARIANTS = {
     hoverShadow: "0 2px 0 0 var(--color-error-shadow)",
     pressShadow: "0 1px 0 0 var(--color-error-shadow)",
   },
+  reject: {
+    base: "border border-error bg-card text-error hover:bg-error/10",
+    shadow: "0 4px 0 0 var(--color-error-shadow)",
+    hoverShadow: "0 2px 0 0 var(--color-error-shadow)",
+    pressShadow: "0 1px 0 0 var(--color-error-shadow)",
+  },
 } satisfies Record<string, PressButtonStyle>;
 
 export type PressButtonVariant = keyof typeof PRESS_BUTTON_VARIANTS;

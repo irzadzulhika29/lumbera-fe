@@ -3,7 +3,7 @@
 import { startTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { startOnboarding } from "@/src/features/auth/api/authApi";
+import { checkMemberPhone, startOnboarding } from "@/src/features/auth/api/authApi";
 import type { AuthEntryFlow, RoleOptionId } from "@/src/features/onboarding/content";
 import {
   getAuthOtpHref,
@@ -11,6 +11,10 @@ import {
 } from "@/src/features/onboarding/content";
 import { isApiError } from "@/src/shared/api";
 
+import {
+  clearMemberPinActivationSession,
+  saveMemberPinActivationSession,
+} from "../utils/memberPinActivationStorage";
 import { saveOnboardingDraftSession } from "../utils/onboardingDraftStorage";
 import { getPendingLoginPhoneStorageKey } from "../utils/pinSetupFlow";
 
@@ -62,6 +66,34 @@ export function usePhoneAuthFlow(roleId: RoleOptionId, flow: AuthEntryFlow) {
         startTransition(() => {
           router.push(getAuthOtpHref(roleId));
         });
+      } else if (roleId === "member") {
+        const activationSession = await checkMemberPhone({
+          phoneNumber: normalizedPhone,
+        });
+
+        window.sessionStorage.setItem(
+          getPendingLoginPhoneStorageKey(roleId),
+          activationSession.phone_number,
+        );
+
+        if (activationSession.status === "ACTIVE") {
+          clearMemberPinActivationSession();
+
+          startTransition(() => {
+            router.push(getAuthPinHref(roleId, "login"));
+          });
+        } else {
+          saveMemberPinActivationSession({
+            activationChallengeId: activationSession.activation_challenge_id,
+            activationToken: activationSession.activation_token,
+            phoneNumber: activationSession.phone_number,
+            expiresInSeconds: activationSession.expires_in_seconds,
+          });
+
+          startTransition(() => {
+            router.push(getAuthPinHref(roleId, "create"));
+          });
+        }
       } else {
         window.sessionStorage.setItem(
           getPendingLoginPhoneStorageKey(roleId),

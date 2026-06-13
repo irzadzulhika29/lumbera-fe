@@ -8,6 +8,11 @@ const colorGroups = [
     tokens: [
       { name: "Primary", hex: "#129490", swatchClass: "bg-primary" },
       {
+        name: "Primary Deep",
+        hex: "#0e6f6c",
+        swatchClass: "bg-[var(--color-primary-deep)]",
+      },
+      {
         name: "Primary Shadow",
         hex: "#0e7673",
         swatchClass: "bg-[var(--color-primary-shadow)]",
