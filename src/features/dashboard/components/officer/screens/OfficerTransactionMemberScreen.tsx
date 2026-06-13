@@ -2,11 +2,15 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
+  getOfficerMembers,
+  type OfficerMemberItem,
+} from "@/src/features/dashboard/api/officerMemberApi";
+import {
   getOfficerTransactionTypeConfig,
-  officerMembers,
+  type OfficerMember,
   type OfficerTransactionType,
 } from "@/src/features/dashboard/transactionFlow";
 
@@ -22,18 +26,65 @@ export default function OfficerTransactionMemberScreen({
   type: OfficerTransactionType;
 }) {
   const [query, setQuery] = useState("");
+  const [members, setMembers] = useState<OfficerMemberItem[]>([]);
+  const [memberTotal, setMemberTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const transaction = getOfficerTransactionTypeConfig(type);
 
-  const filteredMembers = useMemo(
+  const fetchMembers = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await getOfficerMembers({
+        search: query.trim() || undefined,
+        page: 1,
+        limit: 20,
+      });
+
+      setMembers(response.data.items ?? []);
+      setMemberTotal(response.data.total ?? 0);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal memuat data anggota");
+      setMembers([]);
+      setMemberTotal(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [query]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchMembers();
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [fetchMembers]);
+
+  const formattedMembers = useMemo<OfficerMember[]>(
     () =>
-      query.trim()
-        ? officerMembers.filter(
-            (member) =>
-              member.name.toLowerCase().includes(query.toLowerCase()) ||
-              member.meta.toLowerCase().includes(query.toLowerCase()),
-          )
-        : officerMembers,
-    [query],
+      members.map((member) => ({
+        id: member.member_id,
+        initials: member.initials,
+        name: member.full_name,
+        meta: `No. Ang. ${member.member_number} - KSP - Grade ${member.mcs_grade}`,
+      })),
+    [members],
+  );
+
+  const buildCreateHref = useCallback(
+    (member: OfficerMember) => {
+      const params = new URLSearchParams({
+        memberId: member.id,
+        memberName: member.name,
+        initials: member.initials,
+        meta: member.meta,
+      });
+
+      return `/dashboard/officer/transactions/${type}/create?${params.toString()}`;
+    },
+    [type],
   );
 
   if (!transaction) {
@@ -59,15 +110,25 @@ export default function OfficerTransactionMemberScreen({
 
       <div className="bg-white px-5 pb-8 pt-[46px]">
         <p className="text-[0.92rem] font-medium text-text/78">
-          Menampilkan {filteredMembers.length} anggota koperasi.
+          {loading
+            ? "Memuat anggota koperasi..."
+            : `Menampilkan ${formattedMembers.length} dari ${memberTotal} anggota koperasi.`}
         </p>
 
         <div className="mt-8 space-y-6">
-          {filteredMembers.length > 0 ? (
-            filteredMembers.map((member) => (
+          {loading ? (
+            <p className="pt-10 text-center text-[0.92rem] font-medium text-text/55">
+              Memuat data...
+            </p>
+          ) : error ? (
+            <p className="pt-10 text-center text-[0.92rem] font-medium text-red-500">
+              {error}
+            </p>
+          ) : formattedMembers.length > 0 ? (
+            formattedMembers.map((member) => (
               <Link
                 key={member.id}
-                href={`/dashboard/officer/transactions/${type}/create?memberId=${member.id}`}
+                href={buildCreateHref(member)}
                 className="flex items-center gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 <MemberSummary

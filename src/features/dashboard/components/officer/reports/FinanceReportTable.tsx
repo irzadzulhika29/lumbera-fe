@@ -29,11 +29,8 @@ function resolveRowValues(
       .map((value) => (typeof value === "number" ? { amount: value } : value));
   }
 
-  const fallbackValue =
-    row.tone === "negative" || row.tone === "positive" ? 1_000_000 : 0;
-
   return Array.from({ length: columnCount }, () => ({
-    amount: fallbackValue,
+    amount: 0,
   }));
 }
 

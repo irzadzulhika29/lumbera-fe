@@ -29,6 +29,7 @@ export type DashboardAction = {
 
 export type DashboardTransaction = {
   id: string;
+  href: string;
   initials: string;
   name: string;
   description: string;

@@ -1,3 +1,8 @@
+import type {
+  OfficerFinancialReportData,
+  OfficerFinancialReportLine,
+} from "@/src/features/dashboard/api";
+
 export type FinanceReportType = "balance" | "profit-loss" | "cash-flow";
 
 export type FinanceTableCell = {
@@ -19,111 +24,95 @@ export type FinanceTableConfig = {
   title: string;
 };
 
-const values = [1_000_000, 1_000_000, 1_000_000];
-const positiveValues: FinanceTableCell[] = values.map((amount) => ({
-  amount,
-  prefix: "+",
-  tone: "positive",
-}));
-const negativeValues: FinanceTableCell[] = values.map((amount) => ({
-  amount,
-  prefix: "-",
-  tone: "negative",
-}));
-
-export const financeTableConfigs: Record<
+const financeTableMetadata: Record<
   FinanceReportType,
-  FinanceTableConfig
+  Pick<FinanceTableConfig, "exportLabel" | "title">
 > = {
   balance: {
     title: "Neraca",
     exportLabel: "Export .XLSX",
-    rows: [
-      { label: "AKTIVA", type: "section" },
-      { label: "Uang Kas", type: "row", values },
-      { label: "Simpanan di Bank", type: "row", values },
-      {
-        label: "Total Aktiva Lancar",
-        type: "summary",
-        tone: "positive",
-        values,
-      },
-      { label: "TOTAL AKTIVA", type: "total", tone: "positive", values },
-      { label: "KEWAJIBAN & MODAL", type: "section" },
-      {
-        label: "Utang Belum Lunas",
-        type: "row",
-        tone: "negative",
-        values,
-      },
-      { label: "Modal Koperasi", type: "row", values },
-      { label: "TOTAL", type: "total", tone: "positive", values },
-    ],
   },
   "profit-loss": {
     title: "Laba Rugi",
     exportLabel: "Export .XLSX",
-    rows: [
-      { label: "PENDAPATAN USAHA", type: "section" },
-      { label: "Pendapatan Bunga Pinjaman", type: "row", values },
-      { label: "Pendapatan Administrasi", type: "row", values },
-      { label: "Pendapatan Lain-lain", type: "row", values },
-      {
-        label: "Total Pendapatan",
-        type: "summary",
-        tone: "positive",
-        values,
-      },
-      { label: "BEBAN USAHA", type: "section" },
-      { label: "Beban Operasional", type: "row", tone: "negative", values },
-      { label: "Beban Gaji Pengurus", type: "row", tone: "negative", values },
-      { label: "Beban Penyusutan", type: "row", tone: "negative", values },
-      { label: "Beban ATK & Umum", type: "row", tone: "negative", values },
-      { label: "TOTAL", type: "total", tone: "negative", values },
-    ],
   },
   "cash-flow": {
     title: "Arus Kas",
     exportLabel: "Export .XLSX",
-    rows: [
-      { label: "AKTIVITAS OPERASI", type: "section" },
-      { label: "Penerimaan Simpanan", type: "row", values: positiveValues },
-      { label: "Penerimaan Angsuran", type: "row", values: positiveValues },
-      { label: "Pembayaran Pinjaman", type: "row", values: negativeValues },
-      { label: "Beban Operasional", type: "row", values: negativeValues },
-      {
-        label: "Bersih Operasi",
-        type: "summary",
-        tone: "positive",
-        values: positiveValues,
-      },
-      { label: "AKTIVITAS INVESTASI", type: "section" },
-      {
-        label: "Pembelian Inventaris",
-        type: "row",
-        values: [
-          { amount: 1_000_000, prefix: "-", tone: "negative" },
-          { amount: 1_000_000, tone: "negative" },
-          { amount: 1_000_000, tone: "negative" },
-        ],
-      },
-      {
-        label: "Bersih Investasi",
-        type: "total",
-        tone: "negative",
-        values: negativeValues,
-      },
-      { label: "AKTIVITAS PENDANAAN", type: "section" },
-      { label: "Penambahan Modal", type: "row", values: positiveValues },
-      {
-        label: "Bersih Pendanaan",
-        type: "summary",
-        tone: "positive",
-        values: positiveValues,
-      },
-    ],
   },
 };
+
+type FinancialReportLineKey =
+  | "balance_sheet"
+  | "income_statement"
+  | "cash_flow";
+
+const reportDataKeyByType: Record<FinanceReportType, FinancialReportLineKey> = {
+  balance: "balance_sheet",
+  "profit-loss": "income_statement",
+  "cash-flow": "cash_flow",
+};
+
+function resolveCellTone(amount: number): FinanceTableCell["tone"] {
+  if (amount < 0) return "negative";
+  if (amount > 0) return "positive";
+  return "neutral";
+}
+
+function resolveRowTone(
+  line: OfficerFinancialReportLine,
+): FinanceTableRow["tone"] {
+  const values = Object.values(line.values);
+
+  if (values.some((value) => value < 0)) return "negative";
+  if (line.is_total || values.some((value) => value > 0)) return "positive";
+  return undefined;
+}
+
+export function buildFinanceTableConfig(
+  type: FinanceReportType,
+  report: OfficerFinancialReportData | null,
+): FinanceTableConfig {
+  const metadata = financeTableMetadata[type];
+
+  if (!report) {
+    return {
+      ...metadata,
+      rows: [],
+    };
+  }
+
+  const periodKeys = report.period_columns.map((column) => column.key);
+  const rows: FinanceTableRow[] = [];
+  const lines = report[reportDataKeyByType[type]];
+  let activeSection = "";
+
+  for (const line of lines) {
+    if (line.section !== activeSection) {
+      rows.push({ label: line.section, type: "section" });
+      activeSection = line.section;
+    }
+
+    rows.push({
+      label: line.label,
+      type: line.is_total ? "total" : "row",
+      tone: resolveRowTone(line),
+      values: periodKeys.map((key) => {
+        const amount = line.values[key] ?? 0;
+
+        return {
+          amount,
+          tone: resolveCellTone(amount),
+        };
+      }),
+    });
+  }
+
+  return {
+    ...metadata,
+    rows,
+  };
+}
 
 export const financeReportTabs: Array<{
   label: string;

@@ -1,6 +1,7 @@
 import { Icon } from "@iconify/react";
 
 import type { DashboardTransaction } from "@/src/features/dashboard/types";
+import NextIcon from "./NextIcon";
 
 type TransactionListProps = {
   transactions: DashboardTransaction[];
@@ -39,9 +40,10 @@ export default function TransactionList({
   return (
     <div className={compact ? "space-y-5" : "space-y-7"}>
       {transactions.map((transaction) => (
-        <article
+        <Link
           key={transaction.id}
-          className={`flex items-start ${compact ? "gap-3" : "gap-3.5"}`}
+          href={transaction.href}
+          className={`flex items-start ${compact ? "gap-3" : "gap-3.5"} rounded-[14px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`}
         >
           {member ? (
             <MemberTransactionIcon direction={transaction.direction} />
@@ -66,7 +68,10 @@ export default function TransactionList({
             </p>
           </div>
 
-          <div className={`shrink-0 text-right ${compact ? "pt-0.5" : ""}`}>
+          <div
+            className={`shrink-0 ${compact ? "pt-0.5" : ""} flex items-start gap-2`}
+          >
+            <div className="text-right">
             <p
               className={`font-bold leading-tight ${
                 member
@@ -95,7 +100,7 @@ export default function TransactionList({
               </p>
             )}
           </div>
-        </article>
+        </Link>
       ))}
     </div>
   );

@@ -1,21 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
+import { getOfficerFinancialReport } from "@/src/features/dashboard/api";
 import { getDashboardNavigation } from "@/src/features/dashboard/data";
 import { financePeriodOptions } from "@/src/features/dashboard/reportData";
 import SelectField from "@/src/shared/components/ui/SelectField";
 
 import DashboardScreenShell from "../../layout/DashboardScreenShell";
 import OfficerFlowHeader from "../layout/OfficerFlowHeader";
-
-const healthBreakdown = [
-  { label: "Keuangan (35%)", score: 87, tone: "text-[#159A97]" },
-  { label: "Operasional (25%)", score: 75, tone: "text-[#F59E0B]" },
-  { label: "Data (20%)", score: 80, tone: "text-[#159A97]" },
-  { label: "Kepatuhan (20%)", score: 72, tone: "text-[#F59E0B]" },
-] as const;
 
 const reportTypeOptions = [
   { label: "Neraca", value: "balance", checked: true },
@@ -93,11 +87,134 @@ type ReportScreenProps = {
   initialPeriod?: string;
 };
 
+type ReportSummaryState = {
+  data: Awaited<ReturnType<typeof getOfficerFinancialReport>>["data"] | null;
+  errorMessage: string | null;
+  isLoading: boolean;
+  period: string;
+};
+
+function formatCurrency(amount: number) {
+  return `Rp ${new Intl.NumberFormat("id-ID").format(amount)}`;
+}
+
+function findLineValue(
+  lines:
+    | Awaited<ReturnType<typeof getOfficerFinancialReport>>["data"]["balance_sheet"]
+    | Awaited<ReturnType<typeof getOfficerFinancialReport>>["data"]["income_statement"]
+    | Awaited<ReturnType<typeof getOfficerFinancialReport>>["data"]["cash_flow"],
+  label: string,
+  periodKey: string,
+) {
+  return lines.find((line) => line.label === label)?.values[periodKey] ?? 0;
+}
+
 export default function OfficerReportScreen({
-  initialPeriod = "monthly",
+  initialPeriod = "2026-06",
 }: ReportScreenProps) {
   const navigation = getDashboardNavigation("officer", "Laporan");
   const [period, setPeriod] = useState(initialPeriod);
+  const [summaryState, setSummaryState] = useState<ReportSummaryState>({
+    data: null,
+    errorMessage: null,
+    isLoading: true,
+    period: initialPeriod,
+  });
+  const isStalePeriod = summaryState.period !== period;
+  const reportData = isStalePeriod ? null : summaryState.data;
+  const errorMessage = isStalePeriod ? null : summaryState.errorMessage;
+  const isLoading = isStalePeriod || summaryState.isLoading;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    getOfficerFinancialReport(period)
+      .then((response) => {
+        if (!isMounted) return;
+
+        setSummaryState({
+          data: response.data,
+          errorMessage: null,
+          isLoading: false,
+          period,
+        });
+      })
+      .catch((error: unknown) => {
+        if (!isMounted) return;
+
+        setSummaryState({
+          data: null,
+          errorMessage:
+            error instanceof Error
+              ? error.message
+              : "Gagal mengambil ringkasan laporan.",
+          isLoading: false,
+          period,
+        });
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [period]);
+
+  const latestPeriod = reportData?.period_columns.at(-1);
+  const latestPeriodKey = latestPeriod?.key ?? period;
+  const latestPeriodLabel = latestPeriod?.label ?? period;
+  const healthBreakdown = useMemo(() => {
+    if (!reportData) return [];
+
+    return [
+      {
+        label: "Total Aktiva",
+        value: formatCurrency(
+          findLineValue(
+            reportData.balance_sheet,
+            "TOTAL AKTIVA",
+            latestPeriodKey,
+          ),
+        ),
+        tone: "text-[#159A97]",
+      },
+      {
+        label: "Simpanan Anggota",
+        value: formatCurrency(
+          findLineValue(
+            reportData.balance_sheet,
+            "Simpanan Anggota",
+            latestPeriodKey,
+          ),
+        ),
+        tone: "text-[#147DDB]",
+      },
+      {
+        label: "Laba Bersih",
+        value: formatCurrency(
+          findLineValue(
+            reportData.income_statement,
+            "Laba Bersih",
+            latestPeriodKey,
+          ),
+        ),
+        tone: "text-[#10AF4A]",
+      },
+      {
+        label: "Arus Kas Operasi",
+        value: formatCurrency(
+          findLineValue(reportData.cash_flow, "Bersih Operasi", latestPeriodKey),
+        ),
+        tone: "text-[#F59E0B]",
+      },
+    ];
+  }, [latestPeriodKey, reportData]);
+
+  const headlineValue = useMemo(() => {
+    if (!reportData) return formatCurrency(0);
+
+    return formatCurrency(
+      findLineValue(reportData.balance_sheet, "TOTAL AKTIVA", latestPeriodKey),
+    );
+  }, [latestPeriodKey, reportData]);
 
   return (
     <DashboardScreenShell
@@ -115,21 +232,31 @@ export default function OfficerReportScreen({
             <div className="flex items-start justify-center gap-3">
               <div className="min-w-0 basis-[40%] space-y-[1rem] pt-5">
                 <h2 className="text-[13px] font-bold tracking-[-0.03em] text-primary">
-                  Kesehatan Koperasi
+                  Ringkasan Keuangan
                 </h2>
-                {healthBreakdown.map((item) => (
-                  <div
-                    key={item.label}
-                    className="flex items-center justify-between gap-3 text-[0.92rem]"
-                  >
-                    <span className="font-medium text-[11px]">
-                      {item.label}
-                    </span>
-                    <span className={`text-[14px] font-bold ${item.tone}`}>
-                      {item.score}
-                    </span>
-                  </div>
-                ))}
+                {isLoading ? (
+                  <p className="text-[11px] font-medium text-text/60">
+                    Memuat ringkasan laporan...
+                  </p>
+                ) : errorMessage ? (
+                  <p className="text-[11px] font-medium text-[#c62828]">
+                    {errorMessage}
+                  </p>
+                ) : (
+                  healthBreakdown.map((item) => (
+                    <div
+                      key={item.label}
+                      className="flex items-center justify-between gap-3 text-[0.92rem]"
+                    >
+                      <span className="font-medium text-[11px]">
+                        {item.label}
+                      </span>
+                      <span className={`text-[11px] font-bold ${item.tone}`}>
+                        {item.value}
+                      </span>
+                    </div>
+                  ))
+                )}
               </div>
 
               <div className="basis-[60%] shrink-0 pt-1">
@@ -170,17 +297,17 @@ export default function OfficerReportScreen({
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                    <span className="text-[2.2rem] font-bold leading-none tracking-[-0.05em] text-text">
-                      A
+                    <span className="max-w-[118px] text-[1.25rem] font-bold leading-tight tracking-[-0.05em] text-text">
+                      {headlineValue}
                     </span>
-                    <span className="mt-2 text-[0.9rem] font-medium text-text/72">
-                      87/100
+                    <span className="mt-2 text-[0.78rem] font-medium text-text/72">
+                      {latestPeriodLabel}
                     </span>
                   </div>
                 </div>
 
                 <p className="text-center text-[12px] font-medium text-text/68">
-                  Skor Kesehatan Koperasi
+                  Total Aktiva
                 </p>
               </div>
             </div>
@@ -226,7 +353,7 @@ export default function OfficerReportScreen({
                 Terakhir di cek
               </p>
               <p className="mt-2 text-[0.88rem] font-medium text-primary">
-                14 Juni 2026
+                {latestPeriodLabel}
               </p>
             </div>
 
