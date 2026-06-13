@@ -1,72 +1,31 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
+import { getMemberLoanDashboard } from "@/src/features/dashboard/api";
 import DashboardDataTable, {
   type DashboardDataTableRow,
 } from "@/src/features/dashboard/components/common/DashboardDataTable";
 import DashboardPageHeader from "@/src/features/dashboard/components/layout/DashboardPageHeader";
 import DashboardScreenShell from "@/src/features/dashboard/components/layout/DashboardScreenShell";
+import LoanActiveStrip from "@/src/features/dashboard/components/member/loans/LoanActiveStrip";
 import { getDashboardData, getDashboardNavigation } from "@/src/features/dashboard/data";
-
-function LoanActiveStrip({
-  reference,
-  amount,
-  installmentLabel,
-  tenorLabel,
-  dueDateLabel,
-  paidProgressPercent,
-  paidProgressLabel,
-}: {
-  reference: string;
-  amount: string;
-  installmentLabel: string;
-  tenorLabel: string;
-  dueDateLabel: string;
-  paidProgressPercent: number;
-  paidProgressLabel: string;
-}) {
-  return (
-    <section className="bg-[linear-gradient(45deg,var(--color-primary-shadow)_0%,var(--color-primary-shadow)_42%,#7BB4B2_100%)] px-5 pb-5 pt-3 text-white">
-      <p className="text-[0.78rem] font-semibold text-white/88">{reference}</p>
-      <strong className="mt-1 block text-[1.95rem] font-bold leading-none tracking-[-0.045em]">
-        {amount}
-      </strong>
-
-      <div className="-ml-5 mt-3 h-px bg-[linear-gradient(90deg,rgba(255,255,255,0.82)_0%,rgba(255,255,255,0.34)_62%,rgba(255,255,255,0)_100%)]" />
-
-      <div className="mt-3 grid grid-cols-3 gap-5">
-        <div>
-          <p className="text-[0.76rem] font-medium text-white/84">Cicilan bulanan</p>
-          <p className="mt-1 text-[0.98rem] font-bold">{installmentLabel}</p>
-        </div>
-        <div>
-          <p className="text-[0.76rem] font-medium text-white/84">Tenor</p>
-          <p className="mt-1 text-[0.98rem] font-bold">{tenorLabel}</p>
-        </div>
-        <div>
-          <p className="text-[0.76rem] font-medium text-white/84">Jatuh tempo</p>
-          <p className="mt-1 text-[0.98rem] font-bold">{dueDateLabel}</p>
-        </div>
-      </div>
-
-      <div className="mt-6 h-[6px] overflow-hidden rounded-full bg-white/92">
-        <div
-          className="h-full rounded-full bg-warning transition-[width] duration-300"
-          style={{ width: `${Math.max(0, Math.min(paidProgressPercent, 100))}%` }}
-        />
-      </div>
-
-      <p className="mt-3 text-[0.78rem] font-medium text-white/92">
-        {paidProgressLabel}
-      </p>
-    </section>
-  );
-}
+import type {
+  DashboardActiveLoanSummary,
+  DashboardLoanHistoryItem,
+  DashboardLoanScheduleRow,
+} from "@/src/features/dashboard/types";
+import {
+  mapMemberLoanDashboardToActiveLoan,
+  mapMemberLoanDashboardToHistoryItems,
+  mapMemberLoanDashboardToScheduleRows,
+} from "@/src/features/dashboard/utils/memberLoanDashboardMapper";
 
 function buildScheduleRows(
-  rows: NonNullable<ReturnType<typeof getDashboardData>["loanSchedule"]>,
+  rows: DashboardLoanScheduleRow[],
+  remainingCount = 0,
 ): DashboardDataTableRow[] {
-  return [
-    ...rows.slice(0, 3).map((row) => ({
+  const mappedRows: DashboardDataTableRow[] = rows.map((row) => ({
       label: row.numberLabel,
       type: "row" as const,
       cells: [
@@ -87,23 +46,27 @@ function buildScheduleRows(
           align: "left" as const,
         },
       ],
-    })),
-    {
+    }));
+
+  if (remainingCount > 0) {
+    mappedRows.push({
       key: "schedule-summary-row",
-      label: "Dan seterusnya s.d. Des 2026",
+      label: "Angsuran berikutnya",
       labelColumnSpan: 3,
-      type: "summary",
+      type: "summary" as const,
       cells: [
-        { content: "+3 cicilan", align: "left" },
+        { content: `+${remainingCount} cicilan`, align: "left" as const },
       ],
-    },
-  ];
+    });
+  }
+
+  return mappedRows;
 }
 
 function LoanHistoryList({
   items,
 }: {
-  items: NonNullable<ReturnType<typeof getDashboardData>["loanHistory"]>;
+  items: DashboardLoanHistoryItem[];
 }) {
   return (
     <section className="mt-7">
@@ -112,6 +75,12 @@ function LoanHistoryList({
       </h2>
 
       <div className="mt-4 space-y-4">
+        {items.length === 0 ? (
+          <div className="rounded-[14px] border border-border bg-white px-4 py-5 text-[0.84rem] font-medium text-text/56 shadow-sm">
+            Belum ada riwayat pinjaman untuk ditampilkan.
+          </div>
+        ) : null}
+
         {items.map((item) => (
           <article key={item.id} className="border-t-[3px] border-warning pt-3">
             <div className="flex items-start justify-between gap-3">
@@ -143,13 +112,41 @@ function LoanHistoryList({
 
 export default function MemberLoanHistoryScreen() {
   const dashboard = getDashboardData("member");
-  const activeLoan = dashboard.activeLoanSummary;
-  const scheduleRows = dashboard.loanSchedule ?? [];
-  const historyItems = dashboard.loanHistory ?? [];
+  const [activeLoan, setActiveLoan] = useState<DashboardActiveLoanSummary | undefined>(
+    dashboard.activeLoanSummary,
+  );
+  const [scheduleRows, setScheduleRows] = useState<DashboardLoanScheduleRow[]>(
+    dashboard.loanSchedule ?? [],
+  );
+  const [historyItems, setHistoryItems] = useState<DashboardLoanHistoryItem[]>(
+    dashboard.loanHistory ?? [],
+  );
+  const [remainingInstallmentCount, setRemainingInstallmentCount] = useState(0);
 
-  if (!activeLoan) {
-    return null;
-  }
+  useEffect(() => {
+    let cancelled = false;
+
+    getMemberLoanDashboard()
+      .then((response) => {
+        if (cancelled) return;
+
+        setActiveLoan(mapMemberLoanDashboardToActiveLoan(response.data));
+        setScheduleRows(mapMemberLoanDashboardToScheduleRows(response.data));
+        setHistoryItems(mapMemberLoanDashboardToHistoryItems(response.data));
+        setRemainingInstallmentCount(response.data.installment_meta.remaining_count);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setActiveLoan(dashboard.activeLoanSummary);
+        setScheduleRows(dashboard.loanSchedule ?? []);
+        setHistoryItems(dashboard.loanHistory ?? []);
+        setRemainingInstallmentCount(0);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dashboard.activeLoanSummary, dashboard.loanHistory, dashboard.loanSchedule]);
 
   return (
     <DashboardScreenShell
@@ -166,15 +163,27 @@ export default function MemberLoanHistoryScreen() {
         />
       </div>
 
-      <LoanActiveStrip
-        reference={activeLoan.reference}
-        amount={activeLoan.amount}
-        installmentLabel={activeLoan.installmentLabel}
-        tenorLabel={activeLoan.tenorLabel}
-        dueDateLabel={activeLoan.dueDateLabel}
-        paidProgressPercent={activeLoan.paidProgressPercent}
-        paidProgressLabel={activeLoan.paidProgressLabel}
-      />
+      {activeLoan ? (
+        <LoanActiveStrip
+          reference={activeLoan.reference}
+          amount={activeLoan.amount}
+          installmentLabel={activeLoan.installmentLabel}
+          tenorLabel={activeLoan.tenorLabel}
+          dueDateLabel={activeLoan.dueDateLabel}
+          paidProgressPercent={activeLoan.paidProgressPercent}
+          paidProgressLabel={activeLoan.paidProgressLabel}
+        />
+      ) : (
+        <section className="mx-4 rounded-[24px] border border-primary/10 bg-[#f4fbfb] px-5 py-6 text-center">
+          <h3 className="text-[1rem] font-bold tracking-[-0.025em] text-primary">
+            Belum ada pinjaman aktif
+          </h3>
+          <p className="mt-2 text-[0.82rem] leading-relaxed text-text/68">
+            Jadwal angsuran akan muncul di sini setelah pengajuan Anda disetujui
+            dan dana dicairkan.
+          </p>
+        </section>
+      )}
 
       <div className="bg-white px-3 pb-7 pt-5">
         <section>
@@ -187,10 +196,11 @@ export default function MemberLoanHistoryScreen() {
             headerLabel="NO"
             labelColumnWidth={64}
             columnWidths={[152, 138, 116]}
-            rows={buildScheduleRows(scheduleRows)}
+            rows={buildScheduleRows(scheduleRows, remainingInstallmentCount)}
             bodyMaxHeightClassName="max-h-[310px] overflow-y-auto"
             showScrollIndicator={false}
             stickyLastColumn
+            emptyMessage="Belum ada jadwal angsuran."
           />
         </section>
 

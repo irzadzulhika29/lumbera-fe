@@ -4,40 +4,21 @@ import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
+import type { MemberLoanApplicationResponse } from "@/src/features/dashboard/api";
 import DashboardScreenShell from "@/src/features/dashboard/components/layout/DashboardScreenShell";
+import {
+  clearMemberLoanApplicationResult,
+  getMemberLoanApplicationResult,
+} from "@/src/features/dashboard/utils/memberLoanApplicationStorage";
 
-const submissionStages = [
-  {
-    id: "submitted",
-    title: "Pengajuan diterima",
-    subtitle: "11 Jun 2026, 10:22",
-    status: "completed",
-  },
-  {
-    id: "score-verified",
-    title: "Skor kredit terverifikasi",
-    subtitle: "11 Jun 2026, 10:23 · MCS 780",
-    status: "completed",
-  },
-  {
-    id: "review",
-    title: "Peninjauan Akseleran",
-    subtitle: "Estimasi 1-2 jam",
-    status: "pending",
-  },
-  {
-    id: "disbursement",
-    title: "Dana cair ke Virtual Account",
-    subtitle: "Menunggu persetujuan",
-    status: "pending",
-  },
-] as const;
+type LoanApplicationResult = MemberLoanApplicationResponse["data"];
 
 function StageStatusIcon({
   status,
 }: {
-  status: (typeof submissionStages)[number]["status"];
+  status: "completed" | "pending";
 }) {
   return (
     <span
@@ -50,7 +31,52 @@ function StageStatusIcon({
   );
 }
 
+function formatCurrency(amount: number) {
+  return `Rp ${new Intl.NumberFormat("id-ID").format(amount)}`;
+}
+
+function formatDateTimeLabel(value: string) {
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Jakarta",
+  })
+    .format(new Date(value))
+    .replace(".", ":");
+}
+
 export default function MemberLoanRequestSuccessScreen() {
+  const [result, setResult] = useState<LoanApplicationResult | null>(null);
+
+  useEffect(() => {
+    setResult(getMemberLoanApplicationResult());
+  }, []);
+
+  const submissionStages = useMemo(() => {
+    if (!result) {
+      return [];
+    }
+
+    return result.timeline.map((stage) => ({
+      id: stage.code,
+      title: stage.label,
+      subtitle: [
+        stage.occurred_at ? formatDateTimeLabel(stage.occurred_at) : "",
+        stage.description,
+      ]
+        .filter(Boolean)
+        .join(" - "),
+      status:
+        stage.state === "done"
+          ? ("completed" as const)
+          : ("pending" as const),
+    }));
+  }, [result]);
+
   return (
     <DashboardScreenShell background="bg-white" scrollable={false}>
       <motion.main
@@ -111,6 +137,24 @@ export default function MemberLoanRequestSuccessScreen() {
               Pengajuan berhasil!
             </motion.h1>
 
+            {result ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.32, duration: 0.28, ease: "easeOut" }}
+                className="mt-4 space-y-1 text-center"
+              >
+                <p className="text-[0.96rem] font-bold text-primary">
+                  {formatCurrency(result.requested_amount)} - {result.term_months}{" "}
+                  bulan
+                </p>
+                <p className="text-[0.8rem] font-medium text-text/56">
+                  {result.partner_name} - Cicilan{" "}
+                  {formatCurrency(result.monthly_installment)}/bulan
+                </p>
+              </motion.div>
+            ) : null}
+
             <motion.section
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
@@ -148,6 +192,12 @@ export default function MemberLoanRequestSuccessScreen() {
                     </div>
                   </div>
                 ))}
+
+                {!submissionStages.length ? (
+                  <p className="text-[0.86rem] font-medium text-text/56">
+                    Detail pengajuan terakhir tidak ditemukan.
+                  </p>
+                ) : null}
               </div>
             </motion.section>
 
@@ -158,6 +208,7 @@ export default function MemberLoanRequestSuccessScreen() {
             >
               <Link
                 href="/dashboard/member"
+                onClick={() => clearMemberLoanApplicationResult()}
                 className="mt-10 inline-flex items-center justify-center gap-2 text-[1.02rem] font-bold text-primary transition-colors hover:text-primary/85"
               >
                 <Icon

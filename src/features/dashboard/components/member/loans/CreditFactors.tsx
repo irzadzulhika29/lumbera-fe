@@ -18,7 +18,7 @@ export default function CreditFactors({
         {factors.map((factor) => (
           <div key={factor.id} className="text-center">
             <div className="flex h-12 items-center justify-center rounded-[12px] bg-[#e7f2f3] text-[1.7rem] font-bold leading-none tracking-[-0.04em] text-primary">
-              {factor.score}
+              {factor.score ?? "-"}
             </div>
             <p className="mt-2 text-[0.74rem] font-medium leading-snug text-text">
               {factor.label}
@@ -29,13 +29,6 @@ export default function CreditFactors({
           </div>
         ))}
       </div>
-
-      <PressButton
-        variant="primaryFlat"
-        className="mt-5 w-full rounded-[14px] py-3.5 text-[1rem] font-bold"
-      >
-        Lihat penjelasan
-      </PressButton>
     </div>
   );
 }
