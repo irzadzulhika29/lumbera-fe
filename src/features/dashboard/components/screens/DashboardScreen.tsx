@@ -79,7 +79,6 @@ export default function DashboardScreen({ role }: { role: DashboardRole }) {
         cooperativeName={dashboard.cooperativeName}
         period={periodLabel}
         syncLabel={dashboard.syncLabel}
-        stats={<DashboardStats metrics={metrics} />}
         backgroundClassName={
           memberDashboard ? "bg-primary-deep" : undefined
         }
