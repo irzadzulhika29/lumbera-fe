@@ -54,6 +54,18 @@ export default function CreditScoreCard({
             className="overflow-hidden bg-white"
           >
             <CreditFactors factors={profile.factors} />
+            {profile.explanation ? (
+              <div className="px-5 pb-4 pt-3">
+                <div className="rounded-[12px] bg-[#f4fbfb] px-4 py-3">
+                  <p className="text-[0.76rem] font-semibold uppercase tracking-[0.08em] text-primary/72">
+                    Ringkasan
+                  </p>
+                  <p className="mt-2 text-[0.84rem] leading-relaxed text-text/72">
+                    {profile.explanation}
+                  </p>
+                </div>
+              </div>
+            ) : null}
           </motion.div>
         ) : null}
       </AnimatePresence>
