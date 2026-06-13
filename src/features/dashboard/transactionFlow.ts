@@ -10,6 +10,12 @@ export type OfficerTransactionType =
   | "stock-mutations";
 
 export type OfficerMember = {
+  financialSummary?: {
+    currentInstallment?: number;
+    loanNumber?: string;
+    remainingLoan?: number;
+    savingsBalance?: number;
+  };
   id: string;
   initials: string;
   name: string;
@@ -41,8 +47,8 @@ export const officerTransactionTypeConfigs: OfficerTransactionTypeConfig[] = [
     slug: "loans",
     title: "Pinjaman",
     subtitle: "Pengajuan",
-    inputLabel: "Jenis Pinjaman",
-    amountOptions: ["Reguler", "Darurat", "Usaha"],
+    inputLabel: "",
+    amountOptions: [],
     icon: "loan",
     tone: "blue",
   },
@@ -50,10 +56,19 @@ export const officerTransactionTypeConfigs: OfficerTransactionTypeConfig[] = [
     slug: "installments",
     title: "Angsuran",
     subtitle: "Bayar Cicilan",
-    inputLabel: "Jenis Angsuran",
-    amountOptions: ["Pokok", "Bunga", "Denda"],
+    inputLabel: "",
+    amountOptions: [],
     icon: "installment",
     tone: "green",
+  },
+  {
+    slug: "stock-mutations",
+    title: "Penarikan",
+    subtitle: "Tarik Tunai",
+    inputLabel: "",
+    amountOptions: [],
+    icon: "withdraw",
+    tone: "orange",
   },
 ];
 
@@ -68,52 +83,100 @@ export const officerTransactionMenus: DashboardAction[] =
 
 export const officerMembers: OfficerMember[] = [
   {
+    financialSummary: {
+      currentInstallment: 350_000,
+      loanNumber: "P-041",
+      remainingLoan: 2_000_000,
+      savingsBalance: 5_300_000,
+    },
     id: "member-001",
     initials: "BS",
     name: "Budi Setiawan",
-    meta: "No. Ang. 0012 · KSP · Grade AA",
+    meta: "No. Ang. 0012 - KSP - Grade AA",
   },
   {
+    financialSummary: {
+      currentInstallment: 275_000,
+      loanNumber: "P-042",
+      remainingLoan: 1_250_000,
+      savingsBalance: 4_750_000,
+    },
     id: "member-002",
     initials: "AS",
     name: "Aria Saputra",
-    meta: "No. Ang. 0045 · KSP · Grade B",
+    meta: "No. Ang. 0045 - KSP - Grade B",
   },
   {
+    financialSummary: {
+      currentInstallment: 0,
+      loanNumber: "P-043",
+      remainingLoan: 0,
+      savingsBalance: 3_600_000,
+    },
     id: "member-003",
     initials: "DY",
     name: "Dewi Yuliani",
-    meta: "No. Ang. 0078 · KSP · Grade B",
+    meta: "No. Ang. 0078 - KSP - Grade B",
   },
   {
+    financialSummary: {
+      currentInstallment: 425_000,
+      loanNumber: "P-044",
+      remainingLoan: 3_500_000,
+      savingsBalance: 6_100_000,
+    },
     id: "member-004",
     initials: "AR",
     name: "Arif Rahman",
-    meta: "No. Ang. 0092 · KSP · Grade A",
+    meta: "No. Ang. 0092 - KSP - Grade A",
   },
   {
+    financialSummary: {
+      currentInstallment: 180_000,
+      loanNumber: "P-045",
+      remainingLoan: 900_000,
+      savingsBalance: 2_450_000,
+    },
     id: "member-005",
     initials: "MT",
     name: "Mita Tantri",
-    meta: "No. Ang. 0056 · KSP · Grade B",
+    meta: "No. Ang. 0056 - KSP - Grade B",
   },
   {
+    financialSummary: {
+      currentInstallment: 120_000,
+      loanNumber: "P-046",
+      remainingLoan: 450_000,
+      savingsBalance: 1_950_000,
+    },
     id: "member-006",
     initials: "RS",
     name: "Rizki Santoso",
-    meta: "No. Ang. 0085 · KSP · Grade C",
+    meta: "No. Ang. 0085 - KSP - Grade C",
   },
   {
+    financialSummary: {
+      currentInstallment: 0,
+      loanNumber: "P-047",
+      remainingLoan: 0,
+      savingsBalance: 7_800_000,
+    },
     id: "member-007",
     initials: "LS",
     name: "Lina Sari",
-    meta: "No. Ang. 0101 · KSP · Grade A",
+    meta: "No. Ang. 0101 - KSP - Grade A",
   },
   {
+    financialSummary: {
+      currentInstallment: 310_000,
+      loanNumber: "P-048",
+      remainingLoan: 1_700_000,
+      savingsBalance: 3_200_000,
+    },
     id: "member-008",
     initials: "BP",
     name: "Budi Prasetyo",
-    meta: "No. Ang. 0067 · KSP · Grade B",
+    meta: "No. Ang. 0067 - KSP - Grade B",
   },
 ];
 

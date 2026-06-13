@@ -16,6 +16,7 @@ const dashboardIconMap: Record<DashboardIconName, string> = {
   loan: "solar:card-transfer-linear",
   installment: "solar:calendar-mark-linear",
   notification: "solar:bell-linear",
+  withdraw: "solar:wallet-money-linear",
 };
 
 export default function DashboardIcon({

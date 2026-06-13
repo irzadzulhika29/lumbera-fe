@@ -5,11 +5,11 @@ import { getDashboardData } from "@/src/features/dashboard/data";
 import type { DashboardIconName } from "@/src/features/dashboard/types";
 import { officerTransactionMenus } from "@/src/features/dashboard/transactionFlow";
 
-import DashboardSearchField from "../common/DashboardSearchField";
-import FilterChips from "../common/FilterChips";
-import NextIcon from "../common/NextIcon";
-import TransactionList from "../common/TransactionList";
-import DashboardScreenShell from "../layout/DashboardScreenShell";
+import DashboardSearchField from "../../common/DashboardSearchField";
+import FilterChips from "../../common/FilterChips";
+import NextIcon from "../../common/NextIcon";
+import TransactionList from "../../common/TransactionList";
+import DashboardScreenShell from "../../layout/DashboardScreenShell";
 import OfficerFlowHeader from "../layout/OfficerFlowHeader";
 
 const ornamentMap: Record<DashboardIconName, string> = {
@@ -21,6 +21,7 @@ const ornamentMap: Record<DashboardIconName, string> = {
   members: "/ornament/transaction.svg",
   profile: "/ornament/transaction.svg",
   notification: "/ornament/transaction.svg",
+  withdraw: "/ornament/withdraw.svg",
 };
 
 const toneClasses = {
@@ -55,25 +56,25 @@ export default function OfficerTransactionsScreen() {
 
       <div className="bg-white px-5 pb-7 pt-0">
         <div className="mt-12">
-          <div className="grid grid-cols-3 gap-4">
-            {officerTransactionMenus.slice(0, 3).map((action) => (
+          <div className="flex gap-4 overflow-x-auto overscroll-contain [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {officerTransactionMenus.map((action) => (
               <Link
                 key={action.label}
                 href={action.href}
-                className="flex min-w-0 flex-col items-center rounded-[22px] bg-[#EEF4F9] px-3 pb-5 pt-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="flex min-w-[110px] flex-col items-center rounded-[18px] bg-[#EEF4F9] px-2 pb-3.5 pt-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 <span
-                  className={`flex h-[62px] w-[62px] items-center justify-center rounded-[18px] ${toneClasses[action.tone]}`}
+                  className={`flex h-[48px] w-[48px] items-center justify-center rounded-[14px] ${toneClasses[action.tone]}`}
                 >
                   <Image
                     src={ornamentMap[action.icon]}
                     alt=""
-                    width={30}
-                    height={30}
-                    className="h-[30px] w-[30px]"
+                    width={24}
+                    height={24}
+                    className="h-[24px] w-[24px]"
                   />
                 </span>
-                <strong className="mt-2 text-center text-[0.96rem] font-bold tracking-[-0.03em] text-secondary">
+                <strong className="mt-1.5 text-center text-[0.82rem] font-bold tracking-[-0.03em] text-secondary">
                   {action.label}
                 </strong>
               </Link>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import OfficerTransactionSuccessScreen from "@/src/features/dashboard/components/screens/OfficerTransactionSuccessScreen";
+import OfficerTransactionSuccessScreen from "@/src/features/dashboard/components/officer/screens/OfficerTransactionSuccessScreen";
 import {
   getOfficerMemberById,
   getOfficerTransactionTypeConfig,
@@ -14,7 +14,8 @@ type PageProps = {
 
 function buildSuccessTitle(type: string) {
   if (type === "savings") return "Simpanan tersimpan!";
-  if (type === "loans") return "Pinjaman tersimpan!";
+  if (type === "loans") return "Pencairan tercatat!";
+  if (type === "stock-mutations") return "Penarikan tercatat!";
   return "Angsuran tersimpan!";
 }
 
@@ -48,9 +49,14 @@ export default async function OfficerTransactionSuccessPage({
     notFound();
   }
 
-  const transactionLabel = option
-    ? `${transaction.title} ${option}`
-    : transaction.title;
+  const transactionLabel =
+    transaction.slug === "loans"
+      ? "Pencairan Pinjaman"
+      : transaction.slug === "stock-mutations"
+        ? "Tarik Tunai"
+      : option
+        ? `${transaction.title} ${option}`
+        : transaction.title;
 
   return (
     <OfficerTransactionSuccessScreen

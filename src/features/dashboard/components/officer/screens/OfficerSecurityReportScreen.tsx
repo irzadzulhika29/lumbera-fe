@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 
-import DashboardPageHeader from "../layout/DashboardPageHeader";
-import DashboardScreenShell from "../layout/DashboardScreenShell";
+import DashboardPageHeader from "../../layout/DashboardPageHeader";
+import DashboardScreenShell from "../../layout/DashboardScreenShell";
 
 const auditItems = [
   { label: "Koperasi", value: "Koperasi Padiwangi" },
@@ -12,7 +12,7 @@ const auditItems = [
   { label: "Blockchain TX ID", value: "b92...Hyperledger #48291" },
 ] as const;
 
-export default function SecurityReportScreen() {
+export default function OfficerSecurityReportScreen() {
   return (
     <DashboardScreenShell background="bg-[#f7f8f9]">
       <div className="px-6 pb-8 pt-[calc(1.4rem+env(safe-area-inset-top))]">

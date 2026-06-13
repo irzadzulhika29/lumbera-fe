@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 
 import PressButton from "@/src/shared/components/ui/PressButton";
 
-export default function MemberImportForm({
+export default function OfficerMemberImportForm({
   onImportSuccess,
   onSwitchMode,
 }: {
@@ -64,7 +64,7 @@ export default function MemberImportForm({
         <span className="text-[0.9rem] italic text-[#475569]">atau</span>
       </div>
 
-      <PressButton className="h-14 w-full rounded-[12px] text-[1.05rem] font-bold">
+      <PressButton className="h-12 w-full rounded-[8px] text-[0.95rem] font-bold">
         Unduh template
       </PressButton>
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import FinanceReportScreen from "@/src/features/dashboard/components/screens/FinanceReportScreen";
+import OfficerFinanceReportScreen from "@/src/features/dashboard/components/officer/screens/OfficerFinanceReportScreen";
 import { getFinanceReportConfig } from "@/src/features/dashboard/reportData";
 
 type PageProps = {
@@ -41,5 +41,7 @@ export default async function DashboardFinanceReportPage({
   const report = getFinanceReportConfig(period);
   const reportType = resolveFinanceReportType(type);
 
-  return <FinanceReportScreen period={report.value} type={reportType} />;
+  return (
+    <OfficerFinanceReportScreen period={report.value} type={reportType} />
+  );
 }

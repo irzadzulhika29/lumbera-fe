@@ -3,8 +3,8 @@ import {
   type FinanceReportPeriod,
 } from "@/src/features/dashboard/reportData";
 
-import DashboardPageHeader from "../layout/DashboardPageHeader";
-import DashboardScreenShell from "../layout/DashboardScreenShell";
+import DashboardPageHeader from "../../layout/DashboardPageHeader";
+import DashboardScreenShell from "../../layout/DashboardScreenShell";
 import FinanceReportTable from "../reports/FinanceReportTable";
 import FinanceReportTabs from "../reports/FinanceReportTabs";
 import {
@@ -17,7 +17,7 @@ type FinanceReportScreenProps = {
   type: FinanceReportType;
 };
 
-export default function FinanceReportScreen({
+export default function OfficerFinanceReportScreen({
   period,
   type,
 }: FinanceReportScreenProps) {

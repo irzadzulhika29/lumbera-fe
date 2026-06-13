@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 
-import DashboardPageHeader from "../layout/DashboardPageHeader";
-import DashboardScreenShell from "../layout/DashboardScreenShell";
-import ManualMemberForm from "../members/ManualMemberForm";
-import MemberImportForm from "../members/MemberImportForm";
-import MemberImportPreview from "../members/MemberImportPreview";
+import DashboardPageHeader from "../../layout/DashboardPageHeader";
+import DashboardScreenShell from "../../layout/DashboardScreenShell";
+import OfficerManualMemberForm from "../members/OfficerManualMemberForm";
+import OfficerMemberImportForm from "../members/OfficerMemberImportForm";
+import OfficerMemberImportPreview from "../members/OfficerMemberImportPreview";
+import OfficerMemberSubmitSuccess from "../members/OfficerMemberSubmitSuccess";
 
 type ImportPreviewStatus = "success" | "error";
 
@@ -25,7 +26,7 @@ type ImportPreviewData = {
   rows: ImportPreviewRow[];
 };
 
-type Mode = "manual" | "import" | "preview";
+type Mode = "manual" | "import" | "preview" | "success";
 
 const mockImportRows: ImportPreviewRow[] = [
   {
@@ -93,11 +94,12 @@ const mockImportRows: ImportPreviewRow[] = [
   },
 ];
 
-export default function AddMemberScreen() {
+export default function OfficerAddMemberScreen() {
   const [mode, setMode] = useState<Mode>("manual");
   const [importPreview, setImportPreview] = useState<ImportPreviewData | null>(
     null,
   );
+  const [savedCount, setSavedCount] = useState(1);
 
   const handleImportSuccess = (fileName: string) => {
     setImportPreview({
@@ -106,6 +108,31 @@ export default function AddMemberScreen() {
     });
     setMode("preview");
   };
+
+  const handleManualSubmit = () => {
+    setSavedCount(1);
+    setMode("success");
+  };
+
+  const handleImportSubmit = (successCount: number) => {
+    setSavedCount(successCount);
+    setMode("success");
+  };
+
+  const handleAddAgain = () => {
+    setImportPreview(null);
+    setSavedCount(1);
+    setMode("manual");
+  };
+
+  if (mode === "success") {
+    return (
+      <OfficerMemberSubmitSuccess
+        memberCount={savedCount}
+        onAddAgain={handleAddAgain}
+      />
+    );
+  }
 
   return (
     <DashboardScreenShell
@@ -125,15 +152,19 @@ export default function AddMemberScreen() {
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-10 [scrollbar-color:rgba(18,148,144,0.35)_transparent] [scrollbar-width:thin]">
         {mode === "manual" ? (
-          <ManualMemberForm onSwitchMode={() => setMode("import")} />
+          <OfficerManualMemberForm
+            onSubmit={handleManualSubmit}
+            onSwitchMode={() => setMode("import")}
+          />
         ) : mode === "import" ? (
-          <MemberImportForm
+          <OfficerMemberImportForm
             onSwitchMode={() => setMode("manual")}
             onImportSuccess={handleImportSuccess}
           />
         ) : (
-          <MemberImportPreview
+          <OfficerMemberImportPreview
             fileName={importPreview?.fileName ?? "data.xlsx"}
+            onSubmit={handleImportSubmit}
             rows={importPreview?.rows ?? []}
             onBackToImport={() => setMode("import")}
           />

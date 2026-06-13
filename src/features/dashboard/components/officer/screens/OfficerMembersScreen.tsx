@@ -6,10 +6,10 @@ import { useMemo, useState } from "react";
 
 import { getDashboardNavigation } from "@/src/features/dashboard/data";
 
-import DashboardSearchField from "../common/DashboardSearchField";
-import FilterChips from "../common/FilterChips";
-import MemberSummary from "../common/MemberSummary";
-import DashboardScreenShell from "../layout/DashboardScreenShell";
+import DashboardSearchField from "../../common/DashboardSearchField";
+import FilterChips from "../../common/FilterChips";
+import MemberSummary from "../../common/MemberSummary";
+import DashboardScreenShell from "../../layout/DashboardScreenShell";
 
 function PlusIcon() {
   return (
@@ -36,7 +36,7 @@ const grades = ["Semua", "AA", "A", "B", "C", "D"].map((grade) => ({
   value: grade,
 }));
 
-export default function CooperativeMembersScreen() {
+export default function OfficerMembersScreen() {
   const [query, setQuery] = useState("");
   const [activeGrade, setActiveGrade] = useState("Semua");
   const navigationItems = getDashboardNavigation("officer", "Anggota");

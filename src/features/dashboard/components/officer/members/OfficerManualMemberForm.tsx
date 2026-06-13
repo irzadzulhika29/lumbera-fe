@@ -3,9 +3,11 @@ import PressButton from "@/src/shared/components/ui/PressButton";
 
 const requiredMark = <span className="text-[#e74c3c]">*</span>;
 
-export default function ManualMemberForm({
+export default function OfficerManualMemberForm({
+  onSubmit,
   onSwitchMode,
 }: {
+  onSubmit: () => void;
   onSwitchMode: () => void;
 }) {
   return (
@@ -62,6 +64,8 @@ export default function ManualMemberForm({
 
       <div className="mt-12 flex flex-col gap-4">
         <PressButton
+          type="button"
+          onClick={onSubmit}
           className="h-14 w-full rounded-[12px] text-[1.05rem] font-bold"
         >
           Daftarkan anggota

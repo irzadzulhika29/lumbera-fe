@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
 
-import BackIcon from "../common/BackIcon";
+import BackIcon from "../../common/BackIcon";
 
 type OfficerFlowHeaderProps = {
   backHref: string;

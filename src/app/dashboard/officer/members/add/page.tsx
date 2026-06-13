@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import AddMemberScreen from "@/src/features/dashboard/components/screens/AddMemberScreen";
+import OfficerAddMemberScreen from "@/src/features/dashboard/components/officer/screens/OfficerAddMemberScreen";
 
 export const metadata: Metadata = {
   title: "Tambah Anggota | Lumbera",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function AddMemberPage() {
-  return <AddMemberScreen />;
+  return <OfficerAddMemberScreen />;
 }

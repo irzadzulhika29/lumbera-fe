@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import SecurityReportScreen from "@/src/features/dashboard/components/screens/SecurityReportScreen";
+import OfficerSecurityReportScreen from "@/src/features/dashboard/components/officer/screens/OfficerSecurityReportScreen";
 
 export const metadata: Metadata = {
   title: "Keamanan Koperasi | Lumbera",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardSecurityReportPage() {
-  return <SecurityReportScreen />;
+  return <OfficerSecurityReportScreen />;
 }

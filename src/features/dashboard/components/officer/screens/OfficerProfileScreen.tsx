@@ -1,11 +1,10 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import Link from "next/link";
 
 import MobileScreen from "@/src/shared/components/layout/MobileScreen";
-import DashboardBottomNavigation from "../layout/DashboardBottomNavigation";
 import { getDashboardNavigation } from "@/src/features/dashboard/data";
+import DashboardBottomNavigation from "../../layout/DashboardBottomNavigation";
 
 const accountMenus = [
   {
