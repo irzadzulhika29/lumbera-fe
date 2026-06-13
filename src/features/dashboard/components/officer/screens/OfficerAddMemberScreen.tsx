@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import type { OfficerMemberImportData } from "@/src/features/dashboard/api";
 import DashboardPageHeader from "../../layout/DashboardPageHeader";
 import DashboardScreenShell from "../../layout/DashboardScreenShell";
 import OfficerManualMemberForm from "../members/OfficerManualMemberForm";
@@ -9,103 +10,16 @@ import OfficerMemberImportForm from "../members/OfficerMemberImportForm";
 import OfficerMemberImportPreview from "../members/OfficerMemberImportPreview";
 import OfficerMemberSubmitSuccess from "../members/OfficerMemberSubmitSuccess";
 
-type ImportPreviewStatus = "success" | "error";
-
-type ImportPreviewRow = {
-  address: string;
-  joinedAt: string;
-  phoneNumber: string;
-  id: string;
-  name: string;
-  nik: string;
-  status: ImportPreviewStatus;
-};
-
-type ImportPreviewData = {
-  fileName: string;
-  rows: ImportPreviewRow[];
-};
-
 type Mode = "manual" | "import" | "preview" | "success";
-
-const mockImportRows: ImportPreviewRow[] = [
-  {
-    id: "row-1",
-    name: "Bara Hermawan",
-    nik: "1234567890123456",
-    phoneNumber: "081234567890",
-    address: "Jl. Bunga Kenari No.1, Kota Malang, Jawa Timur",
-    joinedAt: "11 Juni 2024",
-    status: "success",
-  },
-  {
-    id: "row-2",
-    name: "Dewi Lestari",
-    nik: "4433221100998877",
-    phoneNumber: "081298765432",
-    address: "Jl. Anggrek Putih No.9, Kota Yogyakarta, DI Yogyakarta",
-    joinedAt: "20 Juni 2024",
-    status: "success",
-  },
-  {
-    id: "row-3",
-    name: "Linda Susanti",
-    nik: "6677889900112233",
-    phoneNumber: "085512345678",
-    address: "Jl. Kenanga Sari No.7, Kota Medan, Sumatera Utara",
-    joinedAt: "25 Juni 2024",
-    status: "success",
-  },
-  {
-    id: "row-4",
-    name: "Budi Hartono",
-    nik: "9988776655443322",
-    phoneNumber: "083456789012",
-    address: "Jl. Flamboyan No.15, Kota Palembang, Sumatera Selatan",
-    joinedAt: "28 Juni 2024",
-    status: "success",
-  },
-  {
-    id: "row-5",
-    name: "Rani Permata",
-    nik: "1234432112344321",
-    phoneNumber: "081322334455",
-    address: "NIK duplikat dengan anggota aktif",
-    joinedAt: "03 Juli 2024",
-    status: "error",
-  },
-  {
-    id: "row-6",
-    name: "Sinta Ayu",
-    nik: "9988123411223344",
-    phoneNumber: "081277788899",
-    address: "Format tanggal bergabung tidak valid",
-    joinedAt: "2024/07/12",
-    status: "error",
-  },
-  {
-    id: "row-7",
-    name: "Agus Wibowo",
-    nik: "1111222233334444",
-    phoneNumber: "081300112233",
-    address: "Alamat wajib diisi lengkap",
-    joinedAt: "15 Juli 2024",
-    status: "error",
-  },
-];
 
 export default function OfficerAddMemberScreen() {
   const [mode, setMode] = useState<Mode>("manual");
-  const [importPreview, setImportPreview] = useState<ImportPreviewData | null>(
-    null,
-  );
+  const [importPreview, setImportPreview] =
+    useState<OfficerMemberImportData | null>(null);
   const [savedCount, setSavedCount] = useState(1);
 
-  const handleImportSuccess = (fileName: string) => {
-    setImportPreview({
-      fileName,
-      rows: mockImportRows,
-    });
+  const handleImportSuccess = (data: OfficerMemberImportData) => {
+    setImportPreview(data);
     setMode("preview");
   };
 
@@ -114,8 +28,8 @@ export default function OfficerAddMemberScreen() {
     setMode("success");
   };
 
-  const handleImportSubmit = (successCount: number) => {
-    setSavedCount(successCount);
+  const handleImportSubmit = (importedRows: number) => {
+    setSavedCount(importedRows);
     setMode("success");
   };
 
@@ -161,14 +75,13 @@ export default function OfficerAddMemberScreen() {
             onSwitchMode={() => setMode("manual")}
             onImportSuccess={handleImportSuccess}
           />
-        ) : (
+        ) : importPreview ? (
           <OfficerMemberImportPreview
-            fileName={importPreview?.fileName ?? "data.xlsx"}
-            onSubmit={handleImportSubmit}
-            rows={importPreview?.rows ?? []}
+            initialData={importPreview}
+            onSubmitSuccess={handleImportSubmit}
             onBackToImport={() => setMode("import")}
           />
-        )}
+        ) : null}
       </div>
     </DashboardScreenShell>
   );

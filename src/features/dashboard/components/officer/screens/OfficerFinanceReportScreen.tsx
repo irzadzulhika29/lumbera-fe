@@ -3,8 +3,8 @@ import {
   type FinanceReportPeriod,
 } from "@/src/features/dashboard/reportData";
 
-import DashboardPageHeader from "../../layout/DashboardPageHeader";
 import DashboardScreenShell from "../../layout/DashboardScreenShell";
+import OfficerFlowHeader from "../layout/OfficerFlowHeader";
 import FinanceReportTable from "../reports/FinanceReportTable";
 import FinanceReportTabs from "../reports/FinanceReportTabs";
 import {
@@ -26,13 +26,13 @@ export default function OfficerFinanceReportScreen({
 
   return (
     <DashboardScreenShell background="bg-[#f7f8f9]">
-      <div className="px-6 pb-6 pt-[calc(1.4rem+env(safe-area-inset-top))]">
-        <DashboardPageHeader
+      <OfficerFlowHeader
           backHref={`/dashboard/reports?period=${period}`}
           title="Laporan Keuangan"
           subtitle="Lihat pertumbuhan keuangan koperasi"
-        />
+      />
 
+      <div className="px-6 pb-6 pt-6">
         <p className="mt-8 text-[1rem] font-bold text-primary">
           {report.label}
         </p>

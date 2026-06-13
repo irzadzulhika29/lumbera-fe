@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import { Icon } from "@iconify/react";
 
+import { downloadOfficerMemberImportTemplate } from "@/src/features/dashboard/api";
 import PressButton from "@/src/shared/components/ui/PressButton";
 
 export default function OfficerMemberImportForm({
@@ -9,6 +13,9 @@ export default function OfficerMemberImportForm({
   onImportSuccess: (fileName: string) => void;
   onSwitchMode: () => void;
 }) {
+  const [downloadError, setDownloadError] = useState("");
+  const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
@@ -17,6 +24,22 @@ export default function OfficerMemberImportForm({
     }
 
     onImportSuccess(file.name);
+  };
+
+  const handleTemplateDownload = async () => {
+    try {
+      setDownloadError("");
+      setIsDownloadingTemplate(true);
+      await downloadOfficerMemberImportTemplate();
+    } catch (error) {
+      setDownloadError(
+        error instanceof Error
+          ? error.message
+          : "Gagal mengunduh template. Coba lagi.",
+      );
+    } finally {
+      setIsDownloadingTemplate(false);
+    }
   };
 
   return (
@@ -64,9 +87,18 @@ export default function OfficerMemberImportForm({
         <span className="text-[0.9rem] italic text-[#475569]">atau</span>
       </div>
 
-      <PressButton className="h-12 w-full rounded-[8px] text-[0.95rem] font-bold">
-        Unduh template
+      <PressButton
+        onClick={handleTemplateDownload}
+        disabled={isDownloadingTemplate}
+        className="h-12 w-full rounded-[8px] text-[0.95rem] font-bold"
+      >
+        {isDownloadingTemplate ? "Mengunduh template..." : "Unduh template"}
       </PressButton>
+      {downloadError ? (
+        <p className="mt-3 text-center text-[0.88rem] font-medium text-[#e74c3c]">
+          {downloadError}
+        </p>
+      ) : null}
 
       <div className="mt-auto flex flex-col gap-4 pt-24">
         <PressButton className="h-14 w-full rounded-[12px] text-[1.05rem] font-bold">
