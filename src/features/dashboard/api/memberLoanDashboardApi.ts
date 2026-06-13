@@ -83,6 +83,20 @@ export type MemberLoanDashboardResponse = {
   };
 };
 
+export type RunMemberMcsScoringResponse = {
+  status: {
+    code: number;
+    isSuccess: boolean;
+  };
+  message: string;
+  data: {
+    request_id: string;
+    member_id: string;
+    status: string;
+    webhook_state: string;
+  };
+};
+
 export async function getMemberLoanDashboard(): Promise<MemberLoanDashboardResponse> {
   const accessToken = getRequiredAccessToken();
   const response = await fetch(MEMBER_LOAN_DASHBOARD_API_ROUTE, {
@@ -109,4 +123,42 @@ export async function getMemberLoanDashboard(): Promise<MemberLoanDashboardRespo
   }
 
   return (await response.json()) as MemberLoanDashboardResponse;
+}
+
+export async function runMemberMcsScoring(): Promise<RunMemberMcsScoringResponse> {
+  const session = getAuthSession();
+
+  if (!session?.accessToken || !session.memberId) {
+    throw new Error("Data anggota tidak ditemukan. Silakan masuk kembali.");
+  }
+
+  const response = await fetch(
+    `/api/dashboard/member/mcs/${session.memberId}/run`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        accessToken: session.accessToken,
+      }),
+      cache: "no-store",
+    },
+  );
+
+  if (!response.ok) {
+    const errorPayload = (await response.json().catch(() => null)) as {
+      message?: string;
+    } | null;
+
+    throw new ApiError({
+      message:
+        errorPayload?.message ||
+        "Gagal memicu proses cek profil kredit. Silakan coba lagi.",
+      status: response.status,
+    });
+  }
+
+  return (await response.json()) as RunMemberMcsScoringResponse;
 }
