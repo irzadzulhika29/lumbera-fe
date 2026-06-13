@@ -2,6 +2,7 @@ export * from "./officerDashboardSummaryApi";
 export * from "./officerCooperativeHealthScoreApi";
 export * from "./officerFinancialReportApi";
 export * from "./officerMemberApi";
+export * from "./officerStoreApi";
 export * from "./officerTransactionApi";
 export * from "./memberDashboardApi";
 export * from "./memberLoanApplicationApi";
