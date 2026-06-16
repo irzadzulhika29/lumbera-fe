@@ -4,7 +4,7 @@ import { officerNavigation } from "./navigation";
 
 export const officerDashboard: DashboardViewModel = {
   role: "officer",
-  greeting: "Selamat Pagi,",
+  greeting: "Selamat Pagi, Alfi",
   userName: "Amba!",
   cooperativeName: "Koperasi Padiwangi",
   period: "KSP - Juni 2026",
